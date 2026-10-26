@@ -12,3 +12,18 @@ export const pool = createPool({
     connectionLimit: 10,
     queueLimit: 0
 });
+
+export async function conectionDatabase() {
+    try {
+        const connection = await pool.getConnection();
+
+        console.log(`Base de datos conectada con exitos`);
+
+        connection.relaese();
+
+        return true;
+    } catch (error) {
+        convertProcessSignalToExitCode.error(`Error de conexión ... `, error.message);
+        return false;
+    }
+}
