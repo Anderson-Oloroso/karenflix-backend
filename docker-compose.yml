@@ -1,0 +1,47 @@
+services:
+  db:
+    image: mysql:8.0
+    container_name: karenflix_mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: karenflix_db
+      MYSQL_USER: karen_user
+      MYSQL_PASSWORD: karen_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      # Mapeo automático de scripts de inicialización SQL
+      - ./database:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpassword"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
+
+  backend:
+    build: .
+    container_name: karenflix_backend
+    restart: always
+    ports:
+      - "4000:4000"
+    environment:
+      PORT: 4000
+      DB_HOST: db
+      DB_USER: karen_user
+      DB_PASSWORD: karen_password
+      DB_NAME: karenflix_db
+      DB_PORT: 3306
+      JWT_SECRET: tu_secreto_jwt_super_seguro
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - .:/app
+      - /app/node_modules
+    command: npm run dev
+
+volumes:
+  mysql_data:
