@@ -3,7 +3,7 @@ import rateLimit from "express-rate-limit";
  const app = express();
 
 const limiter  = rateLimit({
-    windowMs: 10 * 60 * 1000,
+    windowMs: Number( process.env.RATE_LIMIT_WINDOW_MS),
     max: 100,
     message: {
         status: 'error',

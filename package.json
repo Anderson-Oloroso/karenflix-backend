@@ -16,7 +16,7 @@
     "swagger-ui-express": "^5.0.1"
   },
   "scripts": {
-    "dev": "--watch server.js --quiet",
+    "dev": "nodemon server.js --quiet",
     "start": "server.js"
   },
   "repository": {
@@ -30,5 +30,8 @@
   "bugs": {
     "url": "https://github.com/Anderson-Oloroso/karenflix-backend/issues"
   },
-  "homepage": "https://github.com/Anderson-Oloroso/karenflix-backend#readme"
+  "homepage": "https://github.com/Anderson-Oloroso/karenflix-backend#readme",
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
 }
