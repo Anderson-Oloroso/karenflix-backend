@@ -4,7 +4,7 @@ import rateLimit from "express-rate-limit";
 
 const limiter  = rateLimit({
     windowMs: Number( process.env.RATE_LIMIT_WINDOW_MS),
-    max: 100,
+    max: Number( process.env.RATE_LIMIT_MAX_REQUESTS),
     message: {
         status: 'error',
         message: `demaciasdas peticiones, intenta mas tarde ... `
@@ -17,7 +17,7 @@ app.use(express.urlencoded({extended: true}));
 
 app.get('/', (req, res) =>{
     res.status(200).json({
-        status: onkeydown,
+        status: "succes",
         message: " karenflix API funcionando correctamente ... "
     });
 });
