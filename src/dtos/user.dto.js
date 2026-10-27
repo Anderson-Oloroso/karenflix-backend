@@ -1,25 +1,18 @@
-export class LoginDTO {
-    constructor({ username, password } = {}) {
-        this.username = String(username ?? '').trim().toLowerCase();
-        this.password = String(password ?? '').trim();
-    }
-}
+export default class AuthDTO {
+    #username;
+    #email;
+    #password;
+    #role;
 
-export class RegisterDTO {
-    constructor({ username, email, password, role } = {}) {
-        this.username = String(username ?? '').trim().toLowerCase();
-        this.email = String(email ?? '').trim().toLowerCase();
-        this.password = String(password ?? '').trim();
-        this.role = role ?? 'user';
+    constructor(data = {}) {
+        this.#username = data.username ? String(data.username).trim() : undefined;
+        this.#email = data.email ? String(data.email).trim().toLowerCase() : undefined;
+        this.#password = data.password ? String(data.password) : undefined;
+        this.#role = data.role;
     }
-}
 
-export class UserResponseDTO {
-    constructor(user = {}) {
-        this.id = user.id;
-        this.username = user.username;
-        this.email = user.email;
-        this.role = user.role;
-        this.createdAt = user.created_at;
-    }
+    get username() { return this.#username; }
+    get email() { return this.#email; }
+    get password() { return this.#password; }
+    get role() { return this.#role; }
 }
