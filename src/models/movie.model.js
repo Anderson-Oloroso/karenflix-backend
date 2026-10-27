@@ -149,4 +149,26 @@ export default class MoviesModel {
         return rows.length > 0;
     }
 
+    static async updateMovie(id, movie){
+        cosnt  [result] = await pool.query(`
+            UPDATE movies
+                title = ?,
+                description = ?,
+                category_id = ?,
+                release_year = ?,
+                image_url = ?,
+                status = ?
+            `,[
+                movie.title,
+                movie.descripotion,
+                movie.category_id,
+                movie.release_year,
+                movie.image_url,
+                movie.status,
+                id
+            ]
+        );
+
+        return result;
+    }
 }
