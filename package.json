@@ -17,7 +17,7 @@
   },
   "scripts": {
     "dev": "nodemon src/server.js --quiet",
-    "start": " node src/server.js"
+    "start": "node src/server.js"
   },
   "repository": {
     "type": "git",
