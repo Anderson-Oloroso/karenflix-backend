@@ -1,19 +1,51 @@
 -- 02-seeds.sql
 USE karenflix_db;
 
--- Usuario Admin por defecto (password: Admin123! hasheado con bcrypt)
+-- 1. Inserción de Usuarios (1 Administrador y 2 Usuarios normales)
+-- Nota: Los hashes de contraseñas son simulados para bcrypt (ej. 'password123')
 INSERT INTO users (username, email, password_hash, role) VALUES
-('admin_karen', 'admin@karenflix.com', '$2b$10$e8R54m48d70/Gf.w3qHhR.1aL3L2uFqK9aP5lq8aQ3f.Jz2e5.t8S', 'admin'),
-('user_geek', 'geek@karenflix.com', '$2b$10$e8R54m48d70/Gf.w3qHhR.1aL3L2uFqK9aP5lq8aQ3f.Jz2e5.t8S', 'user');
+('admin_karen', 'admin@karenflix.com', '$2b$10$e8X...hash_admin_example', 'admin'),
+('user_juan', 'juan@gmail.com', '$2b$10$e8X...hash_juan_example', 'user'),
+('user_maria', 'maria@gmail.com', '$2b$10$e8X...hash_maria_example', 'user');
 
--- Categorías Geek Base
+-- 2. Inserción de Categorías
 INSERT INTO categories (name, description) VALUES
-('Anime', 'Series y películas de animación japonesa'),
-('Ciencia Ficción', 'Viajes espaciales, tecnología y futuros distópicos'),
-('Superhéroes', 'Cómics adaptados al cine y la televisión'),
-('Fantasía', 'Mundos mágicos, dragones y aventuras épicas');
+('Ciencia Ficción', 'Películas basadas en el futuro, tecnología avanzada y exploración espacial.'),
+('Acción', 'Películas llenas de adrenalina, combates y persecuciones.'),
+('Animación', 'Películas animadas para todo público, incluyendo anime y series geek.'),
+('Drama', 'Historias profundas centradas en el desarrollo de personajes y conflictos emocionales.');
 
--- Películas Aprobadas Iniciales
+-- 3. Inserción de Películas (created_by = 1 corresponde a admin_karen)
 INSERT INTO movies (title, description, category_id, release_year, image_url, status, created_by) VALUES
-('Interstellar', 'Un grupo de exploradores viaja a través de un agujero de gusano en el espacio.', 2, 2014, 'https://example.com/interstellar.jpg', 'approved', 1),
-('Spider-Man: Into the Spider-Verse', 'Miles Morales se convierte en el Spider-Man de su universo.', 3, 2018, 'https://example.com/spiderverse.jpg', 'approved', 1);
+('Inception', 'Un ladrón que roba secretos corporativos a través de los sueños.', 1, 2010, 'https://images.unsplash.com/photo-1534447677768-be436bb09401', 'approved', 1),
+('Interstellar', 'Un equipo de exploradores viaja a través de un agujero de gusano en busca de un nuevo hogar.', 1, 2014, 'https://images.unsplash.com/photo-1451187580459-43490279c0fa', 'approved', 1),
+('Spider-Man: Into the Spider-Verse', 'Miles Morales se convierte en el Hombre Araña de su universo y cruza caminos con otros.', 3, 2018, 'https://images.unsplash.com/photo-1635805737707-575885ab0820', 'approved', 1),
+('The Matrix', 'Un hacker descubre que la realidad cotidiana es una simulación creada por máquinas.', 1, 1999, 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5', 'pending', 1);
+
+-- 4. Inserción de Actores
+INSERT INTO actors (name, biography, birth_date, photo_url) VALUES
+('Leonardo DiCaprio', 'Actor y productor de cine estadounidense, ganador del Óscar.', '1974-11-11', 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d'),
+('Matthew McConaughey', 'Actor estadounidense conocido por sus papeles en dramas y ciencia ficción.', '1969-11-04', 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e'),
+('Keanu Reeves', 'Actor y músico canadiense, protagonista de Matrix y John Wick.', '1964-09-02', 'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce');
+
+-- 5. Relación Películas - Actores (movie_actors)
+INSERT INTO movie_actors (movie_id, actor_id, character_name) VALUES
+(1, 1, 'Dom Cobb'),
+(2, 2, 'Joseph Cooper'),
+(4, 3, 'Neo / Thomas Anderson');
+
+-- 6. Inserción de Favoritos / Mi Lista (favorites)
+INSERT INTO favorites (user_id, movie_id) VALUES
+(2, 1), -- Juan guardó Inception en su lista
+(2, 2), -- Juan guardó Interstellar en su lista
+(3, 3); -- María guardó Spider-Verse en su lista
+
+-- 7. Inserción de Reseñas (reviews con rating de 1 a 10)
+INSERT INTO reviews (movie_id, user_id, title, comment, rating) VALUES
+(1, 2, 'Una obra maestra del cine', 'La trama de los sueños dentro de los sueños es alucinante y la banda sonora es épica.', 10),
+(2, 3, 'Emotiva y compleja', 'Me hizo reflexionar mucho sobre el tiempo y el espacio. Visualmente increíble.', 9);
+
+-- 8. Inserción de Reacciones a Reseñas (review_reactions)
+INSERT INTO review_reactions (review_id, user_id, reaction_type) VALUES
+(1, 3, 'like'), -- María le dio "like" a la reseña de Juan
+(2, 2, 'like'); -- Juan le dio "like" a la reseña de María
