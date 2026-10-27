@@ -15,13 +15,11 @@ El SQL es la fuente de verdad. Si este documento y el esquema difieren, prevalec
 
 ## Alcance
 
-El esquema cubre usuarios, películas, categorías, reseñas y reacciones a reseñas. Se implementa en MySQL con InnoDB. Este documento refleja el esquema actual y no propone cambios adicionales.
+El esquema cubre usuarios, categorías, películas, actores, la relación entre películas y actores, favoritos, reseñas y reacciones a reseñas. Se implementa en MySQL con InnoDB. Este documento describe las tablas y reglas definidas en `01-schema.sql`.
+
+> **Advertencia:** `01-schema.sql` comienza con `DROP DATABASE IF EXISTS karenflix_db`. Ejecutarlo elimina la base de datos existente y todos sus datos antes de crearla nuevamente. No ejecutes ese script en un entorno con información que quieras conservar.
 
 ## Diagrama entidad-relación lógico
-
-La imagen original se conserva como referencia visual:
-
-![Diagrama ERD lógico de Karenflix](./diagrams/logic_diagram.jpg)
 
 La siguiente versión Mermaid representa las entidades y relaciones implementadas. El tipo `atributo` es un marcador genérico de Mermaid; los tipos concretos están definidos en `01-schema.sql`.
 
@@ -55,6 +53,29 @@ erDiagram
         atributo created_at
     }
 
+    ACTORS {
+        atributo id PK
+        atributo name
+        atributo biography
+        atributo birth_date
+        atributo photo_url
+        atributo created_at
+    }
+
+    MOVIE_ACTORS {
+        atributo id PK
+        atributo movie_id FK
+        atributo actor_id FK
+        atributo character_name
+    }
+
+    FAVORITES {
+        atributo id PK
+        atributo user_id FK
+        atributo movie_id FK
+        atributo created_at
+    }
+
     REVIEWS {
         atributo id PK
         atributo movie_id FK
@@ -73,8 +94,12 @@ erDiagram
         atributo created_at
     }
 
-    USERS ||--o{ MOVIES : crea
+    USERS o|--o{ MOVIES : crea
     CATEGORIES ||--o{ MOVIES : clasifica
+    MOVIES ||--o{ MOVIE_ACTORS : incluye
+    ACTORS ||--o{ MOVIE_ACTORS : participa
+    USERS ||--o{ FAVORITES : guarda
+    MOVIES ||--o{ FAVORITES : aparece_en
     MOVIES ||--o{ REVIEWS : recibe
     USERS ||--o{ REVIEWS : publica
     REVIEWS ||--o{ REVIEW_REACTIONS : recibe
@@ -89,7 +114,10 @@ erDiagram
 | --- | --- |
 | `users` | `id` (PK), `username` (`VARCHAR(50)`, NOT NULL, UK), `email` (`VARCHAR(100)`, NOT NULL, UK), `password_hash` (`VARCHAR(255)`, NOT NULL), `role` (`ENUM('admin', 'user')`, predeterminado `'user'`), `created_at` (`TIMESTAMP`, predeterminado `CURRENT_TIMESTAMP`) |
 | `categories` | `id` (PK), `name` (`VARCHAR(50)`, NOT NULL, UK), `description` (`TEXT`, NOT NULL), `created_at` (`TIMESTAMP`, predeterminado `CURRENT_TIMESTAMP`) |
-| `movies` | `id` (PK), `title` (`VARCHAR(150)`, NOT NULL, UK), `description` (`TEXT`, NOT NULL), `category_id` (`INT`, NOT NULL, FK), `release_year` (`INT`, NOT NULL), `image_url` (`VARCHAR(255)`, nullable), `status` (`ENUM('pending', 'approved')`, predeterminado `'pending'`), `created_by` (`INT`, NOT NULL, FK), `created_at` (`TIMESTAMP`, predeterminado `CURRENT_TIMESTAMP`) |
+| `movies` | `id` (PK), `title` (`VARCHAR(150)`, NOT NULL, UK), `description` (`TEXT`, NOT NULL), `category_id` (`INT`, NOT NULL, FK), `release_year` (`INT`, NOT NULL), `image_url` (`VARCHAR(255)`, nullable), `status` (`ENUM('pending', 'approved')`, predeterminado `'pending'`), `created_by` (`INT`, nullable, FK con `ON DELETE SET NULL`), `created_at` (`TIMESTAMP`, predeterminado `CURRENT_TIMESTAMP`) |
+| `actors` | `id` (PK), `name` (`VARCHAR(100)`, NOT NULL), `biography` (`TEXT`, nullable), `birth_date` (`DATE`, nullable), `photo_url` (`VARCHAR(255)`, nullable), `created_at` (`TIMESTAMP`, predeterminado `CURRENT_TIMESTAMP`) |
+| `movie_actors` | `id` (PK), `movie_id` (`INT`, NOT NULL, FK), `actor_id` (`INT`, NOT NULL, FK), `character_name` (`VARCHAR(100)`, nullable) |
+| `favorites` | `id` (PK), `user_id` (`INT`, NOT NULL, FK), `movie_id` (`INT`, NOT NULL, FK), `created_at` (`TIMESTAMP`, predeterminado `CURRENT_TIMESTAMP`), UNIQUE (`user_id`, `movie_id`) |
 | `reviews` | `id` (PK), `movie_id` (`INT`, NOT NULL, FK), `user_id` (`INT`, NOT NULL, FK), `title` (`VARCHAR(100)`, NOT NULL), `comment` (`TEXT`, NOT NULL), `rating` (`TINYINT`, NOT NULL, CHECK entre 1 y 10), `created_at` (`TIMESTAMP`, predeterminado `CURRENT_TIMESTAMP`) |
 | `review_reactions` | `id` (PK), `review_id` (`INT`, NOT NULL, FK), `user_id` (`INT`, NOT NULL, FK), `reaction_type` (`ENUM('like', 'dislike')`, NOT NULL), `created_at` (`TIMESTAMP`, predeterminado `CURRENT_TIMESTAMP`), UNIQUE (`review_id`, `user_id`) |
 
@@ -99,8 +127,12 @@ En la tabla, el lado “uno” indica que cada registro dependiente se relaciona
 
 | Relación | Cardinalidad | Interpretación |
 | --- | --- | --- |
-| `users` crea `movies` | Un usuario a cero o muchas películas | Cada película se atribuye a un usuario creador. |
+| `users` crea `movies` | Un usuario a cero o muchas películas; una película puede tener cero o un usuario creador | `movies.created_by` es nullable. Si se elimina al usuario, la película se conserva y el campo queda en `NULL`. |
 | `categories` clasifica `movies` | Una categoría a cero o muchas películas | Cada película pertenece a una categoría. |
+| `movies` relaciona `movie_actors` | Una película a cero o muchos registros de reparto | Cada registro de reparto pertenece a una película. |
+| `actors` relaciona `movie_actors` | Un actor a cero o muchas películas | `movie_actors` permite asociar varios actores con una película y varias películas con un actor. |
+| `users` guarda `favorites` | Un usuario a cero o muchos favoritos | Cada favorito pertenece a un usuario y a una película. |
+| `movies` aparece en `favorites` | Una película a cero o muchos favoritos | La combinación usuario-película no se puede repetir. |
 | `movies` recibe `reviews` | Una película a cero o muchas reseñas | Cada reseña corresponde a una película. |
 | `users` publica `reviews` | Un usuario a cero o muchas reseñas | Cada reseña corresponde a un usuario autor. |
 | `reviews` recibe `review_reactions` | Una reseña a cero o muchas reacciones | Cada reacción corresponde a una reseña. |
@@ -111,13 +143,17 @@ En la tabla, el lado “uno” indica que cada registro dependiente se relaciona
 Las siguientes reglas están declaradas en `01-schema.sql`:
 
 - `users.username`, `users.email`, `categories.name` y `movies.title` son obligatorios y únicos.
-- `review_reactions` impone unicidad compuesta en (`review_id`, `user_id`): un usuario no puede registrar más de una reacción por reseña.
 - `users.role` admite `'admin'` o `'user'` y tiene `'user'` como valor predeterminado. La columna no está declarada `NOT NULL`.
 - `movies.status` admite `'pending'` o `'approved'` y tiene `'pending'` como valor predeterminado. La columna no está declarada `NOT NULL`.
 - `review_reactions.reaction_type` admite `'like'` o `'dislike'` y es obligatorio.
 - `reviews.rating` es obligatorio y tiene una restricción `CHECK` de 1 a 10, inclusive.
-- Las claves foráneas de `movies`, `reviews` y `review_reactions` especifican `ON DELETE CASCADE`.
-- Las claves foráneas y los campos de negocio que las contienen son obligatorios (`NOT NULL`).
+- Al eliminar un usuario, sus reseñas, reacciones y favoritos se eliminan en cascada; las películas que creó se conservan y su `created_by` queda en `NULL`.
+- Al eliminar una reseña, sus reacciones se eliminan en cascada.
+- Al eliminar una película, se eliminan en cascada sus reseñas, favoritos y asociaciones con actores (`movie_actors`).
+- Al eliminar una categoría, sus películas se eliminan en cascada y, a su vez, se eliminan los registros dependientes de esas películas.
+- Al eliminar un actor, se eliminan en cascada sus asociaciones con películas; no se eliminan las películas.
+- `review_reactions` impone unicidad compuesta en (`review_id`, `user_id`): un usuario no puede registrar más de una reacción por reseña.
+- Las claves foráneas son obligatorias salvo `movies.created_by`, que admite `NULL` para conservar películas cuando se elimina a su creador.
 - `password_hash` almacena el hash de la contraseña, no la contraseña en texto plano.
 
 ## Índices definidos
@@ -135,6 +171,10 @@ Esta sección distingue las claves que crean índices para integridad de los ín
 | `categories` | `name` | `UNIQUE`. |
 | `movies` | `id` | Clave primaria. |
 | `movies` | `title` | `UNIQUE`. |
+| `actors` | `id` | Clave primaria. |
+| `movie_actors` | `id` | Clave primaria. |
+| `favorites` | `id` | Clave primaria. |
+| `favorites` | (`user_id`, `movie_id`) | `UNIQUE KEY unique_user_movie_favorite`. |
 | `reviews` | `id` | Clave primaria. |
 | `review_reactions` | `id` | Clave primaria. |
 | `review_reactions` | (`review_id`, `user_id`) | `UNIQUE KEY unique_user_review_reaction`. |
@@ -151,4 +191,4 @@ No se documentan aquí índices compuestos adicionales como si estuvieran implem
 
 ## Datos iniciales
 
-`02-seeds.sql` agrega dos usuarios de ejemplo, cuatro categorías y dos películas aprobadas. Los datos se insertan usando identificadores de categoría y usuario concretos; por tanto, se asume que las inserciones iniciales mantienen el orden e identificadores esperados por el script.
+`02-seeds.sql` agrega tres usuarios, cuatro categorías, cuatro películas, tres actores, asociaciones de reparto, favoritos, reseñas y reacciones de ejemplo. Las inserciones relacionadas usan identificadores asignados por el orden de inserción; por tanto, el script asume una base de datos vacía recién creada con `01-schema.sql`.
