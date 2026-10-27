@@ -15,7 +15,7 @@ export default class MoviesService {
         return result;
     }
 
-    static async getALl(filters = {}){
+    static async getAll(filters = {}){
         let movies;
 
         if(filters.category){
