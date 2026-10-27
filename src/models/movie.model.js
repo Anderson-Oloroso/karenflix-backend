@@ -126,4 +126,15 @@ export default class MoviesModel {
 
         return movie;
     }
+
+    static async exists(id){
+        cosnt [rows] = await pool.query(`
+            SELECT id
+            FROM movies
+            WHERE id = ?
+            `,[id]
+        );
+
+        return rows.length > 0;
+    }
 }
