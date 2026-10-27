@@ -50,5 +50,28 @@ export default class MoviesModel {
 
         return movies;
     }
-    
+
+    static async getById(){
+        
+        cosnt [ movie ] = await pool.query(
+            `SELECT 
+                m.id,
+                m.title,
+                m.description,
+                c.name AS category_name,
+                m.release_year,
+                m.image_url,
+                m.status,
+                u.username,
+                m.create_at
+            FROM movies m 
+            INNER JOIN categorias c
+                ON c.id = m.category_id
+            INNER JOIN users u 
+                ON u.id = m.create_at
+            WHERE m.id = ? 
+            `,[id]
+        );
+        return movie[0];
+    }
 }
