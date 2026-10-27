@@ -171,4 +171,14 @@ export default class MoviesModel {
 
         return result;
     }
+
+    static async approve(id){
+        cosnt [result] = await pool.query(`
+            UPDATE movies
+            SET status = 'approved'
+            WHERE id = ?
+            `, [id]
+        );
+        return result;
+    }
 }
