@@ -2,7 +2,7 @@
   "name": "karenflix-backend",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
   "dependencies": {
     "bcrypt": "^5.1.1",
     "dotenv": "^16.4.7",
@@ -16,8 +16,8 @@
     "swagger-ui-express": "^5.0.1"
   },
   "scripts": {
-    "dev": "nodemon server.js --quiet",
-    "start": "server.js"
+    "dev": "nodemon src/server.js --quiet",
+    "start": " node src/server.js"
   },
   "repository": {
     "type": "git",
