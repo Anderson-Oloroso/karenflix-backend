@@ -16,7 +16,8 @@
     "swagger-ui-express": "^5.0.1"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "nodemon src/server.js --quiet",
+    "start": "node src/server.js"
   },
   "repository": {
     "type": "git",
@@ -29,5 +30,8 @@
   "bugs": {
     "url": "https://github.com/Anderson-Oloroso/karenflix-backend/issues"
   },
-  "homepage": "https://github.com/Anderson-Oloroso/karenflix-backend#readme"
+  "homepage": "https://github.com/Anderson-Oloroso/karenflix-backend#readme",
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
 }
