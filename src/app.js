@@ -1,35 +1,35 @@
-import express, { json } from "express";
-import rateLimit from "express-rate-limit";
- const app = express();
+import express from 'express';
+import rateLimit from 'express-rate-limit';
+import apiRoutes from './routes/index.js';
+import { errorHandler, rutaNoEncontrada } from './middlewares/error.middleware.js';
 
-const limiter  = rateLimit({
-    windowMs: Number( process.env.RATE_LIMIT_WINDOW_MS),
-    max: Number( process.env.RATE_LIMIT_MAX_REQUESTS),
+const app = express();
+
+const limiter = rateLimit({
+    windowMs: Number(process.env.RATE_LIMIT_WINDOW_MS || 900000),
+    max: Number(process.env.RATE_LIMIT_MAX_REQUESTS || 100),
     message: {
         status: 'error',
-        message: `demaciasdas peticiones, intenta mas tarde ... `
+        message: 'Demasiadas peticiones, intenta más tarde...'
     }
 });
 
 app.use(limiter);
 app.use(express.json());
-app.use(express.urlencoded({extended: true}));
+app.use(express.urlencoded({ extended: true }));
 
-app.get('/api/v1', (req, res) =>{
+app.get('/api/v1', (req, res) => {
     res.status(200).json({
-        status: "succes",
-        message: " karenflix API funcionando correctamente ... "
+        status: 'success',
+        message: 'karenflix API funcionando correctamente...'
     });
 });
 
-// Rutas (import index from "src/routes/index.js")
+// Rutas principales
+app.use('/api/v1', apiRoutes);
 
-// Manejo de rutas inexistentes
-app.use((req, res)=>{
-    res.status(404).json({
-        status: "error",
-        message: "Ruta no encontrada ... "
-    });
-});
+// Manejo de rutas inexistentes y errores
+app.use(rutaNoEncontrada);
+app.use(errorHandler);
 
 export default app;
