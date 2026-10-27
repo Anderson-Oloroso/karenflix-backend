@@ -181,4 +181,13 @@ export default class MoviesModel {
         );
         return result;
     }
+
+    static async deleteMovie(id){
+        const [result] = await pool.query(`
+            DELETE FROM movies
+            WHERE id = ?
+            `, [id]
+        );
+        return result();
+    }
 }
