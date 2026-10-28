@@ -10,16 +10,16 @@ export default class MoviesDTO {
     #createBy;
     #createAt;
 
-    constructor(movie){
+    constructor(movie = {}) {
         this.#id = movie.id;
         this.#title = movie.title;
         this.#description = movie.description;
-        this.#category = movie.category;
+        this.#category = movie.category_name || movie.category;
         this.#releaseYear = movie.release_year;
         this.#imageUrl = movie.image_url;
         this.#status = movie.status;
-        this.#createBy = movie.username;
-        this.#createAt = movie.create_at;
+        this.#createBy = movie.username || movie.created_by;
+        this.#createAt = movie.created_at || movie.create_at;
     }
 
     get data() {
@@ -36,7 +36,7 @@ export default class MoviesDTO {
         };
     }
 
-    static fromArray(){
+    static fromArray(rows = []) {
         return rows.map(movie => new MoviesDTO(movie).data);
     }
 }
