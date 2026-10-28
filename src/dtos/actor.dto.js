@@ -1,11 +1,9 @@
-import { act } from "react";
-
 export default class ActorDTO {
     #id;
     #name;
     #biography;
     #birth_date;
-    #photo_url
+    #photo_url;
     #createdAt;
 
     constructor(actor = {}) {
@@ -21,7 +19,7 @@ export default class ActorDTO {
         return {
             id: this.#id,
             name: this.#name,
-            piography: this.#biography,
+            biography: this.#biography,
             birth_date: this.#birth_date,
             photo_url: this.#photo_url,
             ...(this.#createdAt && { createdAt: this.#createdAt })
