@@ -1,8 +1,17 @@
-import MoviesService from '../services/movie.service.js';
+export default class MovieController {
+    #movieService;
 
-export default class MoviesController {
+    constructor(movieService) {
+        this.#movieService = movieService;
+        this.create = this.create.bind(this);
+        this.getAll = this.getAll.bind(this);
+        this.getById = this.getById.bind(this);
+        this.update = this.update.bind(this);
+        this.approve = this.approve.bind(this);
+        this.delete = this.delete.bind(this);
+    }
 
-    static async create(req, res) {
+    async create(req, res) {
         try {
             const movie = {
                 ...req.body,
@@ -10,7 +19,7 @@ export default class MoviesController {
                 created_by: req.user?.id || req.user?.sub || req.body.created_by
             };
 
-            const result = await MoviesService.create(movie);
+            const result = await this.#movieService.create(movie);
 
             return res.status(201).json({
                 status: 'success',
@@ -27,14 +36,14 @@ export default class MoviesController {
         }
     }
 
-    static async getAll(req, res) {
+    async getAll(req, res) {
         try {
             const filters = {
                 category: req.query.category,
                 title: req.query.title
             };
 
-            const movies = await MoviesService.getAll(filters);
+            const movies = await this.#movieService.getAll(filters);
 
             return res.status(200).json({
                 status: 'success',
@@ -49,10 +58,10 @@ export default class MoviesController {
         }
     }
 
-    static async getById(req, res) {
+    async getById(req, res) {
         try {
             const { id } = req.params;
-            const movie = await MoviesService.getById(id);
+            const movie = await this.#movieService.getById(id);
 
             return res.status(200).json({
                 status: 'success',
@@ -66,10 +75,10 @@ export default class MoviesController {
         }
     }
 
-    static async update(req, res) {
+    async update(req, res) {
         try {
             const { id } = req.params;
-            await MoviesService.update(id, req.body);
+            await this.#movieService.update(id, req.body);
 
             return res.status(200).json({
                 status: 'success',
@@ -83,10 +92,10 @@ export default class MoviesController {
         }
     }
 
-    static async approve(req, res) {
+    async approve(req, res) {
         try {
             const { id } = req.params;
-            await MoviesService.approve(id);
+            await this.#movieService.approve(id);
 
             return res.status(200).json({
                 status: 'success',
@@ -100,10 +109,10 @@ export default class MoviesController {
         }
     }
 
-    static async delete(req, res) {
+    async delete(req, res) {
         try {
             const { id } = req.params;
-            await MoviesService.deleteMovie(id);
+            await this.#movieService.deleteMovie(id);
 
             return res.status(200).json({
                 status: 'success',
