@@ -2,11 +2,11 @@
 USE karenflix_db;
 
 -- 1. Inserción de Usuarios (1 Administrador y 2 Usuarios normales)
--- Nota: Los hashes de contraseñas son simulados para bcrypt (ej. 'password123')
+-- Las contraseñas se hashearon con bcrypt (coste 10); credenciales de desarrollo documentadas en database/README.md.
 INSERT INTO users (username, email, password_hash, role) VALUES
-('admin_karen', 'admin@karenflix.com', '$2b$10$e8X...hash_admin_example', 'admin'),
-('user_juan', 'juan@gmail.com', '$2b$10$e8X...hash_juan_example', 'user'),
-('user_maria', 'maria@gmail.com', '$2b$10$e8X...hash_maria_example', 'user');
+('admin_karen', 'admin@karenflix.com', '$2b$10$H0HFV1XtylorbeuVLa08K.W8rV9fS3mbjArcN7gwVltTFdq.KUn0G', 'admin'),
+('user_juan', 'juan@gmail.com', '$2b$10$tzfAk/6vdWkPUKJ4yWO/pOYvbxjFODAwHMAgOiLdckdqXkVKGt1KG', 'user'),
+('user_maria', 'maria@gmail.com', '$2b$10$jVwF06p4.aEWASZV8aL3S.T6TY3zK7pgb91Syi3/YswoJVLZadd/u', 'user');
 
 -- 2. Inserción de Categorías
 INSERT INTO categories (name, description) VALUES
