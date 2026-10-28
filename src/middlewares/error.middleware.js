@@ -1,6 +1,13 @@
 export function errorHandler(err, req, res, next) {
-    res.status(err.statusCode || 500).json({
-        status: 'Fail',
+    const statusCode = err.statusCode || 500;
+    const status = err.status || (statusCode >= 500 ? 'Error' : 'Fail');
+
+    if (statusCode === 500) {
+        console.error('[ERROR INTERNO NO CONTROLADO]:', err);
+    }
+
+    res.status(statusCode).json({
+        status,
         mensaje: err.message || 'Error interno del servidor',
         errores: err.details || null
     });
