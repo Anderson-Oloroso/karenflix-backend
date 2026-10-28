@@ -15,30 +15,11 @@ const movieController = new MovieController(movieService);
 
 const router = Router();
 
-// GET 
 router.get('/', movieController.getAll);
 router.get('/:id', movieController.getById);
-
-// POST
-router.post(
-    '/',
-    createMovieValidator,
-    validationMiddleware,
-    movieController.create
-);
-
-// PUT
-router.put(
-    '/:id',
-    updateMovieValidator,
-    validationMiddleware,
-    movieController.update
-);
-
-// PATCH
+router.post('/', createMovieValidator, validationMiddleware, movieController.create);
+router.put('/:id', updateMovieValidator, validationMiddleware, movieController.update);
 router.patch('/:id/approve', movieController.approve);
-
-// DELETE
 router.delete('/:id', movieController.delete);
 
 export default router;
