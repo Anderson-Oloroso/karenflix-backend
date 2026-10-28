@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS movies (
     status ENUM('pending', 'approved') DEFAULT 'pending', -- Requerido por la rúbrica
     created_by INT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE,
+    FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE RESTRICT,
     FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL
 ) ENGINE=InnoDB;
 
