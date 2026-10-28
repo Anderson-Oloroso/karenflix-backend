@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { ROLES } from '../constants/roles.constant.js';
+import { ROLES } from '../constants/role.constant.js';
 
 export default class AuthService {
     #userModel;
