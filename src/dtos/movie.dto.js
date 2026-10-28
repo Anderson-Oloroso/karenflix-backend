@@ -1,4 +1,4 @@
-export default class MoviesDTO {
+export default class MovieDTO {
 
     #id;
     #title;
@@ -37,6 +37,6 @@ export default class MoviesDTO {
     }
 
     static fromArray(rows = []) {
-        return rows.map(movie => new MoviesDTO(movie).data);
+        return rows.map(movie => new MovieDTO(movie).data);
     }
 }
