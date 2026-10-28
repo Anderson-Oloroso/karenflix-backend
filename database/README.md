@@ -192,3 +192,13 @@ No se documentan aquí índices compuestos adicionales como si estuvieran implem
 ## Datos iniciales
 
 `02-seeds.sql` agrega tres usuarios, cuatro categorías, cuatro películas, tres actores, asociaciones de reparto, favoritos, reseñas y reacciones de ejemplo. Las inserciones relacionadas usan identificadores asignados por el orden de inserción; por tanto, el script asume una base de datos vacía recién creada con `01-schema.sql`.
+
+Las contraseñas de los usuarios semilla están almacenadas como hashes bcrypt con coste 10 y pueden usarse para iniciar sesión:
+
+| Usuario | Correo | Contraseña |
+| --- | --- | --- |
+| `admin_karen` | `admin@karenflix.com` | `KarenflixAdmin2026!` |
+| `user_juan` | `juan@gmail.com` | `JuanKflix2026!` |
+| `user_maria` | `maria@gmail.com` | `MariaKflix2026!` |
+
+Estas son credenciales públicas de desarrollo. Cámbialas antes de usar los datos semilla en un entorno accesible a terceros o en producción.
