@@ -8,7 +8,7 @@ export default class MovieModel {
     }
 
     async createMovie(movie) {
-        const [result] = await this.#db.query(
+        const [result] = await this.#db.execute(
             `INSERT INTO movies (
                 title,
                 description,
@@ -147,7 +147,7 @@ export default class MovieModel {
     }
 
     async updateMovie(id, movie) {
-        const [result] = await this.#db.query(
+        const [result] = await this.#db.execute(
             `UPDATE movies
             SET
                 title = COALESCE(?, title),
@@ -172,7 +172,7 @@ export default class MovieModel {
     }
 
     async approve(id) {
-        const [result] = await this.#db.query(
+        const [result] = await this.#db.execute(
             `UPDATE movies SET status = 'approved' WHERE id = ?`,
             [id]
         );
@@ -180,7 +180,7 @@ export default class MovieModel {
     }
 
     async deleteMovie(id) {
-        const [result] = await this.#db.query(
+        const [result] = await this.#db.execute(
             `DELETE FROM movies WHERE id = ?`,
             [id]
         );
