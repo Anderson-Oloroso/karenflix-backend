@@ -4,7 +4,7 @@ import MoviesDTO from "../dtos/movie.dto.js";
 export default class MoviesService {
 
     static async create(movieData){
-        const existsTitle = await MoviesModel.existTitle(movieData.existTitle);
+        const existsTitle = await MoviesModel.existTitle(movieData.title);
 
         if(existsTitle){
             throw new Error(
@@ -30,7 +30,6 @@ export default class MoviesService {
     }
 
     static async getById(id){
-
         const movie = await MoviesModel.getById(id);
 
         if(!movie){
@@ -43,7 +42,6 @@ export default class MoviesService {
     }
     
     static async update(id, movieData){
-
         const movieExists = await MoviesModel.exists(id);
 
         if(!movieExists) {
@@ -53,7 +51,7 @@ export default class MoviesService {
         }
 
         if(movieData.title){
-            const titleExists = await MoviesModel.existTitle(movieData.title)
+            const titleExists = await MoviesModel.existTitle(movieData.title);
 
             if(titleExists){
                 throw new Error(
@@ -61,7 +59,7 @@ export default class MoviesService {
                 );
             }
         }
-        return await MoviesModel.update(
+        return await MoviesModel.updateMovie(
             id,
             movieData
         );
@@ -72,7 +70,19 @@ export default class MoviesService {
 
         if(!movieExists){
             throw new Error(
-                'La pel{icula no existe ...'
+                'La pelicula no existe ...'
+            );
+        }
+
+        return await MoviesModel.approve(id);
+    }
+
+    static async deleteMovie(id){
+        const movieExists = await MoviesModel.exists(id);
+
+        if(!movieExists){
+            throw new Error(
+                'La pelicula no existe ...'
             );
         }
 

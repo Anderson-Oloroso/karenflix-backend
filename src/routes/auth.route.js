@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { validationsRegister, validationsLogin } from "../validators/auth.validators.js";
+import { validationsRegister, validationsLogin } from "../validators/auth.validator.js";
 
 import { pool } from "../config/db.config.js";
 import UserModel from "../models/user.model.js";
