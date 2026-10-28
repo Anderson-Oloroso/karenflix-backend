@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import MoviesController from '../controllers/movies.controller.js';
-import createMovieValidator from '../validators/movies.create.validator.js'
-import updateMovieValidator from '../validators/movies.update.validator.js';
+import MoviesController from '../controllers/movie.controller.js';
+import createMovieValidator from '../validators/movie.create.validator.js'
+import updateMovieValidator from '../validators/movie.update.validator.js';
 import validationMiddleware from '../middlewares/validation.middleware.js';
 
 const router = Router();
