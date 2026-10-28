@@ -1,0 +1,38 @@
+info:
+  name: Login
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: "{{baseUrl}}/auth/login"
+  body:
+    type: json
+    data: |-
+      {
+        "email": "admin@karenflix.com",
+        "password": "KarenflixAdmin2026!"
+      }
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: after-response
+      code: |-
+        const body = res.getBody();
+        const token = body?.data?.jwt;
+
+        if (res.status >= 200 && res.status < 300 && typeof token === 'string' && token.length > 0) {
+          bru.setEnvVar('jwt', token);
+          console.log("JWT guardado en la variable de entorno 'jwt'.");
+        } else {
+          bru.deleteEnvVar('jwt');
+          console.error('Login fallido o la respuesta no contiene data.jwt; se eliminó el JWT anterior.');
+        }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
