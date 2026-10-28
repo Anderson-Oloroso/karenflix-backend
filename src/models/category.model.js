@@ -17,6 +17,21 @@ export default class CategoryModel {
         return row[0] ?? null;
     }
 
+    async getByName(name){
+        const query = 'SELECT id, name, description, created_at FROM categories WHERE name = ?';
+        const [ rows ] = await this.#db.query(query, [name]);
+        return rows[0] ?? null;
+    }
+
+    async countMoviesByCategory(categoryId) {
+        const [rows] = await this.#db.query(
+            'SELECT COUNT(*) AS total FROM movies WHERE category_id = ?',
+            [categoryId]
+        );
+
+        return rows[0].total;
+    }
+
     async create(data){
         const query = 'INSERT INTO categories (name, description) VALUES (?, ?)';
         const [ result ] = await this.#db.execute(query, [data.name, data.description]);
