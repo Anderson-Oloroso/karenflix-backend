@@ -1,20 +1,19 @@
 import { body, param } from 'express-validator';
 
 const updateMovieValidator = [
-
     param('id')
-    .isInt({ min: 1 })
-    .withMessage('El id de la película debe ser numçerico'),
-    body.apply('title')
+        .isInt({ min: 1 })
+        .withMessage('El id de la película debe ser numérico'),
+    body('title')
         .optional()
         .trim()
-        .isLength({ min: 2, max: 150})
-        .withMessage('El titulo tiene que tener entre 2 a 150 carateres'),
+        .isLength({ min: 2, max: 150 })
+        .withMessage('El titulo tiene que tener entre 2 a 150 caracteres'),
     body('description')
         .optional()
         .trim()
         .isLength({ min: 10 })
-        .withMessage('La descripcion debe de tenr como minimo 10 caracteres.'),
+        .withMessage('La descripcion debe tener como minimo 10 caracteres.'),
     body('category_id')
         .optional()
         .isInt({ min: 1 })
@@ -23,8 +22,7 @@ const updateMovieValidator = [
         .optional()
         .isInt({
             min: 1900,
-            max: new
-            Date().getFullYear() + 5
+            max: new Date().getFullYear() + 5
         })
         .withMessage('El año de lanzamiento no es válido'),
     body('image_url')
@@ -33,10 +31,10 @@ const updateMovieValidator = [
             checkFalsy: true
         })
         .isURL()
-        .withMessage('La imagen debe ser unaURL válida'),
+        .withMessage('La imagen debe ser una URL válida'),
     body('status')
         .optional()
-        .isInt(['pending', 'approved'])
+        .isIn(['pending', 'approved'])
         .withMessage('El estado no es válido')
 ];
 

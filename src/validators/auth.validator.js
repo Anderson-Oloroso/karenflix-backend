@@ -1,5 +1,5 @@
 import { body, param, validationResult } from 'express-validator';
-import { ROLES } from '../constants/roles.constant.js';
+import { ROLES } from '../constants/role.constant.js';
 
 export function managerValidationErrors(req, res, next) {
     const errores = validationResult(req);
