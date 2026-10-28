@@ -82,9 +82,17 @@ export default class AuthController {
 
     async profile(req, res, next) {
         try {
+            const { iat, exp, ...user } = req.user;
+            const toIsoDate = (timestamp) =>
+                timestamp ? new Date(timestamp * 1000).toISOString() : null;
+
             res.status(200).json({
                 status: 'Success',
-                data: req.user
+                data: {
+                    ...user,
+                    iat: toIsoDate(iat),
+                    exp: toIsoDate(exp)
+                }
             });
         } catch (err) {
             next(err);
