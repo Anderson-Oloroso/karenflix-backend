@@ -14,12 +14,7 @@ export default class AuthController {
     async register(req, res, next) {
         try {
             const dto = new AuthDTO(req.body);
-            const newUser = await this.#authService.register({
-                username: dto.username,
-                email: dto.email,
-                password: dto.password,
-                role: dto.role
-            });
+            const newUser = await this.#authService.register(dto.data);
 
             res.status(201).json({
                 status: 'Success',
