@@ -8,9 +8,9 @@ import createMovieValidator from '../validators/movie.create.validator.js';
 import updateMovieValidator from '../validators/movie.update.validator.js';
 import validationMiddleware from '../middlewares/validation.middleware.js';
 
-// Ensamblaje con inyección de dependencias (100% POO)
-const movieModel      = new MovieModel(pool);
-const movieService    = new MovieService(movieModel);
+// Ensamblaje
+const movieModel = new MovieModel(pool);
+const movieService = new MovieService(movieModel);
 const movieController = new MovieController(movieService);
 
 const router = Router();

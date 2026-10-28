@@ -7,7 +7,7 @@ import AuthService from "../services/auth.service.js";
 import AuthController from "../controllers/auth.controller.js";
 import AuthMiddleware from "../middlewares/auth.middleware.js";
 
-// Ensamblaje con inyección de dependencias (100% POO)
+// Ensamblaje
 const userModel = new UserModel(pool);
 const authService = new AuthService(userModel);
 const authController = new AuthController(authService);
