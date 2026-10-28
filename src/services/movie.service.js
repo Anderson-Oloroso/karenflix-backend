@@ -1,91 +1,81 @@
-import MoviesModel from "../models/movie.model.js";
-import MoviesDTO from "../dtos/movie.dto.js";
+import MovieDTO from "../dtos/movie.dto.js";
 
-export default class MoviesService {
+export default class MovieService {
+    #movieModel;
 
-    static async create(movieData){
-        const existsTitle = await MoviesModel.existTitle(movieData.title);
-
-        if(existsTitle){
-            throw new Error(
-                'Ya existe una pelicula con este titulo.'
-            );
-        }
-        const result = await MoviesModel.createMovie(movieData);
-        return result;
+    constructor(movieModel) {
+        this.#movieModel = movieModel;
     }
 
-    static async getAll(filters = {}){
+    async create(movieData) {
+        const existsTitle = await this.#movieModel.existTitle(movieData.title);
+
+        if (existsTitle) {
+            throw new Error('Ya existe una pelicula con este titulo.');
+        }
+
+        return await this.#movieModel.createMovie(movieData);
+    }
+
+    async getAll(filters = {}) {
         let movies;
 
-        if(filters.category){
-            movies = await MoviesModel.getByCategory(filters.category);
-        }else if(filters.title) {
-            movies = await MoviesModel.getByTitle(filters.title);
-        }else{
-            movies = await MoviesModel.getAll();
+        if (filters.category) {
+            movies = await this.#movieModel.getByCategory(filters.category);
+        } else if (filters.title) {
+            movies = await this.#movieModel.getByTitle(filters.title);
+        } else {
+            movies = await this.#movieModel.getAll();
         }
 
-        return MoviesDTO.fromArray(movies);
+        return MovieDTO.fromArray(movies);
     }
 
-    static async getById(id){
-        const movie = await MoviesModel.getById(id);
+    async getById(id) {
+        const movie = await this.#movieModel.getById(id);
 
-        if(!movie){
-            throw new Error(
-                'La pelicula no existe ...'
-            );
+        if (!movie) {
+            throw new Error('La pelicula no existe ...');
         }
 
-        return new MoviesDTO(movie).data;
+        return new MovieDTO(movie).data;
     }
     
-    static async update(id, movieData){
-        const movieExists = await MoviesModel.exists(id);
+    async update(id, movieData) {
+        const movieExists = await this.#movieModel.exists(id);
 
-        if(!movieExists) {
-            throw new Error(
-                'La pelicula no existe ...'
-            );
+        if (!movieExists) {
+            throw new Error('La pelicula no existe ...');
         }
 
-        if(movieData.title){
-            const titleExists = await MoviesModel.existTitle(movieData.title);
+        if (movieData.title) {
+            const titleExists = await this.#movieModel.existTitle(movieData.title);
 
-            if(titleExists){
-                throw new Error(
-                    'Ya existe una pelicula con este titulo'
-                );
+            if (titleExists) {
+                throw new Error('Ya existe una pelicula con este titulo');
             }
         }
-        return await MoviesModel.updateMovie(
-            id,
-            movieData
-        );
+
+        return await this.#movieModel.updateMovie(id, movieData);
     }
 
-    static async approve(id){
-        const movieExists = await MoviesModel.exists(id);
+    async approve(id) {
+        const movieExists = await this.#movieModel.exists(id);
 
-        if(!movieExists){
-            throw new Error(
-                'La pelicula no existe ...'
-            );
+        if (!movieExists) {
+            throw new Error('La pelicula no existe ...');
         }
 
-        return await MoviesModel.approve(id);
+        return await this.#movieModel.approve(id);
     }
 
-    static async deleteMovie(id){
-        const movieExists = await MoviesModel.exists(id);
+    async deleteMovie(id) {
+        const movieExists = await this.#movieModel.exists(id);
 
-        if(!movieExists){
-            throw new Error(
-                'La pelicula no existe ...'
-            );
+        if (!movieExists) {
+            throw new Error('La pelicula no existe ...');
         }
 
-        return await MoviesModel.deleteMovie(id);
+        return await this.#movieModel.deleteMovie(id);
     }
 }
