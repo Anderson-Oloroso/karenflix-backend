@@ -11,8 +11,12 @@ export default class AuthDTO {
         this.#role = data.role;
     }
 
-    get username() { return this.#username; }
-    get email() { return this.#email; }
-    get password() { return this.#password; }
-    get role() { return this.#role; }
+    get data() {
+        return {
+            username: this.#username,
+            email: this.#email,
+            password: this.#password,
+            role: this.#role
+        };
+    }
 }
