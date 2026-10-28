@@ -1,9 +1,14 @@
 import { pool } from '../config/db.config.js';
 
-export default class MoviesModel {
+export default class MovieModel {
+    #db;
 
-    static async createMovie(movie) {
-        const [result] = await pool.query(
+    constructor(db = pool) {
+        this.#db = db;
+    }
+
+    async createMovie(movie) {
+        const [result] = await this.#db.query(
             `INSERT INTO movies (
                 title,
                 description,
@@ -27,8 +32,8 @@ export default class MoviesModel {
         return result;
     }
 
-    static async getAll() {
-        const [movies] = await pool.query(
+    async getAll() {
+        const [movies] = await this.#db.query(
             `SELECT 
                 m.id,
                 m.title,
@@ -50,8 +55,8 @@ export default class MoviesModel {
         return movies;
     }
 
-    static async getById(id) {
-        const [movie] = await pool.query(
+    async getById(id) {
+        const [movie] = await this.#db.query(
             `SELECT 
                 m.id,
                 m.title,
@@ -73,8 +78,8 @@ export default class MoviesModel {
         return movie[0] ?? null;
     }
 
-    static async getByTitle(title) {
-        const [movie] = await pool.query(
+    async getByTitle(title) {
+        const [movie] = await this.#db.query(
             `SELECT 
                 m.id,
                 m.title,
@@ -98,8 +103,8 @@ export default class MoviesModel {
         return movie;
     }
 
-    static async getByCategory(categoryId) {
-        const [movie] = await pool.query(
+    async getByCategory(categoryId) {
+        const [movie] = await this.#db.query(
             `SELECT 
                 m.id,
                 m.title,
@@ -123,8 +128,8 @@ export default class MoviesModel {
         return movie;
     }
 
-    static async exists(id) {
-        const [rows] = await pool.query(
+    async exists(id) {
+        const [rows] = await this.#db.query(
             `SELECT id FROM movies WHERE id = ?`,
             [id]
         );
@@ -132,8 +137,8 @@ export default class MoviesModel {
         return rows.length > 0;
     }
 
-    static async existTitle(title) {
-        const [rows] = await pool.query(
+    async existTitle(title) {
+        const [rows] = await this.#db.query(
             `SELECT id FROM movies WHERE title = ?`,
             [title]
         );
@@ -141,8 +146,8 @@ export default class MoviesModel {
         return rows.length > 0;
     }
 
-    static async updateMovie(id, movie) {
-        const [result] = await pool.query(
+    async updateMovie(id, movie) {
+        const [result] = await this.#db.query(
             `UPDATE movies
             SET
                 title = COALESCE(?, title),
@@ -166,16 +171,16 @@ export default class MoviesModel {
         return result;
     }
 
-    static async approve(id) {
-        const [result] = await pool.query(
+    async approve(id) {
+        const [result] = await this.#db.query(
             `UPDATE movies SET status = 'approved' WHERE id = ?`,
             [id]
         );
         return result;
     }
 
-    static async deleteMovie(id) {
-        const [result] = await pool.query(
+    async deleteMovie(id) {
+        const [result] = await this.#db.query(
             `DELETE FROM movies WHERE id = ?`,
             [id]
         );
