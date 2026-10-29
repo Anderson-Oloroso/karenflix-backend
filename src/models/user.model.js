@@ -23,6 +23,12 @@ export default class UserModel {
         return rows[0] ?? null;
     }
 
+    async getAll() {
+        const query = 'SELECT id, username, email, role, created_at FROM users ORDER BY id ASC';
+        const [rows] = await this.#db.query(query);
+        return rows;
+    }
+
     async create(data) {
         const query = 'INSERT INTO users (username, email, password_hash, role) VALUES (?, ?, ?, ?)';
         const [result] = await this.#db.execute(query, [
@@ -32,5 +38,28 @@ export default class UserModel {
             data.role
         ]);
         return result.insertId;
+    }
+
+    async updateById(id, data) {
+        const query = `
+            UPDATE users
+            SET username = IFNULL(?, username),
+                email = IFNULL(?, email),
+                password_hash = IFNULL(?, password_hash)
+            WHERE id = ?
+        `;
+        const [result] = await this.#db.execute(query, [
+            data.username ?? null,
+            data.email ?? null,
+            data.password_hash ?? null,
+            id
+        ]);
+        return result.affectedRows > 0;
+    }
+
+    async deleteById(id) {
+        const query = 'DELETE FROM users WHERE id = ?';
+        const [result] = await this.#db.execute(query, [id]);
+        return result.affectedRows > 0;
     }
 }
