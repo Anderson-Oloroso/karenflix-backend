@@ -1,0 +1,27 @@
+info:
+  name: Create Movie Actor
+  type: http
+  seq: 5
+
+http:
+  method: POST
+  url: "{{baseUrl}}/movie-actors"
+  headers:
+    - name: Authorization
+      value: "Bearer {{jwt}}"
+  body:
+    type: json
+    data: |-
+      {
+        "movie_id": 1,
+        "actor_id": 1,
+        "character_name": "Personaje de ejemplo"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false

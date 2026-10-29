@@ -1,0 +1,19 @@
+info:
+  name: Get Favorites
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: "{{baseUrl}}/favorites"
+  headers:
+    - name: Authorization
+      value: "Bearer {{jwt}}"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
