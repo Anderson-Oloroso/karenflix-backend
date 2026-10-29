@@ -1,4 +1,4 @@
-export default class AuthDTO {
+export default class UserDTO {
     #username;
     #email;
     #password;
