@@ -1,0 +1,27 @@
+info:
+  name: Create Movie Review
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: "{{baseUrl}}/movies/{{movieId}}/reviews"
+  headers:
+    - name: Authorization
+      value: "Bearer {{jwt}}"
+  body:
+    type: json
+    data: |-
+      {
+        "rating": 8,
+        "title": "Muy buena película",
+        "comment": "Una reseña de ejemplo que cumple el mínimo requerido."
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false

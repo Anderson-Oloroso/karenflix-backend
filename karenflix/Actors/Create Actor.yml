@@ -1,0 +1,28 @@
+info:
+  name: Create Actor
+  type: http
+  seq: 3
+
+http:
+  method: POST
+  url: "{{baseUrl}}/actors"
+  headers:
+    - name: Authorization
+      value: "Bearer {{jwt}}"
+  body:
+    type: json
+    data: |-
+      {
+        "name": "Actor de ejemplo",
+        "biography": "Biografía de ejemplo con más de diez caracteres.",
+        "birth_date": "1980-01-15",
+        "photo_url": "https://example.com/actor.jpg"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false

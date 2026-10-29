@@ -1,0 +1,29 @@
+info:
+  name: Create Movie
+  type: http
+  seq: 3
+
+http:
+  method: POST
+  url: "{{baseUrl}}/movies"
+  headers:
+    - name: Authorization
+      value: "Bearer {{jwt}}"
+  body:
+    type: json
+    data: |-
+      {
+        "title": "Película de ejemplo",
+        "description": "Descripción de ejemplo con al menos diez caracteres.",
+        "category_id": 1,
+        "release_year": 2024,
+        "image_url": "https://example.com/movie.jpg"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
