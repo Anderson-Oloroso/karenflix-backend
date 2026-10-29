@@ -3,6 +3,24 @@ variables:
   - name: baseUrl
     value: http://localhost:4000/api/v1
     description: base de la peticion
+  - name: movieId
+    value: "1"
+    description: ID existente de una película para requests que lo requieran
+  - name: categoryId
+    value: "1"
+    description: ID existente de una categoría
+  - name: actorId
+    value: "1"
+    description: ID existente de un actor
+  - name: movieActorId
+    value: "1"
+    description: ID existente de una relación película-actor
+  - name: favoriteId
+    value: "1"
+    description: ID existente de un favorito
+  - name: reviewId
+    value: "1"
+    description: ID existente de una reseña
   - name: jwt
     value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJhZG1pbl9rYXJlbiIsImVtYWlsIjoiYWRtaW5Aa2FyZW5mbGl4LmNvbSIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc5MzE2MTY3NywiZXhwIjoxNzkzMjQ4MDc3fQ.0oM3WNpMk21weVGUxxLLA0Mi0Msp493mj7VEAoe96Wk
     description: pega aquí el JWT devuelto por Login para probar Logout y Profile

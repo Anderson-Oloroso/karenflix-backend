@@ -1,0 +1,25 @@
+info:
+  name: Add Favorite
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: "{{baseUrl}}/favorites"
+  headers:
+    - name: Authorization
+      value: "Bearer {{jwt}}"
+  body:
+    type: json
+    data: |-
+      {
+        "movie_id": 1
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false

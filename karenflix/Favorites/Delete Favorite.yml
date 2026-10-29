@@ -1,0 +1,19 @@
+info:
+  name: Delete Favorite
+  type: http
+  seq: 3
+
+http:
+  method: DELETE
+  url: "{{baseUrl}}/favorites/{{favoriteId}}"
+  headers:
+    - name: Authorization
+      value: "Bearer {{jwt}}"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false

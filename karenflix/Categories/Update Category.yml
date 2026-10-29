@@ -1,0 +1,25 @@
+info:
+  name: Update Category
+  type: http
+  seq: 4
+
+http:
+  method: PUT
+  url: "{{baseUrl}}/categories/{{categoryId}}"
+  headers:
+    - name: Authorization
+      value: "Bearer {{jwt}}"
+  body:
+    type: json
+    data: |-
+      {
+        "name": "Drama actualizado"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
