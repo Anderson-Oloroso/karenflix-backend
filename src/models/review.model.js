@@ -28,7 +28,7 @@ export default class ReviewModel {
     async movieExists(movieId, conn) {
         const executor = conn ?? this.#db;
         const [rows] = await executor.execute(
-            `SELECT id FROM movies WHERE id = ? LIMIT 1`,
+            `SELECT id FROM movies WHERE id = ? LIMIT 1${conn ? ' FOR UPDATE' : ''}`,
             [movieId]
         );
 

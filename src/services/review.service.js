@@ -12,9 +12,11 @@ export default class ReviewService {
 
     async create(movieId, userId, reviewData) {
         const connection = await this.#pool.getConnection();
+        let transactionStarted = false;
 
         try {
             await connection.beginTransaction();
+            transactionStarted = true;
 
             const movieExists = await this.#reviewModel.movieExists(movieId, connection);
 
@@ -36,10 +38,13 @@ export default class ReviewService {
             await this.#reviewModel.updateMovieAverageRating(movieId, connection);
 
             await connection.commit();
+            transactionStarted = false;
 
             return { id: result.insertId };
         } catch (error) {
-            await connection.rollback();
+            if (transactionStarted) {
+                await connection.rollback();
+            }
             throw error;
         } finally {
             connection.release();

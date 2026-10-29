@@ -30,7 +30,15 @@ export default class CategoryService {
             throw AppError.conflict('Ya existe una categoría con este nombre');
         }
 
-        const insertId = await this.#categoryModel.create(data);
+        let insertId;
+        try {
+            insertId = await this.#categoryModel.create(data);
+        } catch (error) {
+            if (error.code === 'ER_DUP_ENTRY') {
+                throw AppError.conflict('Ya existe una categoría con este nombre');
+            }
+            throw error;
+        }
 
         return {
             id: insertId,
@@ -54,7 +62,14 @@ export default class CategoryService {
             }
         }
 
-        await this.#categoryModel.update(data, id);
+        try {
+            await this.#categoryModel.update(data, id);
+        } catch (error) {
+            if (error.code === 'ER_DUP_ENTRY') {
+                throw AppError.conflict('Ya existe otra categoría registrada con este nombre');
+            }
+            throw error;
+        }
         return await this.getById(id);
     }
 

@@ -1,9 +1,7 @@
-import { pool } from '../config/db.config.js';
-
 export default class MovieModel {
     #db;
 
-    constructor(db = pool) {
+    constructor(db) {
         this.#db = db;
     }
 
@@ -47,7 +45,7 @@ export default class MovieModel {
             FROM movies m 
             INNER JOIN categories c
                 ON c.id = m.category_id
-            INNER JOIN users u 
+            LEFT JOIN users u
                 ON u.id = m.created_by
             ORDER BY m.created_at DESC`
         );
@@ -70,7 +68,7 @@ export default class MovieModel {
             FROM movies m 
             INNER JOIN categories c
                 ON c.id = m.category_id
-            INNER JOIN users u 
+            LEFT JOIN users u
                 ON u.id = m.created_by
             WHERE m.id = ?`,
             [id]
@@ -93,7 +91,7 @@ export default class MovieModel {
             FROM movies m 
             INNER JOIN categories c
                 ON c.id = m.category_id
-            INNER JOIN users u 
+            LEFT JOIN users u
                 ON u.id = m.created_by
             WHERE m.title LIKE ?
             ORDER BY m.created_at DESC`,
@@ -118,7 +116,7 @@ export default class MovieModel {
             FROM movies m 
             INNER JOIN categories c
                 ON c.id = m.category_id
-            INNER JOIN users u 
+            LEFT JOIN users u
                 ON u.id = m.created_by
             WHERE m.category_id = ?
             ORDER BY m.created_at DESC`,
@@ -137,11 +135,22 @@ export default class MovieModel {
         return rows.length > 0;
     }
 
-    async existTitle(title) {
+    async categoryExists(categoryId) {
         const [rows] = await this.#db.query(
-            `SELECT id FROM movies WHERE title = ?`,
-            [title]
+            'SELECT id FROM categories WHERE id = ?',
+            [categoryId]
         );
+        return rows.length > 0;
+    }
+
+    async existTitle(title, excludeId = null) {
+        let query = 'SELECT id FROM movies WHERE title = ?';
+        const params = [title];
+        if (excludeId !== null) {
+            query += ' AND id != ?';
+            params.push(excludeId);
+        }
+        const [rows] = await this.#db.query(query, params);
 
         return rows.length > 0;
     }

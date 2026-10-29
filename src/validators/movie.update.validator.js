@@ -1,9 +1,13 @@
 import { body, param } from 'express-validator';
 
-const updateMovieValidator = [
+export const movieIdParamValidator = [
     param('id')
         .isInt({ min: 1 })
-        .withMessage('El id de la película debe ser numérico'),
+        .withMessage('El id de la película debe ser numérico')
+];
+
+const updateMovieValidator = [
+    ...movieIdParamValidator,
     body('title')
         .optional()
         .trim()
@@ -35,7 +39,13 @@ const updateMovieValidator = [
     body('status')
         .optional()
         .isIn(['pending', 'approved'])
-        .withMessage('El estado no es válido')
+        .withMessage('El estado no es válido'),
+    body().custom((value) => {
+        if (!Object.keys(value ?? {}).length) {
+            throw new Error('Proporcione al menos un campo para actualizar');
+        }
+        return true;
+    })
 ];
 
 export default updateMovieValidator;

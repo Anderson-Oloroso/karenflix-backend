@@ -15,7 +15,7 @@ const auth = new AuthMiddleware();
 
 const router = Router({ mergeParams: true });
 
-router.get('/', auth.requireAuth, reviewController.getByMovieId);
+router.get('/', auth.requireAuth, reviewValidator, validationMiddleware, reviewController.getByMovieId);
 router.post('/', auth.requireAuth, reviewValidator, validationMiddleware, reviewController.create);
 
 export default router;

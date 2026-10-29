@@ -11,12 +11,12 @@ export default class MovieController {
         this.delete = this.delete.bind(this);
     }
 
-    async create(req, res) {
+    async create(req, res, next) {
         try {
             const movie = {
                 ...req.body,
-                status: req.body.status || 'pending',
-                created_by: req.user?.id || req.user?.sub || req.body.created_by
+                status: 'pending',
+                created_by: req.user.id ?? req.user.sub
             };
 
             const result = await this.#movieService.create(movie);
@@ -29,14 +29,11 @@ export default class MovieController {
                 }
             });
         } catch (error) {
-            return res.status(400).json({
-                status: 'error',
-                message: error.message
-            });
+            next(error);
         }
     }
 
-    async getAll(req, res) {
+    async getAll(req, res, next) {
         try {
             const filters = {
                 category: req.query.category,
@@ -51,14 +48,11 @@ export default class MovieController {
                 data: movies
             });
         } catch (error) {
-            return res.status(500).json({
-                status: 'error',
-                message: error.message
-            });
+            next(error);
         }
     }
 
-    async getById(req, res) {
+    async getById(req, res, next) {
         try {
             const { id } = req.params;
             const movie = await this.#movieService.getById(id);
@@ -68,14 +62,11 @@ export default class MovieController {
                 data: movie
             });
         } catch (error) {
-            return res.status(404).json({
-                status: 'error',
-                message: error.message
-            });
+            next(error);
         }
     }
 
-    async update(req, res) {
+    async update(req, res, next) {
         try {
             const { id } = req.params;
             await this.#movieService.update(id, req.body);
@@ -85,14 +76,11 @@ export default class MovieController {
                 message: 'Película actualizada correctamente'
             });
         } catch (error) {
-            return res.status(400).json({
-                status: 'error',
-                message: error.message
-            });
+            next(error);
         }
     }
 
-    async approve(req, res) {
+    async approve(req, res, next) {
         try {
             const { id } = req.params;
             await this.#movieService.approve(id);
@@ -102,14 +90,11 @@ export default class MovieController {
                 message: 'Película aprobada correctamente'
             });
         } catch (error) {
-            return res.status(400).json({
-                status: 'error',
-                message: error.message
-            });
+            next(error);
         }
     }
 
-    async delete(req, res) {
+    async delete(req, res, next) {
         try {
             const { id } = req.params;
             await this.#movieService.deleteMovie(id);
@@ -119,10 +104,7 @@ export default class MovieController {
                 message: 'Película eliminada correctamente'
             });
         } catch (error) {
-            return res.status(400).json({
-                status: 'error',
-                message: error.message
-            });
+            next(error);
         }
     }
 }
