@@ -1,0 +1,26 @@
+info:
+  name: Update My Profile
+  type: http
+  seq: 5
+
+http:
+  method: PUT
+  url: "{{baseUrl}}/users/me"
+  headers:
+    - name: Authorization
+      value: "Bearer {{jwt}}"
+  body:
+    type: json
+    data: |-
+      {
+        "username": "usuario_actualizado",
+        "email": "actualizado@example.com"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
