@@ -2,9 +2,6 @@ export default class CategoryModel {
     #db;
 
     constructor(db) {
-        if (!db) {
-            throw new Error('Una instancia de base de datos es requerida para CategoryModel');
-        }
         this.#db = db;
     }
 
