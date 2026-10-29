@@ -4,7 +4,7 @@ import ActorModel from '../models/actor.model.js';
 import ActorService from '../services/actor.service.js';
 import ActorController from '../controllers/actor.controller.js';
 import AuthMiddleware from '../middlewares/auth.middleware.js';
-import validationMiddleware from '../middlewares/validation.middleware.js';
+import { validationMiddleware } from '../middlewares/validation.middleware.js';
 import {
     actorIdParamValidator,
     createActorValidator,
