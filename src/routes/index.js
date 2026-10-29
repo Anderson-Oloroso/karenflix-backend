@@ -10,8 +10,8 @@ import movieActorRouter from './movie-actor.route.js';
 
 const apiRouter = Router();
 
-apiRouter.use('/auth',       authRouter);
-apiRouter.use('/movies',     movieRoutes);
+apiRouter.use('/auth', authRouter);
+apiRouter.use('/movies', movieRoutes);
 apiRouter.use('/categories', categoryRouter);
 apiRouter.use('/reviews', reviewReactionRouter);
 apiRouter.use('/actors', actorRouter);
