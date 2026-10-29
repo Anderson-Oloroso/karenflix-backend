@@ -4,7 +4,7 @@ import CategoryModel from '../models/category.model.js';
 import CategoryService from '../services/category.service.js';
 import CategoryController from '../controllers/category.controller.js';
 import AuthMiddleware from '../middlewares/auth.middleware.js';
-import validationMiddleware from '../middlewares/validation.middleware.js';
+import { validationMiddleware } from '../middlewares/validation.middleware.js';
 import {
     createCategoryValidator,
     updateCategoryValidator,
