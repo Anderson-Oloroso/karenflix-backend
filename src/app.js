@@ -5,6 +5,7 @@ import ErrorMiddleware from './middlewares/error.middleware.js';
 import CorsMiddleware from './middlewares/cors.middleware.js';
 import SemverMiddleware from './utils/semver.util.js';
 import LoggerMiddleware from './middlewares/logger.middleware.js';
+import { swaggerDocs } from './config/swagger.config.js';
 
 export class App {
     #app;
@@ -30,6 +31,8 @@ export class App {
     }
 
     #initRoutes() {
+        swaggerDocs(this.#app);
+
         this.#app.get('/api/v1', (req, res) => {
             res.status(200).json({
                 status: 'success',
