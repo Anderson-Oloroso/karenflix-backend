@@ -1,35 +1,44 @@
 import express from 'express';
-import rateLimit from 'express-rate-limit';
 import apiRoutes from './routes/index.js';
-import { errorHandler, rutaNoEncontrada } from './middlewares/error.middleware.js';
+import RateLimitMiddleware from './middlewares/rateLimit.middleware.js';
+import ErrorMiddleware from './middlewares/error.middleware.js';
 
-const app = express();
+export class App {
+    #app;
 
-const limiter = rateLimit({
-    windowMs: Number(process.env.RATE_LIMIT_WINDOW_MS || 900000),
-    max: Number(process.env.RATE_LIMIT_MAX_REQUESTS || 100),
-    message: {
-        status: 'error',
-        message: 'Demasiadas peticiones, intenta más tarde...'
+    constructor() {
+        this.#app = express();
+        this.#initMiddlewares();
+        this.#initRoutes();
+        this.#initErrorHandling();
     }
-});
 
-app.use(limiter);
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+    get app() {
+        return this.#app;
+    }
 
-app.get('/api/v1', (req, res) => {
-    res.status(200).json({
-        status: 'success',
-        message: 'karenflix API funcionando correctamente...'
-    });
-});
+    #initMiddlewares() {
+        this.#app.use(RateLimitMiddleware.globalLimiter);
+        this.#app.use(express.json());
+        this.#app.use(express.urlencoded({ extended: true }));
+    }
 
-// Rutas principales
-app.use('/api/v1', apiRoutes);
+    #initRoutes() {
+        this.#app.get('/api/v1', (req, res) => {
+            res.status(200).json({
+                status: 'success',
+                message: 'karenflix API funcionando correctamente...'
+            });
+        });
 
-// Manejo de rutas inexistentes y errores
-app.use(rutaNoEncontrada);
-app.use(errorHandler);
+        this.#app.use('/api/v1', apiRoutes);
+    }
 
-export default app;
+    #initErrorHandling() {
+        this.#app.use(ErrorMiddleware.handleNotFound);
+        this.#app.use(ErrorMiddleware.handleError);
+    }
+}
+
+const appInstance = new App();
+export default appInstance.app;
