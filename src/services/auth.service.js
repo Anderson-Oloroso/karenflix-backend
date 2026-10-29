@@ -74,17 +74,4 @@ export default class AuthService {
 
         return { user, token };
     }
-
-    async profile(userId) {
-        const user = await this.#userModel.findById(userId);
-        if (!user) return null;
-
-        return {
-            id: user.id,
-            username: user.username,
-            email: user.email,
-            role: user.role,
-            createdAt: user.created_at
-        };
-    }
 }
