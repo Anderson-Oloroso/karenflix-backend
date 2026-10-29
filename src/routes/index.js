@@ -7,10 +7,14 @@ import reviewReactionRouter from './review-reaction.route.js';
 import actorRouter from './actor.route.js';
 import favoriteRouter from './favorite.route.js';
 import movieActorRouter from './movie-actor.route.js';
+import userRouter, { userProfileRouter } from './user.route.js';
 
 const apiRouter = Router();
 
 apiRouter.use('/auth', authRouter);
+apiRouter.use('/auth/profile', userProfileRouter);
+apiRouter.use('/users/me', userProfileRouter);
+apiRouter.use('/users', userRouter);
 apiRouter.use('/movies', movieRoutes);
 apiRouter.use('/categories', categoryRouter);
 apiRouter.use('/reviews', reviewReactionRouter);
