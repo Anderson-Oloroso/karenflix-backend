@@ -5,6 +5,7 @@ export default class ReviewDTO {
     #title;
     #comment;
     #rating;
+    #likesCount;
     #createdAt;
 
     constructor(review = {}) {
@@ -14,6 +15,7 @@ export default class ReviewDTO {
         this.#title = review.title;
         this.#comment = review.comment;
         this.#rating = review.rating;
+        this.#likesCount = Number(review.likes_count || 0);
         this.#createdAt = review.created_at;
     }
 
@@ -25,6 +27,7 @@ export default class ReviewDTO {
             title: this.#title,
             comment: this.#comment,
             rating: this.#rating,
+            likesCount: this.#likesCount,
             createdAt: this.#createdAt
         };
     }

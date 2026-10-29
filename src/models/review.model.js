@@ -14,6 +14,7 @@ export default class ReviewModel {
                 r.title,
                 r.comment,
                 r.rating,
+                r.likes_count,
                 r.created_at
             FROM reviews r
             INNER JOIN users u ON u.id = r.user_id
@@ -25,26 +26,25 @@ export default class ReviewModel {
         return rows;
     }
 
-    async movieExists(movieId, conn) {
-        const executor = conn ?? this.#db;
-        const [rows] = await executor.execute(
-            `SELECT id FROM movies WHERE id = ? LIMIT 1${conn ? ' FOR UPDATE' : ''}`,
+    async movieExists(movieId, conn = this.#db) {
+        const [rows] = await conn.execute(
+            'SELECT id FROM movies WHERE id = ? LIMIT 1',
             [movieId]
         );
 
         return rows.length > 0;
     }
 
-    async userAlreadyReviewed(movieId, userId, conn) {
+    async userAlreadyReviewed(movieId, userId, conn = this.#db) {
         const [rows] = await conn.execute(
-            `SELECT id FROM reviews WHERE movie_id = ? AND user_id = ? LIMIT 1`,
+            'SELECT id FROM reviews WHERE movie_id = ? AND user_id = ? LIMIT 1',
             [movieId, userId]
         );
 
         return rows.length > 0;
     }
 
-    async insert(review, conn) {
+    async insert(review, conn = this.#db) {
         const [result] = await conn.execute(
             `INSERT INTO reviews (movie_id, user_id, title, comment, rating)
             VALUES (?, ?, ?, ?, ?)`,
@@ -54,7 +54,7 @@ export default class ReviewModel {
         return result;
     }
 
-    async updateMovieAverageRating(movieId, conn) {
+    async updateMovieAverageRating(movieId, conn = this.#db) {
         await conn.execute(
             `UPDATE movies
             SET average_rating = (
