@@ -14,12 +14,6 @@ const authMiddleware = new AuthMiddleware();
 
 const router = Router();
 
-router.post(
-    '/:id/reactions',
-    authMiddleware.requireAuth,
-    reviewReactionValidator,
-    validationMiddleware,
-    reviewReactionController.toggle
-);
+router.post('/:id/reactions', authMiddleware.requireAuth, reviewReactionValidator, validationMiddleware, reviewReactionController.toggle);
 
 export default router;
