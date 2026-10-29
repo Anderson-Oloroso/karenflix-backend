@@ -1,4 +1,4 @@
-DROP DATABASE IF EXISTS karenflix_db;
+﻿DROP DATABASE IF EXISTS karenflix_db;
 
 CREATE DATABASE IF NOT EXISTS karenflix_db;
 -- 01-schema.sql
@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
--- Tabla de Categorías
+-- Tabla de CategorÃ­as
 CREATE TABLE IF NOT EXISTS categories (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(50) NOT NULL UNIQUE,
@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS categories (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
--- Tabla de Películas / Series (Con status de aprobación)
+-- Tabla de PelÃ­culas / Series (Con status de aprobaciÃ³n)
 CREATE TABLE IF NOT EXISTS movies (
     id INT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(150) NOT NULL UNIQUE,
@@ -30,7 +30,8 @@ CREATE TABLE IF NOT EXISTS movies (
     category_id INT NOT NULL,
     release_year INT NOT NULL,
     image_url VARCHAR(255),
-    status ENUM('pending', 'approved') DEFAULT 'pending', -- Requerido por la rúbrica
+    status ENUM('pending', 'approved') DEFAULT 'pending', -- Requerido por la rÃºbrica
+    average_rating DECIMAL(4,2) DEFAULT NULL,             -- Promedio ponderado calculado transaccionalmente
     created_by INT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE RESTRICT,
@@ -47,7 +48,7 @@ CREATE TABLE IF NOT EXISTS actors (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
--- Tabla Intermedia de Películas y Actores
+-- Tabla Intermedia de PelÃ­culas y Actores
 CREATE TABLE IF NOT EXISTS movie_actors (
     id INT AUTO_INCREMENT PRIMARY KEY,
     movie_id INT NOT NULL,
@@ -68,7 +69,7 @@ CREATE TABLE IF NOT EXISTS favorites (
     FOREIGN KEY (movie_id) REFERENCES movies(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
--- Tabla de Reseñas
+-- Tabla de ReseÃ±as
 CREATE TABLE IF NOT EXISTS reviews (
     id INT AUTO_INCREMENT PRIMARY KEY,
     movie_id INT NOT NULL,
@@ -81,7 +82,7 @@ CREATE TABLE IF NOT EXISTS reviews (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
--- Tabla de Reacciones (Likes / Dislikes en Reseñas)
+-- Tabla de Reacciones (Likes / Dislikes en ReseÃ±as)
 CREATE TABLE IF NOT EXISTS review_reactions (
     id INT AUTO_INCREMENT PRIMARY KEY,
     review_id INT NOT NULL,
@@ -93,7 +94,7 @@ CREATE TABLE IF NOT EXISTS review_reactions (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
--- Índices para optimizar búsquedas y filtrados
+-- Ãndices para optimizar bÃºsquedas y filtrados
 CREATE INDEX idx_movies_title ON movies(title);
 CREATE INDEX idx_movies_category_status ON movies(category_id, status); 
 CREATE INDEX idx_reviews_movie_id ON reviews(movie_id);
