@@ -1,5 +1,4 @@
 export default class MovieDTO {
-
     #id;
     #title;
     #description;
@@ -7,6 +6,7 @@ export default class MovieDTO {
     #releaseYear;
     #imageUrl;
     #status;
+    #averageRating;
     #createBy;
     #createAt;
 
@@ -18,6 +18,9 @@ export default class MovieDTO {
         this.#releaseYear = movie.release_year;
         this.#imageUrl = movie.image_url;
         this.#status = movie.status;
+        this.#averageRating = movie.average_rating !== undefined && movie.average_rating !== null
+            ? Number(movie.average_rating)
+            : null;
         this.#createBy = movie.username || movie.created_by;
         this.#createAt = movie.created_at || movie.create_at;
     }
@@ -31,6 +34,7 @@ export default class MovieDTO {
             releaseYear: this.#releaseYear,
             imageUrl: this.#imageUrl,
             status: this.#status,
+            averageRating: this.#averageRating,
             createBy: this.#createBy,
             createAt: this.#createAt   
         };

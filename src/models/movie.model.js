@@ -40,6 +40,7 @@ export default class MovieModel {
                 m.release_year,
                 m.image_url,
                 m.status,
+                m.average_rating,
                 u.username,
                 m.created_at
             FROM movies m 
@@ -63,6 +64,7 @@ export default class MovieModel {
                 m.release_year,
                 m.image_url,
                 m.status,
+                m.average_rating,
                 u.username,
                 m.created_at
             FROM movies m 
@@ -86,6 +88,7 @@ export default class MovieModel {
                 m.release_year,
                 m.image_url,
                 m.status,
+                m.average_rating,
                 u.username,
                 m.created_at
             FROM movies m 
@@ -111,6 +114,7 @@ export default class MovieModel {
                 m.release_year,
                 m.image_url,
                 m.status,
+                m.average_rating,
                 u.username,
                 m.created_at
             FROM movies m 
@@ -128,7 +132,7 @@ export default class MovieModel {
 
     async exists(id) {
         const [rows] = await this.#db.query(
-            `SELECT id FROM movies WHERE id = ?`,
+            'SELECT id FROM movies WHERE id = ?',
             [id]
         );
 
@@ -182,7 +186,7 @@ export default class MovieModel {
 
     async approve(id) {
         const [result] = await this.#db.execute(
-            `UPDATE movies SET status = 'approved' WHERE id = ?`,
+            "UPDATE movies SET status = 'approved' WHERE id = ?",
             [id]
         );
         return result;
@@ -190,7 +194,7 @@ export default class MovieModel {
 
     async deleteMovie(id) {
         const [result] = await this.#db.execute(
-            `DELETE FROM movies WHERE id = ?`,
+            'DELETE FROM movies WHERE id = ?',
             [id]
         );
         return result;
