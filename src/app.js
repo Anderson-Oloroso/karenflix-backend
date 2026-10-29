@@ -2,6 +2,7 @@ import express from 'express';
 import apiRoutes from './routes/index.js';
 import RateLimitMiddleware from './middlewares/rateLimit.middleware.js';
 import ErrorMiddleware from './middlewares/error.middleware.js';
+import CorsMiddleware from './middlewares/cors.middleware.js';
 
 export class App {
     #app;
@@ -18,6 +19,7 @@ export class App {
     }
 
     #initMiddlewares() {
+        this.#app.use(CorsMiddleware.handle);
         this.#app.use(RateLimitMiddleware.globalLimiter);
         this.#app.use(express.json());
         this.#app.use(express.urlencoded({ extended: true }));
