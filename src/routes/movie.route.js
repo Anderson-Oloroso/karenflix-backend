@@ -6,7 +6,7 @@ import MovieController from '../controllers/movie.controller.js';
 
 import createMovieValidator from '../validators/movie.create.validator.js';
 import updateMovieValidator from '../validators/movie.update.validator.js';
-import validationMiddleware from '../middlewares/validation.middleware.js';
+import { validationMiddleware } from '../middlewares/validation.middleware.js';
 import AuthMiddleware from '../middlewares/auth.middleware.js';
 import { movieIdParamValidator } from '../validators/movie.update.validator.js';
 
