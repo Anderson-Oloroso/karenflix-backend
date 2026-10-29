@@ -5,9 +5,9 @@ export default class ReviewService {
     #reviewModel;
     #pool;
 
-    constructor(reviewModel, pool = null) {
+    constructor(reviewModel) {
         this.#reviewModel = reviewModel;
-        this.#pool = pool;
+
     }
 
     async create(movieId, userId, reviewData) {
