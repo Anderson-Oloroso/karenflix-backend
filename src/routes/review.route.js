@@ -8,7 +8,7 @@ import { createReviewValidator, reviewMovieIdParamValidator } from '../validator
 import { validationMiddleware } from '../middlewares/validation.middleware.js';
 
 const reviewModel = new ReviewModel(pool);
-const reviewService = new ReviewService(reviewModel, pool);
+const reviewService = new ReviewService(reviewModel);
 const reviewController = new ReviewController(reviewService);
 const auth = new AuthMiddleware();
 
