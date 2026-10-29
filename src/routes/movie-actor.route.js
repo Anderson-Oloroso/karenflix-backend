@@ -27,31 +27,8 @@ movieActorRouter.get('/movie/:movieId', movieIdParamValidator, validationMiddlew
 movieActorRouter.get('/actor/:actorId', actorIdParamValidator, validationMiddleware, movieActorController.getByActorId);
 
 // Rutas protegidas (solo administradores)
-movieActorRouter.post(
-    '/',
-    authMiddleware.requireAuth,
-    authMiddleware.requireAdmin,
-    createMovieActorValidator,
-    validationMiddleware,
-    movieActorController.create
-);
-
-movieActorRouter.put(
-    '/:id',
-    authMiddleware.requireAuth,
-    authMiddleware.requireAdmin,
-    updateMovieActorValidator,
-    validationMiddleware,
-    movieActorController.update
-);
-
-movieActorRouter.delete(
-    '/:id',
-    authMiddleware.requireAuth,
-    authMiddleware.requireAdmin,
-    movieActorIdParamValidator,
-    validationMiddleware,
-    movieActorController.delete
-);
+movieActorRouter.post('/', authMiddleware.requireAuth, authMiddleware.requireAdmin, createMovieActorValidator, validationMiddleware, movieActorController.create);
+movieActorRouter.put('/:id', authMiddleware.requireAuth, authMiddleware.requireAdmin, updateMovieActorValidator, validationMiddleware, movieActorController.update);
+movieActorRouter.delete('/:id', authMiddleware.requireAuth, authMiddleware.requireAdmin, movieActorIdParamValidator, validationMiddleware, movieActorController.delete);
 
 export default movieActorRouter;
