@@ -1,16 +1,8 @@
-import { body, param, validationResult } from 'express-validator';
+import { body, param } from 'express-validator';
 import { ROLES } from '../constants/role.constant.js';
+import ValidationMiddleware from '../middlewares/validation.middleware.js';
 
-export function managerValidationErrors(req, res, next) {
-    const errores = validationResult(req);
-    if (!errores.isEmpty()) {
-        const err = new Error('Errores de validación');
-        err.statusCode = 400;
-        err.details = errores.array();
-        return next(err);
-    }
-    next();
-}
+export const managerValidationErrors = ValidationMiddleware.validate;
 
 export const validationsRegister = [
     body('username')
