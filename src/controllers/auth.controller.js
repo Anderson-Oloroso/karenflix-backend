@@ -32,13 +32,6 @@ export default class AuthController {
             const { password } = req.body;
             const result = await this.#authService.login(identifier, password);
 
-            if (!result) {
-                return res.status(401).json({
-                    status: 'Fail',
-                    message: 'El correo/usuario o la contraseña son incorrectos'
-                });
-            }
-
             if (res.cookie) {
                 res.cookie('access_token', result.token, {
                     httpOnly: true,

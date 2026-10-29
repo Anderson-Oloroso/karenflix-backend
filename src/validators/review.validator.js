@@ -1,6 +1,9 @@
-import { body } from 'express-validator';
+import { body, param } from 'express-validator';
 
 const reviewValidator = [
+    param('id')
+        .isInt({ min: 1 })
+        .withMessage('El ID de la película debe ser un número entero positivo'),
     body('rating')
         .notEmpty()
         .withMessage('El rating es obligatorio.')

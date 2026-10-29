@@ -30,7 +30,7 @@ export const validationsRegister = [
 
     body('role')
         .optional()
-        .isIn(ROLES.all).withMessage(`El rol debe ser uno de los permitidos: ${ROLES.all.join(', ')}`),
+        .isIn([ROLES.USER]).withMessage('El rol de administrador no puede asignarse durante el registro'),
 
     managerValidationErrors
 ];
@@ -48,6 +48,13 @@ export const validationsLogin = [
 
     body('password')
         .notEmpty().withMessage('La contraseña es obligatoria'),
+
+    body().custom((_, { req }) => {
+        if (Boolean(req.body.email) === Boolean(req.body.username)) {
+            throw new Error('Proporcione exactamente uno de los campos: email o username');
+        }
+        return true;
+    }),
 
     managerValidationErrors
 ];
