@@ -2,9 +2,6 @@ export default class CategoryController {
     #categoryService;
 
     constructor(categoryService) {
-        if (!categoryService) {
-            throw new Error('categoryService es requerido en CategoryController');
-        }
         this.#categoryService = categoryService;
         this.getAll = this.getAll.bind(this);
         this.getById = this.getById.bind(this);
