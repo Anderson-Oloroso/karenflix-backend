@@ -1,0 +1,26 @@
+info:
+  name: Update User
+  type: http
+  seq: 3
+
+http:
+  method: PUT
+  url: "{{baseUrl}}/users/{{userId}}"
+  headers:
+    - name: Authorization
+      value: "Bearer {{jwt}}"
+  body:
+    type: json
+    data: |-
+      {
+        "username": "usuario_actualizado",
+        "email": "actualizado@example.com"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
