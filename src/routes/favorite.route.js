@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { pool } from '../config/db.config.js';
 import AuthMiddleware from '../middlewares/auth.middleware.js';
-import validationMiddleware from '../middlewares/validation.middleware.js';
+import { validationMiddleware } from '../middlewares/validation.middleware.js';
 import FavoriteModel from '../models/favorite.model.js';
 import FavoriteService from '../services/favorite.service.js';
 import FavoriteController from '../controllers/favorite.controller.js';
