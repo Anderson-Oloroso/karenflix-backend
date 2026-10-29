@@ -22,5 +22,5 @@ variables:
     value: "1"
     description: ID existente de una reseña
   - name: jwt
-    value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJhZG1pbl9rYXJlbiIsImVtYWlsIjoiYWRtaW5Aa2FyZW5mbGl4LmNvbSIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc5MzE2MTY3NywiZXhwIjoxNzkzMjQ4MDc3fQ.0oM3WNpMk21weVGUxxLLA0Mi0Msp493mj7VEAoe96Wk
+    value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJhZG1pbl9rYXJlbiIsImVtYWlsIjoiYWRtaW5Aa2FyZW5mbGl4LmNvbSIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc5MzI4Njk1MCwiZXhwIjoxNzkzMzczMzUwfQ.mW8cqJotFT7hTs5CHjKPGqMy-hhfrH5eIT2_Aj37qkE
     description: pega aquí el JWT devuelto por Login para probar Logout y Profile

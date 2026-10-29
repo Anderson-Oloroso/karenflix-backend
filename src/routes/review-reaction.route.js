@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { pool } from '../config/db.config.js';
 import AuthMiddleware from '../middlewares/auth.middleware.js';
-import validationMiddleware from '../middlewares/validation.middleware.js';
+import { validationMiddleware } from '../middlewares/validation.middleware.js';
 import ReviewReactionModel from '../models/review-reaction.model.js';
 import ReviewReactionService from '../services/review-reaction.service.js';
 import ReviewReactionController from '../controllers/review-reaction.controller.js';
