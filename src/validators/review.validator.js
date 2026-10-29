@@ -1,6 +1,12 @@
 import { body, param } from 'express-validator';
 
-const reviewValidator = [
+export const reviewMovieIdParamValidator = [
+    param('id')
+        .isInt({ min: 1 })
+        .withMessage('El ID de la película debe ser un número entero positivo')
+];
+
+export const createReviewValidator = [
     param('id')
         .isInt({ min: 1 })
         .withMessage('El ID de la película debe ser un número entero positivo'),
@@ -24,4 +30,4 @@ const reviewValidator = [
         .withMessage('El comentario debe tener entre 10 y 1000 caracteres.')
 ];
 
-export default reviewValidator;
+export default createReviewValidator;
