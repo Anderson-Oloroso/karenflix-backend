@@ -3,6 +3,9 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
+import 'dotenv/config';
+
+const PORT = process.env.PORT;
 
 const configDirectory = dirname(fileURLToPath(import.meta.url));
 const routeFiles = readdirSync(resolve(configDirectory, '../routes'))
@@ -19,7 +22,7 @@ const swaggerSpec = swaggerJsdoc({
         },
         servers: [
             {
-                url: 'http://localhost:4000/api/v1',
+                url: `http://localhost:${PORT}/api/v1`,
                 description: 'Servidor local'
             }
         ],
