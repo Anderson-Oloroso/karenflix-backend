@@ -12,6 +12,7 @@ export default class LoggerMiddleware {
             const entry = {
                 timestamp: new Date().toISOString(),
                 method: req.method,
+                user: req.user?.username ?? 'anonymous',
                 route,
                 statusCode,
                 responseTimeMs: Date.now() - startTime
