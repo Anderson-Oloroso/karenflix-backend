@@ -13,6 +13,76 @@ const apiRouter = Router();
 
 apiRouter.use('/auth', authRouter);
 apiRouter.use('/auth/profile', userProfileRouter);
+
+/**
+ * @swagger
+ * /users/me:
+ *   get:
+ *     tags: [Users]
+ *     summary: Obtener el perfil del usuario autenticado
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Perfil del usuario autenticado.
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ */
+/**
+ * @swagger
+ * /users/me:
+ *   put:
+ *     tags: [Users]
+ *     summary: Actualizar el perfil del usuario autenticado
+ *     security:
+ *       - BearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             minProperties: 1
+ *             properties:
+ *               username:
+ *                 type: string
+ *                 minLength: 3
+ *                 maxLength: 50
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 maxLength: 100
+ *               password:
+ *                 type: string
+ *                 minLength: 6
+ *     responses:
+ *       200:
+ *         description: Perfil actualizado.
+ *       400:
+ *         $ref: '#/components/responses/BadRequest'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       409:
+ *         $ref: '#/components/responses/Conflict'
+ */
+/**
+ * @swagger
+ * /users/me:
+ *   delete:
+ *     tags: [Users]
+ *     summary: Eliminar la cuenta del usuario autenticado
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Cuenta eliminada.
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ */
 apiRouter.use('/users/me', userProfileRouter);
 apiRouter.use('/users', userRouter);
 apiRouter.use('/movies', movieRoutes);
