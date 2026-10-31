@@ -17,12 +17,6 @@ export default class ActorModel {
         return rows[0] ?? null;
     }
 
-    async getByName(name) {
-        const query = 'SELECT id, name, biography, birth_date, photo_url, created_at FROM actors WHERE name = ?';
-        const [rows] = await this.#db.query(query, [name]);
-        return rows[0] ?? null;
-    }
-
     async exists(id) {
         const query = 'SELECT 1 FROM actors WHERE id = ?';
         const [rows] = await this.#db.query(query, [id]);

@@ -30,9 +30,9 @@ export default class MovieActorService {
     }
 
     async getByMovieId(movieId) {
-        const movieExists = await this.#movieActorModel.movieExists(movieId);
-        if (!movieExists) {
-            throw AppError.notFound(`La película con ID ${movieId} no existe`);
+        const movieIsApproved = await this.#movieActorModel.movieIsApproved(movieId);
+        if (!movieIsApproved) {
+            throw AppError.notFound(`La película con ID ${movieId} no existe o no está aprobada`);
         }
 
         const rows = await this.#movieActorModel.getByMovieId(movieId);
@@ -74,7 +74,7 @@ export default class MovieActorService {
             character_name: data.character_name ?? null
         });
 
-        const created = await this.#movieActorModel.getById(insertId);
+        const created = await this.#movieActorModel.getById(insertId, true);
         if (!created) {
             throw AppError.internal('No se pudo recuperar el registro recién creado');
         }
@@ -83,7 +83,7 @@ export default class MovieActorService {
     }
 
     async update(id, data) {
-        const existing = await this.#movieActorModel.getById(id);
+        const existing = await this.#movieActorModel.getById(id, true);
         if (!existing) {
             throw AppError.notFound(`No se encontró la asignación con ID ${id}`);
         }
@@ -113,7 +113,7 @@ export default class MovieActorService {
         }
 
         await this.#movieActorModel.update(id, data);
-        const updated = await this.#movieActorModel.getById(id);
+        const updated = await this.#movieActorModel.getById(id, true);
         return new MovieActorDTO(updated).data;
     }
 

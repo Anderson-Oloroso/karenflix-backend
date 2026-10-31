@@ -17,12 +17,6 @@ export default class CategoryModel {
         return rows[0] ?? null;
     }
 
-    async getByName(name) {
-        const query = 'SELECT id, name, description, created_at FROM categories WHERE name = ?';
-        const [rows] = await this.#db.query(query, [name]);
-        return rows[0] ?? null;
-    }
-
     async exists(id) {
         const query = 'SELECT 1 FROM categories WHERE id = ?';
         const [rows] = await this.#db.query(query, [id]);

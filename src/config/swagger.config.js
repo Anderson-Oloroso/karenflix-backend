@@ -1,143 +1,142 @@
-import { readdirSync } from 'node:fs';
-import { dirname, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
-import swaggerJsdoc from 'swagger-jsdoc';
+import { readFileSync } from 'node:fs';
 import swaggerUi from 'swagger-ui-express';
 import 'dotenv/config';
+import { API_PREFIX, API_VERSION } from './api.config.js';
 
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 4000;
+const paths = JSON.parse(readFileSync(new URL('./swagger.paths.json', import.meta.url), 'utf8'));
 
-const configDirectory = dirname(fileURLToPath(import.meta.url));
-const routeFiles = readdirSync(resolve(configDirectory, '../routes'))
-    .filter(file => file.endsWith('.js'))
-    .map(file => resolve(configDirectory, '../routes', file));
-
-const swaggerSpec = swaggerJsdoc({
-    definition: {
-        openapi: '3.0.0',
-        info: {
-            title: 'KarenFlix API',
-            description: 'Documentación interactiva de la API REST de KarenFlix.',
-            version: '1.0.0'
-        },
-        servers: [
-            {
-                url: `http://localhost:${PORT}/api/v1`,
-                description: 'Servidor local'
+const swaggerSpec = {
+    openapi: '3.0.3',
+    info: {
+        title: 'KarenFlix API',
+        version: API_VERSION,
+        description: 'Documentación interactiva de la API REST de KarenFlix.'
+    },
+    servers: [
+        {
+            url: `http://localhost:${PORT}${API_PREFIX}`,
+            description: 'Servidor local'
+        }
+    ],
+    tags: [
+        { name: 'Health' },
+        { name: 'Auth' },
+        { name: 'Categories' },
+        { name: 'Movies' },
+        { name: 'Reviews' },
+        { name: 'Reactions' },
+        { name: 'Actors' },
+        { name: 'Favorites' },
+        { name: 'Movie Actors' },
+        { name: 'Users' }
+    ],
+    components: {
+        securitySchemes: {
+            BearerAuth: {
+                type: 'http',
+                scheme: 'bearer',
+                bearerFormat: 'JWT'
             }
-        ],
-        tags: [
-            { name: 'Health' },
-            { name: 'Auth' },
-            { name: 'Categories' },
-            { name: 'Movies' },
-            { name: 'Reviews' },
-            { name: 'Reactions' },
-            { name: 'Actors' },
-            { name: 'Favorites' },
-            { name: 'Movie Actors' },
-            { name: 'Users' }
-        ],
-        paths: {
-            '/': {
-                get: {
-                    tags: ['Health'],
-                    summary: 'Verificar el estado de la API',
-                    responses: {
-                        200: {
-                            description: 'La API está funcionando correctamente.',
-                            content: {
-                                'application/json': {
-                                    schema: {
-                                        type: 'object',
-                                        properties: {
-                                            status: { type: 'string', example: 'success' },
-                                            message: {
-                                                type: 'string',
-                                                example: 'karenflix API funcionando correctamente...'
-                                            }
-                                        }
-                                    }
-                                }
+        },
+        schemas: {
+            ErrorResponse: {
+                type: 'object',
+                properties: {
+                    status: { type: 'string', example: 'Fail' },
+                    message: { type: 'string', example: 'Error de validación' },
+                    mensaje: { type: 'string', example: 'Solicitud inválida' },
+                    errors: {
+                        type: 'array',
+                        items: { type: 'object' }
+                    },
+                    errores: { type: 'object', nullable: true },
+                    metodo: { type: 'string' },
+                    url: { type: 'string' }
+                }
+            },
+            MoviePageResponse: {
+                type: 'object',
+                required: ['status', 'total', 'page', 'limit', 'totalPages', 'data'],
+                properties: {
+                    status: { type: 'string', example: 'success' },
+                    total: { type: 'integer', minimum: 0 },
+                    page: { type: 'integer', minimum: 1 },
+                    limit: { type: 'integer', minimum: 1, maximum: 100 },
+                    totalPages: { type: 'integer', minimum: 0 },
+                    data: {
+                        type: 'array',
+                        items: {
+                            type: 'object',
+                            required: ['id', 'title', 'status'],
+                            properties: {
+                                id: { type: 'integer' },
+                                title: { type: 'string' },
+                                description: { type: 'string' },
+                                category: { type: 'string' },
+                                releaseYear: { type: 'integer' },
+                                imageUrl: { type: 'string', nullable: true },
+                                status: { type: 'string', enum: ['pending', 'approved'] },
+                                averageRating: { type: 'number', nullable: true },
+                                createBy: { type: 'string', nullable: true },
+                                createAt: { type: 'string', format: 'date-time' }
                             }
                         }
                     }
                 }
             }
         },
-        components: {
-            securitySchemes: {
-                BearerAuth: {
-                    type: 'http',
-                    scheme: 'bearer',
-                    bearerFormat: 'JWT'
-                }
-            },
-            schemas: {
-                ErrorResponse: {
-                    type: 'object',
-                    properties: {
-                        status: { type: 'string', example: 'Fail' },
-                        message: { type: 'string', example: 'Error de validación' },
-                        mensaje: { type: 'string', example: 'Solicitud inválida' },
-                        errors: {
-                            type: 'array',
-                            items: { type: 'object' }
-                        },
-                        errores: { type: 'object', nullable: true },
-                        metodo: { type: 'string' },
-                        url: { type: 'string' }
+        responses: {
+            BadRequest: {
+                description: 'La solicitud contiene datos inválidos.',
+                content: {
+                    'application/json': {
+                        schema: { $ref: '#/components/schemas/ErrorResponse' }
                     }
                 }
             },
-            responses: {
-                BadRequest: {
-                    description: 'La solicitud contiene datos inválidos.',
-                    content: {
-                        'application/json': {
-                            schema: { $ref: '#/components/schemas/ErrorResponse' }
-                        }
-                    }
-                },
-                Unauthorized: {
-                    description: 'Se requiere autenticación JWT válida.',
-                    content: {
-                        'application/json': {
-                            schema: { $ref: '#/components/schemas/ErrorResponse' }
-                        }
-                    }
-                },
-                Forbidden: {
-                    description: 'El usuario autenticado no tiene permisos suficientes.',
-                    content: {
-                        'application/json': {
-                            schema: { $ref: '#/components/schemas/ErrorResponse' }
-                        }
-                    }
-                },
-                NotFound: {
-                    description: 'No se encontró el recurso solicitado.',
-                    content: {
-                        'application/json': {
-                            schema: { $ref: '#/components/schemas/ErrorResponse' }
-                        }
-                    }
-                },
-                Conflict: {
-                    description: 'La operación entra en conflicto con un recurso existente.',
-                    content: {
-                        'application/json': {
-                            schema: { $ref: '#/components/schemas/ErrorResponse' }
-                        }
+            Unauthorized: {
+                description: 'Se requiere autenticación JWT válida.',
+                content: {
+                    'application/json': {
+                        schema: { $ref: '#/components/schemas/ErrorResponse' }
                     }
                 }
+            },
+            Forbidden: {
+                description: 'El usuario autenticado no tiene permisos suficientes.',
+                content: {
+                    'application/json': {
+                        schema: { $ref: '#/components/schemas/ErrorResponse' }
+                    }
+                }
+            },
+            NotFound: {
+                description: 'No se encontró el recurso solicitado.',
+                content: {
+                    'application/json': {
+                        schema: { $ref: '#/components/schemas/ErrorResponse' }
+                    }
+                }
+            },
+            Conflict: {
+                description: 'La operación entra en conflicto con un recurso existente.',
+                content: {
+                    'application/json': {
+                        schema: { $ref: '#/components/schemas/ErrorResponse' }
+                    }
+                }
+            },
+            InternalServerError: {
+                description: 'Se produjo un error interno del servidor.'
             }
         }
     },
-    apis: routeFiles
-});
+    paths
+};
 
 export function swaggerDocs(app) {
+    app.get('/api-docs.json', (req, res) => res.json(swaggerSpec));
     app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 }
 

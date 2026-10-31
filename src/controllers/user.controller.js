@@ -65,10 +65,6 @@ export default class UserController {
         try {
             const result = await this.#userService.delete(req.user.id);
 
-            if (res.clearCookie) {
-                res.clearCookie('access_token');
-            }
-
             res.status(200).json({
                 status: 'Success',
                 message: 'Cuenta eliminada correctamente',

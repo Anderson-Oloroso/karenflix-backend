@@ -1,4 +1,4 @@
-export const API_VERSION = '1.0.0';
+import { API_VERSION } from '../config/api.config.js';
 
 export default class SemverMiddleware {
     static handle(req, res, next) {
