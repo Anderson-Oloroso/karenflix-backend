@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs';
 import swaggerUi from 'swagger-ui-express';
+import { API_PREFIX, API_VERSION } from './api.config.js';
 
 const paths = JSON.parse(readFileSync(new URL('./swagger.paths.json', import.meta.url), 'utf8'));
 
@@ -7,12 +8,12 @@ const swaggerSpec = {
     openapi: '3.0.3',
     info: {
         title: 'KarenFlix API',
-        version: '1.0.0',
+        version: API_VERSION,
         description: 'API REST de KarenFlix'
     },
     servers: [
         {
-            url: process.env.API_PREFIX || '/api/v1'
+            url: API_PREFIX
         }
     ],
     components: {
@@ -21,6 +22,38 @@ const swaggerSpec = {
                 type: 'http',
                 scheme: 'bearer',
                 bearerFormat: 'JWT'
+            }
+        },
+        schemas: {
+            MoviePageResponse: {
+                type: 'object',
+                required: ['status', 'total', 'page', 'limit', 'totalPages', 'data'],
+                properties: {
+                    status: { type: 'string', example: 'success' },
+                    total: { type: 'integer', minimum: 0 },
+                    page: { type: 'integer', minimum: 1 },
+                    limit: { type: 'integer', minimum: 1, maximum: 100 },
+                    totalPages: { type: 'integer', minimum: 0 },
+                    data: {
+                        type: 'array',
+                        items: {
+                            type: 'object',
+                            required: ['id', 'title', 'status'],
+                            properties: {
+                                id: { type: 'integer' },
+                                title: { type: 'string' },
+                                description: { type: 'string' },
+                                category: { type: 'string' },
+                                releaseYear: { type: 'integer' },
+                                imageUrl: { type: 'string', nullable: true },
+                                status: { type: 'string', enum: ['pending', 'approved'] },
+                                averageRating: { type: 'number', nullable: true },
+                                createBy: { type: 'string', nullable: true },
+                                createAt: { type: 'string', format: 'date-time' }
+                            }
+                        }
+                    }
+                }
             }
         },
         responses: {
