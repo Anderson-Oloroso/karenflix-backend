@@ -46,6 +46,7 @@ export default class AuthController {
 
     async logout(req, res, next) {
         try {
+            await this.#authService.logout(req.user.id);
             res.status(200).json({
                 status: 'Success',
                 message: 'Sesión cerrada exitosamente'
