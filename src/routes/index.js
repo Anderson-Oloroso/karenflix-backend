@@ -5,6 +5,7 @@ import categoryRouter from './category.route.js';
 import reviewRouter  from './review.route.js';
 import reviewReactionRouter from './review-reaction.route.js';
 import actorRouter from './actor.route.js';
+import directorRouter from './director.route.js';
 import favoriteRouter from './favorite.route.js';
 import movieActorRouter from './movie-actor.route.js';
 import userRouter, { userProfileRouter } from './user.route.js';
@@ -20,6 +21,7 @@ apiRouter.use('/movies', movieRoutes);
 apiRouter.use('/categories', categoryRouter);
 apiRouter.use('/reviews', reviewReactionRouter);
 apiRouter.use('/actors', actorRouter);
+apiRouter.use('/directors', directorRouter);
 apiRouter.use('/favorites', favoriteRouter);
 apiRouter.use('/movie-actors', movieActorRouter);
 
