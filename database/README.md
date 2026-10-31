@@ -118,7 +118,7 @@ erDiagram
 | `actors` | `id` (PK), `name` (`VARCHAR(100)`, NOT NULL), `biography` (`TEXT`, nullable), `birth_date` (`DATE`, nullable), `photo_url` (`VARCHAR(255)`, nullable), `created_at` (`TIMESTAMP`, predeterminado `CURRENT_TIMESTAMP`) |
 | `movie_actors` | `id` (PK), `movie_id` (`INT`, NOT NULL, FK), `actor_id` (`INT`, NOT NULL, FK), `character_name` (`VARCHAR(100)`, nullable) |
 | `favorites` | `id` (PK), `user_id` (`INT`, NOT NULL, FK), `movie_id` (`INT`, NOT NULL, FK), `created_at` (`TIMESTAMP`, predeterminado `CURRENT_TIMESTAMP`), UNIQUE (`user_id`, `movie_id`) |
-| `reviews` | `id` (PK), `movie_id` (`INT`, NOT NULL, FK), `user_id` (`INT`, NOT NULL, FK), `title` (`VARCHAR(100)`, NOT NULL), `comment` (`TEXT`, NOT NULL), `rating` (`TINYINT`, NOT NULL, CHECK entre 1 y 10), `likes_count` (`INT`, NOT NULL, predeterminado `0`, calculado por triggers), `created_at` (`TIMESTAMP`, predeterminado `CURRENT_TIMESTAMP`) |
+| `reviews` | `id` (PK), `movie_id` (`INT`, NOT NULL, FK), `user_id` (`INT`, NOT NULL, FK), `title` (`VARCHAR(100)`, NOT NULL), `comment` (`TEXT`, NOT NULL), `rating` (`TINYINT`, NOT NULL, CHECK entre 1 y 10), `likes_count` (`INT`, NOT NULL, predeterminado `0`, calculado por triggers), `created_at` (`TIMESTAMP`, predeterminado `CURRENT_TIMESTAMP`), UNIQUE (`movie_id`, `user_id`) |
 | `review_reactions` | `id` (PK), `review_id` (`INT`, NOT NULL, FK), `user_id` (`INT`, NOT NULL, FK), `reaction_type` (`ENUM('like', 'dislike')`, NOT NULL), `created_at` (`TIMESTAMP`, predeterminado `CURRENT_TIMESTAMP`), UNIQUE (`review_id`, `user_id`) |
 
 ## Relaciones y cardinalidades
@@ -147,10 +147,11 @@ Las siguientes reglas están declaradas en `01-schema.sql`:
 - `movies.status` admite `'pending'` o `'approved'` y tiene `'pending'` como valor predeterminado. La columna no está declarada `NOT NULL`.
 - `review_reactions.reaction_type` admite `'like'` o `'dislike'` y es obligatorio.
 - `reviews.rating` es obligatorio y tiene una restricción `CHECK` de 1 a 10, inclusive.
+- `reviews` impone unicidad compuesta en (`movie_id`, `user_id`): cada usuario puede publicar como máximo una reseña por película.
 - Al eliminar un usuario, sus reseñas, reacciones y favoritos se eliminan en cascada; las películas que creó se conservan y su `created_by` queda en `NULL`.
 - Al eliminar una reseña, sus reacciones se eliminan en cascada.
 - Al eliminar una película, se eliminan en cascada sus reseñas, favoritos y asociaciones con actores (`movie_actors`).
-- Al eliminar una categoría, sus películas se eliminan en cascada y, a su vez, se eliminan los registros dependientes de esas películas.
+- No se puede eliminar una categoría mientras tenga películas asociadas (`ON DELETE RESTRICT`).
 - Al eliminar un actor, se eliminan en cascada sus asociaciones con películas; no se eliminan las películas.
 - `review_reactions` impone unicidad compuesta en (`review_id`, `user_id`): un usuario no puede registrar más de una reacción por reseña.
 - Las claves foráneas son obligatorias salvo `movies.created_by`, que admite `NULL` para conservar películas cuando se elimina a su creador.
@@ -176,6 +177,7 @@ Esta sección distingue las claves que crean índices para integridad de los ín
 | `favorites` | `id` | Clave primaria. |
 | `favorites` | (`user_id`, `movie_id`) | `UNIQUE KEY unique_user_movie_favorite`. |
 | `reviews` | `id` | Clave primaria. |
+| `reviews` | (`movie_id`, `user_id`) | `UNIQUE KEY unique_movie_user_review`. |
 | `review_reactions` | `id` | Clave primaria. |
 | `review_reactions` | (`review_id`, `user_id`) | `UNIQUE KEY unique_user_review_reaction`. |
 
@@ -183,11 +185,27 @@ Esta sección distingue las claves que crean índices para integridad de los ín
 
 | Nombre | Tabla | Columnas | Declaración y propósito |
 | --- | --- | --- | --- |
-| `idx_movies_title` | `movies` | `title` | Índice no único creado explícitamente por el script. Es redundante para la búsqueda por título porque `title` también tiene una restricción `UNIQUE`. |
 | `idx_movies_category_status` | `movies` | (`category_id`, `status`) | Índice compuesto para consultas que filtran por categoría y estado; su prefijo también cubre `category_id` para la clave foránea. |
-| `idx_reviews_movie_id` | `reviews` | `movie_id` | Índice explícito para localizar reseñas por película y apoyar la clave foránea `reviews.movie_id`. |
 
-No se documentan aquí índices compuestos adicionales como si estuvieran implementados. Los índices internos que MySQL/InnoDB genere para claves foráneas no declaradas con un índice explícito pueden depender de cómo se cree la tabla; el script solo declara los índices explícitos de la tabla anterior.
+Las restricciones `UNIQUE` de `movies.title` y `reviews(movie_id, user_id)` también crean índices que apoyan las búsquedas por esas columnas. Los índices internos que MySQL/InnoDB genere para claves foráneas no cubiertas por los índices existentes pueden depender de cómo se cree la tabla.
+
+### Bases de datos existentes
+
+`01-schema.sql` crea una base nueva y comienza eliminando la base `karenflix_db`; no debe ejecutarse sobre una base existente con datos que se quieran conservar. Antes de aplicar la restricción a una instalación existente, identifica y resuelve manualmente cualquier duplicado:
+
+```sql
+SELECT movie_id, user_id, COUNT(*) AS total
+FROM reviews
+GROUP BY movie_id, user_id
+HAVING COUNT(*) > 1;
+```
+
+Después de resolver duplicados, aplica la migración sin recrear la base:
+
+```sql
+ALTER TABLE reviews
+ADD CONSTRAINT unique_movie_user_review UNIQUE (movie_id, user_id);
+```
 
 ## Datos iniciales
 

@@ -1,0 +1,1982 @@
+{
+  "/": {
+    "get": {
+      "tags": [
+        "Health"
+      ],
+      "summary": "Verificar el estado de la API",
+      "responses": {
+        "200": {
+          "description": "La API está funcionando correctamente.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "string",
+                    "example": "success"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "karenflix API funcionando correctamente..."
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/actors": {
+    "get": {
+      "tags": [
+        "Actors"
+      ],
+      "summary": "Listar actores",
+      "responses": {
+        "200": {
+          "description": "Lista de actores."
+        }
+      }
+    },
+    "post": {
+      "tags": [
+        "Actors"
+      ],
+      "summary": "Crear un actor",
+      "security": [
+        {
+          "BearerAuth": []
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "name",
+                "biography"
+              ],
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "minLength": 2,
+                  "maxLength": 100
+                },
+                "biography": {
+                  "type": "string",
+                  "minLength": 10,
+                  "maxLength": 500
+                },
+                "birth_date": {
+                  "type": "string",
+                  "format": "date",
+                  "nullable": true
+                },
+                "photo_url": {
+                  "type": "string",
+                  "format": "uri",
+                  "nullable": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "responses": {
+        "201": {
+          "description": "Actor creado."
+        },
+        "400": {
+          "$ref": "#/components/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/components/responses/Forbidden"
+        },
+        "409": {
+          "$ref": "#/components/responses/Conflict"
+        }
+      }
+    }
+  },
+  "/actors/{id}": {
+    "get": {
+      "tags": [
+        "Actors"
+      ],
+      "summary": "Obtener un actor por ID",
+      "parameters": [
+        {
+          "in": "path",
+          "name": "id",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Actor encontrado."
+        },
+        "400": {
+          "$ref": "#/components/responses/BadRequest"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    },
+    "put": {
+      "tags": [
+        "Actors"
+      ],
+      "summary": "Actualizar un actor",
+      "security": [
+        {
+          "BearerAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "in": "path",
+          "name": "id",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "minProperties": 1,
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "minLength": 2,
+                  "maxLength": 100
+                },
+                "biography": {
+                  "type": "string",
+                  "minLength": 10,
+                  "maxLength": 500
+                },
+                "birth_date": {
+                  "type": "string",
+                  "format": "date",
+                  "nullable": true
+                },
+                "photo_url": {
+                  "type": "string",
+                  "format": "uri",
+                  "nullable": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Actor actualizado."
+        },
+        "400": {
+          "$ref": "#/components/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/components/responses/Forbidden"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        },
+        "409": {
+          "$ref": "#/components/responses/Conflict"
+        }
+      }
+    },
+    "delete": {
+      "tags": [
+        "Actors"
+      ],
+      "summary": "Eliminar un actor",
+      "security": [
+        {
+          "BearerAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "in": "path",
+          "name": "id",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Actor eliminado."
+        },
+        "400": {
+          "$ref": "#/components/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/components/responses/Forbidden"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
+  },
+  "/auth/register": {
+    "post": {
+      "tags": [
+        "Auth"
+      ],
+      "summary": "Registrar una cuenta de usuario",
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "username",
+                "email",
+                "password"
+              ],
+              "properties": {
+                "username": {
+                  "type": "string",
+                  "minLength": 3,
+                  "maxLength": 50
+                },
+                "email": {
+                  "type": "string",
+                  "format": "email"
+                },
+                "password": {
+                  "type": "string",
+                  "minLength": 6
+                },
+                "role": {
+                  "type": "string",
+                  "enum": [
+                    "user"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "responses": {
+        "201": {
+          "description": "Usuario registrado correctamente."
+        },
+        "400": {
+          "$ref": "#/components/responses/BadRequest"
+        },
+        "409": {
+          "$ref": "#/components/responses/Conflict"
+        }
+      }
+    }
+  },
+  "/auth/login": {
+    "post": {
+      "tags": [
+        "Auth"
+      ],
+      "summary": "Iniciar sesión",
+      "description": "Envía exactamente uno de los campos email o username junto con la contraseña.",
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "password"
+              ],
+              "properties": {
+                "email": {
+                  "type": "string",
+                  "format": "email"
+                },
+                "username": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Inicio de sesión exitoso; devuelve el JWT en data.jwt."
+        },
+        "400": {
+          "$ref": "#/components/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        }
+      }
+    }
+  },
+  "/auth/logout": {
+    "post": {
+      "tags": [
+        "Auth"
+      ],
+      "summary": "Cerrar sesión",
+      "security": [
+        {
+          "BearerAuth": []
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Sesión cerrada correctamente."
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        }
+      }
+    }
+  },
+  "/categories": {
+    "get": {
+      "tags": [
+        "Categories"
+      ],
+      "summary": "Listar categorías",
+      "responses": {
+        "200": {
+          "description": "Lista de categorías."
+        }
+      }
+    },
+    "post": {
+      "tags": [
+        "Categories"
+      ],
+      "summary": "Crear una categoría",
+      "security": [
+        {
+          "BearerAuth": []
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "name",
+                "description"
+              ],
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "minLength": 2,
+                  "maxLength": 50
+                },
+                "description": {
+                  "type": "string",
+                  "minLength": 3,
+                  "maxLength": 500
+                }
+              }
+            }
+          }
+        }
+      },
+      "responses": {
+        "201": {
+          "description": "Categoría creada."
+        },
+        "400": {
+          "$ref": "#/components/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/components/responses/Forbidden"
+        },
+        "409": {
+          "$ref": "#/components/responses/Conflict"
+        }
+      }
+    }
+  },
+  "/categories/{id}": {
+    "get": {
+      "tags": [
+        "Categories"
+      ],
+      "summary": "Obtener una categoría por ID",
+      "parameters": [
+        {
+          "in": "path",
+          "name": "id",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Categoría encontrada."
+        },
+        "400": {
+          "$ref": "#/components/responses/BadRequest"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    },
+    "put": {
+      "tags": [
+        "Categories"
+      ],
+      "summary": "Actualizar una categoría",
+      "security": [
+        {
+          "BearerAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "in": "path",
+          "name": "id",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "minProperties": 1,
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "minLength": 2,
+                  "maxLength": 50
+                },
+                "description": {
+                  "type": "string",
+                  "minLength": 3,
+                  "maxLength": 500
+                }
+              }
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Categoría actualizada."
+        },
+        "400": {
+          "$ref": "#/components/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/components/responses/Forbidden"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        },
+        "409": {
+          "$ref": "#/components/responses/Conflict"
+        }
+      }
+    },
+    "delete": {
+      "tags": [
+        "Categories"
+      ],
+      "summary": "Eliminar una categoría",
+      "security": [
+        {
+          "BearerAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "in": "path",
+          "name": "id",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Categoría eliminada."
+        },
+        "400": {
+          "$ref": "#/components/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/components/responses/Forbidden"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
+  },
+  "/favorites": {
+    "get": {
+      "tags": [
+        "Favorites"
+      ],
+      "summary": "Listar los favoritos del usuario autenticado",
+      "security": [
+        {
+          "BearerAuth": []
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Lista de favoritos."
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        }
+      }
+    },
+    "post": {
+      "tags": [
+        "Favorites"
+      ],
+      "summary": "Agregar una película a favoritos",
+      "security": [
+        {
+          "BearerAuth": []
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "movie_id"
+              ],
+              "properties": {
+                "movie_id": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            }
+          }
+        }
+      },
+      "responses": {
+        "201": {
+          "description": "Película agregada a favoritos."
+        },
+        "400": {
+          "$ref": "#/components/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        },
+        "409": {
+          "$ref": "#/components/responses/Conflict"
+        }
+      }
+    }
+  },
+  "/favorites/{id}": {
+    "delete": {
+      "tags": [
+        "Favorites"
+      ],
+      "summary": "Eliminar un favorito del usuario autenticado",
+      "security": [
+        {
+          "BearerAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "in": "path",
+          "name": "id",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Favorito eliminado."
+        },
+        "400": {
+          "$ref": "#/components/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
+  },
+  "/movie-actors": {
+    "get": {
+      "tags": [
+        "Movie Actors"
+      ],
+      "summary": "Listar relaciones entre películas y actores",
+      "parameters": [
+        {
+          "in": "query",
+          "name": "movie_id",
+          "required": false,
+          "schema": {
+            "type": "integer"
+          }
+        },
+        {
+          "in": "query",
+          "name": "actor_id",
+          "required": false,
+          "schema": {
+            "type": "integer"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Lista de relaciones película-actor."
+        }
+      }
+    },
+    "post": {
+      "tags": [
+        "Movie Actors"
+      ],
+      "summary": "Asociar un actor a una película",
+      "security": [
+        {
+          "BearerAuth": []
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "movie_id",
+                "actor_id"
+              ],
+              "properties": {
+                "movie_id": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "actor_id": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "character_name": {
+                  "type": "string",
+                  "maxLength": 100,
+                  "nullable": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "responses": {
+        "201": {
+          "description": "Actor asociado a la película."
+        },
+        "400": {
+          "$ref": "#/components/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/components/responses/Forbidden"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        },
+        "409": {
+          "$ref": "#/components/responses/Conflict"
+        }
+      }
+    }
+  },
+  "/movie-actors/{id}": {
+    "get": {
+      "tags": [
+        "Movie Actors"
+      ],
+      "summary": "Obtener una relación película-actor por ID",
+      "parameters": [
+        {
+          "in": "path",
+          "name": "id",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Relación encontrada."
+        },
+        "400": {
+          "$ref": "#/components/responses/BadRequest"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    },
+    "put": {
+      "tags": [
+        "Movie Actors"
+      ],
+      "summary": "Actualizar una relación película-actor",
+      "security": [
+        {
+          "BearerAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "in": "path",
+          "name": "id",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "minProperties": 1,
+              "properties": {
+                "movie_id": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "actor_id": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "character_name": {
+                  "type": "string",
+                  "maxLength": 100,
+                  "nullable": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Relación actualizada."
+        },
+        "400": {
+          "$ref": "#/components/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/components/responses/Forbidden"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        },
+        "409": {
+          "$ref": "#/components/responses/Conflict"
+        }
+      }
+    },
+    "delete": {
+      "tags": [
+        "Movie Actors"
+      ],
+      "summary": "Eliminar una relación película-actor",
+      "security": [
+        {
+          "BearerAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "in": "path",
+          "name": "id",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Relación eliminada."
+        },
+        "400": {
+          "$ref": "#/components/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/components/responses/Forbidden"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
+  },
+  "/movie-actors/movie/{movieId}": {
+    "get": {
+      "tags": [
+        "Movie Actors"
+      ],
+      "summary": "Listar actores de una película",
+      "parameters": [
+        {
+          "in": "path",
+          "name": "movieId",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Actores asociados a la película."
+        },
+        "400": {
+          "$ref": "#/components/responses/BadRequest"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
+  },
+  "/movie-actors/actor/{actorId}": {
+    "get": {
+      "tags": [
+        "Movie Actors"
+      ],
+      "summary": "Listar películas de un actor",
+      "parameters": [
+        {
+          "in": "path",
+          "name": "actorId",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Películas asociadas al actor."
+        },
+        "400": {
+          "$ref": "#/components/responses/BadRequest"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
+  },
+  "/movies": {
+    "get": {
+      "tags": [
+        "Movies"
+      ],
+      "summary": "Listar películas",
+      "parameters": [
+        {
+          "in": "query",
+          "name": "category",
+          "required": false,
+          "schema": {
+            "type": "integer"
+          },
+          "description": "Filtra por ID de categoría."
+        },
+        {
+          "in": "query",
+          "name": "title",
+          "required": false,
+          "schema": {
+            "type": "string"
+          },
+          "description": "Filtra por título."
+        },
+        {
+          "in": "query",
+          "name": "page",
+          "schema": {
+            "type": "integer",
+            "minimum": 1,
+            "default": 1
+          }
+        },
+        {
+          "in": "query",
+          "name": "limit",
+          "schema": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100,
+            "default": 20
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Página del catálogo de películas aprobadas.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MoviePageResponse"
+              }
+            }
+          }
+        },
+        "400": {
+          "$ref": "#/components/responses/BadRequest"
+        }
+      },
+      "description": "Solo devuelve películas aprobadas, ordenadas por fecha de creación."
+    },
+    "post": {
+      "tags": [
+        "Movies"
+      ],
+      "summary": "Crear una película pendiente de aprobación",
+      "description": "Disponible para cualquier usuario autenticado; la película se crea con estado pending.",
+      "security": [
+        {
+          "BearerAuth": []
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "title",
+                "description",
+                "category_id",
+                "release_year"
+              ],
+              "properties": {
+                "title": {
+                  "type": "string",
+                  "minLength": 2,
+                  "maxLength": 150
+                },
+                "description": {
+                  "type": "string",
+                  "minLength": 10
+                },
+                "category_id": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "release_year": {
+                  "type": "integer",
+                  "minimum": 1900
+                },
+                "image_url": {
+                  "type": "string",
+                  "format": "uri",
+                  "nullable": true
+                }
+              }
+            }
+          }
+        }
+      },
+      "responses": {
+        "201": {
+          "description": "Película creada."
+        },
+        "400": {
+          "$ref": "#/components/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
+  },
+  "/movies/{id}": {
+    "get": {
+      "tags": [
+        "Movies"
+      ],
+      "summary": "Obtener una película por ID",
+      "parameters": [
+        {
+          "in": "path",
+          "name": "id",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Película encontrada."
+        },
+        "400": {
+          "$ref": "#/components/responses/BadRequest"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    },
+    "put": {
+      "tags": [
+        "Movies"
+      ],
+      "summary": "Actualizar una película",
+      "security": [
+        {
+          "BearerAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "in": "path",
+          "name": "id",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "minProperties": 1,
+              "properties": {
+                "title": {
+                  "type": "string",
+                  "minLength": 2,
+                  "maxLength": 150
+                },
+                "description": {
+                  "type": "string",
+                  "minLength": 10
+                },
+                "category_id": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "release_year": {
+                  "type": "integer",
+                  "minimum": 1900
+                },
+                "image_url": {
+                  "type": "string",
+                  "format": "uri",
+                  "nullable": true
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "pending",
+                    "approved"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Película actualizada."
+        },
+        "400": {
+          "$ref": "#/components/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/components/responses/Forbidden"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    },
+    "delete": {
+      "tags": [
+        "Movies"
+      ],
+      "summary": "Eliminar una película",
+      "security": [
+        {
+          "BearerAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "in": "path",
+          "name": "id",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Película eliminada."
+        },
+        "400": {
+          "$ref": "#/components/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/components/responses/Forbidden"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
+  },
+  "/movies/{id}/approve": {
+    "patch": {
+      "tags": [
+        "Movies"
+      ],
+      "summary": "Aprobar una película",
+      "security": [
+        {
+          "BearerAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "in": "path",
+          "name": "id",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Película aprobada."
+        },
+        "400": {
+          "$ref": "#/components/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/components/responses/Forbidden"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
+  },
+  "/reviews/{id}/reactions": {
+    "post": {
+      "tags": [
+        "Reactions"
+      ],
+      "summary": "Alternar reacción like/dislike en una reseña",
+      "description": "Si se envía la reacción ya registrada por el usuario, se elimina.",
+      "security": [
+        {
+          "BearerAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "in": "path",
+          "name": "id",
+          "required": true,
+          "description": "ID de la reseña.",
+          "schema": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "reaction_type"
+              ],
+              "properties": {
+                "reaction_type": {
+                  "type": "string",
+                  "enum": [
+                    "like",
+                    "dislike"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Reacción creada, actualizada o eliminada."
+        },
+        "400": {
+          "$ref": "#/components/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
+  },
+  "/movies/{id}/reviews": {
+    "get": {
+      "tags": [
+        "Reviews"
+      ],
+      "summary": "Listar reseñas de una película",
+      "parameters": [
+        {
+          "in": "path",
+          "name": "id",
+          "required": true,
+          "description": "ID de la película.",
+          "schema": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Lista de reseñas de la película."
+        },
+        "400": {
+          "$ref": "#/components/responses/BadRequest"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    },
+    "post": {
+      "tags": [
+        "Reviews"
+      ],
+      "summary": "Crear una reseña para una película",
+      "description": "La creación se procesa mediante el servicio transaccional de reseñas.",
+      "security": [
+        {
+          "BearerAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "in": "path",
+          "name": "id",
+          "required": true,
+          "description": "ID de la película.",
+          "schema": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "rating",
+                "title",
+                "comment"
+              ],
+              "properties": {
+                "rating": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 10
+                },
+                "title": {
+                  "type": "string",
+                  "minLength": 3,
+                  "maxLength": 100
+                },
+                "comment": {
+                  "type": "string",
+                  "minLength": 10,
+                  "maxLength": 1000
+                }
+              }
+            }
+          }
+        }
+      },
+      "responses": {
+        "201": {
+          "description": "Reseña creada correctamente."
+        },
+        "400": {
+          "$ref": "#/components/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        },
+        "409": {
+          "$ref": "#/components/responses/Conflict"
+        }
+      }
+    }
+  },
+  "/auth/profile": {
+    "get": {
+      "tags": [
+        "Users"
+      ],
+      "summary": "Obtener el perfil del usuario autenticado",
+      "security": [
+        {
+          "BearerAuth": []
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Perfil del usuario autenticado."
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    },
+    "put": {
+      "tags": [
+        "Users"
+      ],
+      "summary": "Actualizar el perfil del usuario autenticado",
+      "security": [
+        {
+          "BearerAuth": []
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "minProperties": 1,
+              "properties": {
+                "username": {
+                  "type": "string",
+                  "minLength": 3,
+                  "maxLength": 50
+                },
+                "email": {
+                  "type": "string",
+                  "format": "email",
+                  "maxLength": 100
+                },
+                "password": {
+                  "type": "string",
+                  "minLength": 6
+                }
+              }
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Perfil actualizado."
+        },
+        "400": {
+          "$ref": "#/components/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "409": {
+          "$ref": "#/components/responses/Conflict"
+        }
+      }
+    },
+    "delete": {
+      "tags": [
+        "Users"
+      ],
+      "summary": "Eliminar la cuenta del usuario autenticado",
+      "security": [
+        {
+          "BearerAuth": []
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Cuenta eliminada."
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
+  },
+  "/users": {
+    "get": {
+      "tags": [
+        "Users"
+      ],
+      "summary": "Listar usuarios",
+      "security": [
+        {
+          "BearerAuth": []
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Lista de usuarios."
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/components/responses/Forbidden"
+        }
+      }
+    }
+  },
+  "/users/{id}": {
+    "put": {
+      "tags": [
+        "Users"
+      ],
+      "summary": "Actualizar un usuario",
+      "security": [
+        {
+          "BearerAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "in": "path",
+          "name": "id",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "minProperties": 1,
+              "properties": {
+                "username": {
+                  "type": "string",
+                  "minLength": 3,
+                  "maxLength": 50
+                },
+                "email": {
+                  "type": "string",
+                  "format": "email",
+                  "maxLength": 100
+                },
+                "password": {
+                  "type": "string",
+                  "minLength": 6
+                }
+              }
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Usuario actualizado."
+        },
+        "400": {
+          "$ref": "#/components/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/components/responses/Forbidden"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        },
+        "409": {
+          "$ref": "#/components/responses/Conflict"
+        }
+      }
+    },
+    "delete": {
+      "tags": [
+        "Users"
+      ],
+      "summary": "Eliminar un usuario",
+      "security": [
+        {
+          "BearerAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "in": "path",
+          "name": "id",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Usuario eliminado."
+        },
+        "400": {
+          "$ref": "#/components/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/components/responses/Forbidden"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
+  },
+  "/movies/pending": {
+    "get": {
+      "tags": [
+        "Movies"
+      ],
+      "summary": "Listar películas pendientes de aprobación",
+      "description": "Disponible únicamente para usuarios con rol admin.",
+      "security": [
+        {
+          "BearerAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "in": "query",
+          "name": "category",
+          "schema": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        {
+          "in": "query",
+          "name": "title",
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "in": "query",
+          "name": "page",
+          "schema": {
+            "type": "integer",
+            "minimum": 1,
+            "default": 1
+          }
+        },
+        {
+          "in": "query",
+          "name": "limit",
+          "schema": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100,
+            "default": 20
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Página de películas pendientes de aprobación.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MoviePageResponse"
+              }
+            }
+          }
+        },
+        "400": {
+          "$ref": "#/components/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/components/responses/Forbidden"
+        }
+      }
+    }
+  },
+  "/movies/{id}/reviews/{reviewId}": {
+    "put": {
+      "tags": [
+        "Reviews"
+      ],
+      "summary": "Actualizar una reseña propia",
+      "security": [
+        {
+          "BearerAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "in": "path",
+          "name": "id",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        {
+          "in": "path",
+          "name": "reviewId",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "minProperties": 1,
+              "properties": {
+                "rating": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 10
+                },
+                "title": {
+                  "type": "string",
+                  "minLength": 3,
+                  "maxLength": 100
+                },
+                "comment": {
+                  "type": "string",
+                  "minLength": 10,
+                  "maxLength": 1000
+                }
+              }
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Reseña actualizada."
+        },
+        "400": {
+          "$ref": "#/components/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/components/responses/Forbidden"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    },
+    "delete": {
+      "tags": [
+        "Reviews"
+      ],
+      "summary": "Eliminar una reseña propia",
+      "security": [
+        {
+          "BearerAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "in": "path",
+          "name": "id",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        {
+          "in": "path",
+          "name": "reviewId",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Reseña eliminada."
+        },
+        "400": {
+          "$ref": "#/components/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/components/responses/Forbidden"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
+  },
+  "/users/me": {
+    "get": {
+      "tags": [
+        "Users"
+      ],
+      "summary": "Obtener el perfil del usuario autenticado",
+      "security": [
+        {
+          "BearerAuth": []
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Perfil del usuario autenticado."
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    },
+    "put": {
+      "tags": [
+        "Users"
+      ],
+      "summary": "Actualizar el perfil del usuario autenticado",
+      "security": [
+        {
+          "BearerAuth": []
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "minProperties": 1,
+              "properties": {
+                "username": {
+                  "type": "string",
+                  "minLength": 3,
+                  "maxLength": 50
+                },
+                "email": {
+                  "type": "string",
+                  "format": "email",
+                  "maxLength": 100
+                },
+                "password": {
+                  "type": "string",
+                  "minLength": 6
+                }
+              }
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Perfil actualizado."
+        },
+        "400": {
+          "$ref": "#/components/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "409": {
+          "$ref": "#/components/responses/Conflict"
+        }
+      }
+    },
+    "delete": {
+      "tags": [
+        "Users"
+      ],
+      "summary": "Eliminar la cuenta del usuario autenticado",
+      "security": [
+        {
+          "BearerAuth": []
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Cuenta eliminada."
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    }
+  }
+}

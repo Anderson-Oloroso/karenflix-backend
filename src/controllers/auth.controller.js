@@ -31,15 +31,6 @@ export default class AuthController {
             const { password } = req.body;
             const result = await this.#authService.login(identifier, password);
 
-            if (res.cookie) {
-                res.cookie('access_token', result.token, {
-                    httpOnly: true,
-                    secure: process.env.NODE_ENV === 'production',
-                    sameSite: 'strict',
-                    maxAge: 24 * 60 * 60 * 1000
-                });
-            }
-
             res.status(200).json({
                 status: 'Success',
                 message: 'Inicio de sesión exitoso',
@@ -55,9 +46,6 @@ export default class AuthController {
 
     async logout(req, res, next) {
         try {
-            if (res.clearCookie) {
-                res.clearCookie('access_token');
-            }
             res.status(200).json({
                 status: 'Success',
                 message: 'Sesión cerrada exitosamente'

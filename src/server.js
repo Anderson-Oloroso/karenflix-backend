@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import app from './app.js';
 import Database from './config/db.config.js';
+import { API_PREFIX } from './config/api.config.js';
 
 export class Server {
     #port;
@@ -13,17 +14,12 @@ export class Server {
 
     async start() {
         try {
-            const databaseConnected = await Database.connect();
-
-            if (!databaseConnected) {
-                console.error('No fue posible conectarse a la base de datos');
-                process.exit(1);
-            }
+            await Database.connect();
 
             this.#app.listen(this.#port, () => {
                 console.log(`servidor ejecutandose en el puerto: ${this.#port}`);
                 console.log(`modo: ${process.env.NODE_ENV}`);
-                console.log(`API: http://localhost:${this.#port}${process.env.API_PREFIX || '/api/v1'}`);
+                console.log(`API: http://localhost:${this.#port}${API_PREFIX}`);
             });
         } catch (error) {
             console.error('Error al iniciar el servidor:', error.message);

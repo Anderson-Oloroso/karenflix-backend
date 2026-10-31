@@ -1,7 +1,7 @@
 import { createPool } from 'mysql2/promise';
 import 'dotenv/config';
 
-export class Database {
+class Database {
     static #pool = null;
 
     static getPool() {
@@ -21,27 +21,9 @@ export class Database {
     }
 
     static async connect() {
-        let connection;
-        try {
-            connection = await Database.getPool().getConnection();
-            console.log('Base de datos conectada con éxito');
-            return true;
-        } catch (error) {
-            console.error('Error de conexión a la base de datos:', error.message);
-            return false;
-        } finally {
-            connection?.release();
-        }
-    }
-
-    static async disconnect() {
-        if (Database.#pool) {
-            await Database.#pool.end();
-            Database.#pool = null;
-        }
+        const connection = await Database.getPool().getConnection();
+        connection.release();
     }
 }
 
-export const pool = Database.getPool();
-export const conectionDatabase = Database.connect;
 export default Database;

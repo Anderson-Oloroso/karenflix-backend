@@ -30,17 +30,13 @@ export default class MovieService {
     }
 
     async getAll(filters = {}) {
-        let movies;
+        const result = await this.#movieModel.getAll(filters);
+        return { ...result, movies: MovieDTO.fromArray(result.movies) };
+    }
 
-        if (filters.category) {
-            movies = await this.#movieModel.getByCategory(filters.category);
-        } else if (filters.title) {
-            movies = await this.#movieModel.getByTitle(filters.title);
-        } else {
-            movies = await this.#movieModel.getAll();
-        }
-
-        return MovieDTO.fromArray(movies);
+    async getPending(filters = {}) {
+        const result = await this.#movieModel.getPending(filters);
+        return { ...result, movies: MovieDTO.fromArray(result.movies) };
     }
 
     async getById(id) {
@@ -89,7 +85,7 @@ export default class MovieService {
             throw AppError.notFound('La película no existe.');
         }
 
-        return await this.#movieModel.approve(id);
+        return this.#movieModel.approve(id);
     }
 
     async deleteMovie(id) {
@@ -99,6 +95,6 @@ export default class MovieService {
             throw AppError.notFound('La película no existe.');
         }
 
-        return await this.#movieModel.deleteMovie(id);
+        return this.#movieModel.deleteMovie(id);
     }
 }

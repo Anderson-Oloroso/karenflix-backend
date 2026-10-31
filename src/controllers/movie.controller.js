@@ -9,6 +9,7 @@ export default class MovieController {
         this.update = this.update.bind(this);
         this.approve = this.approve.bind(this);
         this.delete = this.delete.bind(this);
+        this.getPending = this.getPending.bind(this);
     }
 
     async create(req, res, next) {
@@ -36,16 +37,43 @@ export default class MovieController {
     async getAll(req, res, next) {
         try {
             const filters = {
-                category: req.query.category,
-                title: req.query.title
+                category: req.query.category ? Number(req.query.category) : undefined,
+                title: req.query.title,
+                page: Number(req.query.page || 1),
+                limit: Number(req.query.limit || 20)
             };
 
-            const movies = await this.#movieService.getAll(filters);
+            const result = await this.#movieService.getAll(filters);
 
             return res.status(200).json({
                 status: 'success',
-                total: movies.length,
-                data: movies
+                total: result.total,
+                page: result.page,
+                limit: result.limit,
+                totalPages: Math.ceil(result.total / result.limit),
+                data: result.movies
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async getPending(req, res, next) {
+        try {
+            const filters = {
+                category: req.query.category ? Number(req.query.category) : undefined,
+                title: req.query.title,
+                page: Number(req.query.page || 1),
+                limit: Number(req.query.limit || 20)
+            };
+            const result = await this.#movieService.getPending(filters);
+            return res.status(200).json({
+                status: 'success',
+                total: result.total,
+                page: result.page,
+                limit: result.limit,
+                totalPages: Math.ceil(result.total / result.limit),
+                data: result.movies
             });
         } catch (error) {
             next(error);
