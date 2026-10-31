@@ -6,6 +6,7 @@ import CorsMiddleware from './middlewares/cors.middleware.js';
 import SemverMiddleware from './utils/semver.util.js';
 import LoggerMiddleware from './middlewares/logger.middleware.js';
 import { swaggerDocs } from './config/swagger.config.js';
+import { API_PREFIX } from './config/api.config.js';
 
 export class App {
     #app;
@@ -33,14 +34,14 @@ export class App {
     #initRoutes() {
         swaggerDocs(this.#app);
 
-        this.#app.get('/api/v1', (req, res) => {
+        this.#app.get(API_PREFIX, (req, res) => {
             res.status(200).json({
                 status: 'success',
                 message: 'karenflix API funcionando correctamente...'
             });
         });
 
-        this.#app.use('/api/v1', apiRoutes);
+        this.#app.use(API_PREFIX, apiRoutes);
     }
 
     #initErrorHandling() {
