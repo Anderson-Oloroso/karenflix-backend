@@ -1,17 +1,14 @@
 import { validationResult } from 'express-validator';
+import AppError from '../utils/appError.util.js';
 
 export default class ValidationMiddleware {
-    static validate(req, res, next) {
+    static validate(req, _res, next) {
         const errors = validationResult(req);
 
         if (!errors.isEmpty()) {
-            return res.status(400).json({
-                status: 'Fail',
-                message: 'Error de validación...',
-                errors: errors.array()
-            });
+            return next(AppError.badRequest('Error de validación.', errors.array()));
         }
-        next();
+        return next();
     }
 }
 
