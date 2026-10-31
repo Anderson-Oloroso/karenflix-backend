@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { pool } from '../config/db.config.js';
+import Database from '../config/db.config.js';
 import CategoryModel from '../models/category.model.js';
 import CategoryService from '../services/category.service.js';
 import CategoryController from '../controllers/category.controller.js';
@@ -12,7 +12,7 @@ import {
 } from '../validators/category.validator.js';
 
 // Ensamblaje / Inyección de dependencias
-const categoryModel = new CategoryModel(pool);
+const categoryModel = new CategoryModel(Database.getPool());
 const categoryService = new CategoryService(categoryModel);
 const categoryController = new CategoryController(categoryService);
 const authMiddleware = new AuthMiddleware();
