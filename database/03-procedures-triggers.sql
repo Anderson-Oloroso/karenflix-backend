@@ -64,6 +64,47 @@ BEGIN
 END$$
 DELIMITER ;
 
+-- Las cascadas de claves foráneas no ejecutan triggers sobre las filas eliminadas.
+DROP TRIGGER IF EXISTS trg_users_before_delete_recalculate_aggregates;
+DELIMITER $$
+CREATE TRIGGER trg_users_before_delete_recalculate_aggregates
+BEFORE DELETE ON users
+FOR EACH ROW
+BEGIN
+        UPDATE movies m
+        LEFT JOIN (
+                SELECT movie_id, ROUND(AVG(rating), 2) AS avg_rating
+                FROM reviews
+                WHERE user_id <> OLD.id
+                GROUP BY movie_id
+        ) remaining_reviews ON remaining_reviews.movie_id = m.id
+        SET m.average_rating = remaining_reviews.avg_rating
+        WHERE EXISTS (
+                SELECT 1
+                FROM reviews deleted_reviews
+                WHERE deleted_reviews.movie_id = m.id
+                    AND deleted_reviews.user_id = OLD.id
+        );
+
+        UPDATE reviews r
+        LEFT JOIN (
+                SELECT review_id, COUNT(*) AS total_likes
+                FROM review_reactions
+                WHERE reaction_type = 'like'
+                    AND user_id <> OLD.id
+                GROUP BY review_id
+        ) remaining_likes ON remaining_likes.review_id = r.id
+        SET r.likes_count = COALESCE(remaining_likes.total_likes, 0)
+        WHERE r.user_id <> OLD.id
+            AND EXISTS (
+                    SELECT 1
+                    FROM review_reactions deleted_reactions
+                    WHERE deleted_reactions.review_id = r.id
+                        AND deleted_reactions.user_id = OLD.id
+            );
+END$$
+DELIMITER ;
+
 -- =========================================================================
 -- 4. TRIGGERS EN TABLA `reviews` (Actualización automática de average_rating)
 -- =========================================================================

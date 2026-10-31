@@ -17,7 +17,7 @@ El SQL es la fuente de verdad. Si este documento y el esquema difieren, prevalec
 
 El esquema cubre usuarios, categorías, películas, actores, la relación entre películas y actores, favoritos, reseñas y reacciones a reseñas. Se implementa en MySQL con InnoDB. Este documento describe las tablas y reglas definidas en `01-schema.sql`.
 
-> **Advertencia:** `01-schema.sql` comienza con `DROP DATABASE IF EXISTS karenflix_db`. Ejecutarlo elimina la base de datos existente y todos sus datos antes de crearla nuevamente. No ejecutes ese script en un entorno con información que quieras conservar.
+ `01-schema.sql` no elimina la base de datos ni los datos existentes. `CREATE TABLE IF NOT EXISTS` solo crea tablas faltantes; no aplica cambios a tablas que ya existen. Para actualizar una instalación existente, aplica las migraciones documentadas más abajo.
 
 ## Diagrama entidad-relación lógico
 
@@ -31,6 +31,7 @@ erDiagram
         atributo email UK
         atributo password_hash
         atributo role
+        atributo token_version
         atributo created_at
     }
 
@@ -112,11 +113,11 @@ erDiagram
 
 | Entidad | Atributos |
 | --- | --- |
-| `users` | `id` (PK), `username` (`VARCHAR(50)`, NOT NULL, UK), `email` (`VARCHAR(100)`, NOT NULL, UK), `password_hash` (`VARCHAR(255)`, NOT NULL), `role` (`ENUM('admin', 'user')`, predeterminado `'user'`), `created_at` (`TIMESTAMP`, predeterminado `CURRENT_TIMESTAMP`) |
+| `users` | `id` (PK), `username` (`VARCHAR(50)`, NOT NULL, UK), `email` (`VARCHAR(100)`, NOT NULL, UK), `password_hash` (`VARCHAR(255)`, NOT NULL), `role` (`ENUM('admin', 'user')`, predeterminado `'user'`), `token_version` (`INT`, NOT NULL, predeterminado `0`), `created_at` (`TIMESTAMP`, predeterminado `CURRENT_TIMESTAMP`) |
 | `categories` | `id` (PK), `name` (`VARCHAR(50)`, NOT NULL, UK), `description` (`TEXT`, NOT NULL), `created_at` (`TIMESTAMP`, predeterminado `CURRENT_TIMESTAMP`) |
 | `movies` | `id` (PK), `title` (`VARCHAR(150)`, NOT NULL, UK), `description` (`TEXT`, NOT NULL), `category_id` (`INT`, NOT NULL, FK), `release_year` (`INT`, NOT NULL), `image_url` (`VARCHAR(255)`, nullable), `status` (`ENUM('pending', 'approved')`, predeterminado `'pending'`), `average_rating` (`DECIMAL(4,2)`, nullable, calculado por triggers), `created_by` (`INT`, nullable, FK con `ON DELETE SET NULL`), `created_at` (`TIMESTAMP`, predeterminado `CURRENT_TIMESTAMP`) |
 | `actors` | `id` (PK), `name` (`VARCHAR(100)`, NOT NULL), `biography` (`TEXT`, nullable), `birth_date` (`DATE`, nullable), `photo_url` (`VARCHAR(255)`, nullable), `created_at` (`TIMESTAMP`, predeterminado `CURRENT_TIMESTAMP`) |
-| `movie_actors` | `id` (PK), `movie_id` (`INT`, NOT NULL, FK), `actor_id` (`INT`, NOT NULL, FK), `character_name` (`VARCHAR(100)`, nullable) |
+| `movie_actors` | `id` (PK), `movie_id` (`INT`, NOT NULL, FK), `actor_id` (`INT`, NOT NULL, FK), `character_name` (`VARCHAR(100)`, nullable), UNIQUE (`movie_id`, `actor_id`) |
 | `favorites` | `id` (PK), `user_id` (`INT`, NOT NULL, FK), `movie_id` (`INT`, NOT NULL, FK), `created_at` (`TIMESTAMP`, predeterminado `CURRENT_TIMESTAMP`), UNIQUE (`user_id`, `movie_id`) |
 | `reviews` | `id` (PK), `movie_id` (`INT`, NOT NULL, FK), `user_id` (`INT`, NOT NULL, FK), `title` (`VARCHAR(100)`, NOT NULL), `comment` (`TEXT`, NOT NULL), `rating` (`TINYINT`, NOT NULL, CHECK entre 1 y 10), `likes_count` (`INT`, NOT NULL, predeterminado `0`, calculado por triggers), `created_at` (`TIMESTAMP`, predeterminado `CURRENT_TIMESTAMP`), UNIQUE (`movie_id`, `user_id`) |
 | `review_reactions` | `id` (PK), `review_id` (`INT`, NOT NULL, FK), `user_id` (`INT`, NOT NULL, FK), `reaction_type` (`ENUM('like', 'dislike')`, NOT NULL), `created_at` (`TIMESTAMP`, predeterminado `CURRENT_TIMESTAMP`), UNIQUE (`review_id`, `user_id`) |
@@ -143,12 +144,15 @@ En la tabla, el lado “uno” indica que cada registro dependiente se relaciona
 Las siguientes reglas están declaradas en `01-schema.sql`:
 
 - `users.username`, `users.email`, `categories.name` y `movies.title` son obligatorios y únicos.
+- `movie_actors` impone unicidad compuesta en (`movie_id`, `actor_id`): un actor no puede asociarse dos veces a la misma película.
+- `users.token_version` permite revocar los JWT de una cuenta al cerrar sesión.
 - `users.role` admite `'admin'` o `'user'` y tiene `'user'` como valor predeterminado. La columna no está declarada `NOT NULL`.
 - `movies.status` admite `'pending'` o `'approved'` y tiene `'pending'` como valor predeterminado. La columna no está declarada `NOT NULL`.
 - `review_reactions.reaction_type` admite `'like'` o `'dislike'` y es obligatorio.
 - `reviews.rating` es obligatorio y tiene una restricción `CHECK` de 1 a 10, inclusive.
 - `reviews` impone unicidad compuesta en (`movie_id`, `user_id`): cada usuario puede publicar como máximo una reseña por película.
 - Al eliminar un usuario, sus reseñas, reacciones y favoritos se eliminan en cascada; las películas que creó se conservan y su `created_by` queda en `NULL`.
+- Al eliminar un usuario, un trigger recalcula primero los ratings afectados y los likes de reseñas ajenas; luego sus reseñas, reacciones y favoritos se eliminan en cascada. Las películas que creó se conservan y su `created_by` queda en `NULL`.
 - Al eliminar una reseña, sus reacciones se eliminan en cascada.
 - Al eliminar una película, se eliminan en cascada sus reseñas, favoritos y asociaciones con actores (`movie_actors`).
 - No se puede eliminar una categoría mientras tenga películas asociadas (`ON DELETE RESTRICT`).
@@ -174,6 +178,7 @@ Esta sección distingue las claves que crean índices para integridad de los ín
 | `movies` | `title` | `UNIQUE`. |
 | `actors` | `id` | Clave primaria. |
 | `movie_actors` | `id` | Clave primaria. |
+| `movie_actors` | (`movie_id`, `actor_id`) | `UNIQUE KEY unique_movie_actor`. |
 | `favorites` | `id` | Clave primaria. |
 | `favorites` | (`user_id`, `movie_id`) | `UNIQUE KEY unique_user_movie_favorite`. |
 | `reviews` | `id` | Clave primaria. |
@@ -191,7 +196,26 @@ Las restricciones `UNIQUE` de `movies.title` y `reviews(movie_id, user_id)` tamb
 
 ### Bases de datos existentes
 
-`01-schema.sql` crea una base nueva y comienza eliminando la base `karenflix_db`; no debe ejecutarse sobre una base existente con datos que se quieran conservar. Antes de aplicar la restricción a una instalación existente, identifica y resuelve manualmente cualquier duplicado:
+Para actualizar una instalación existente, primero identifica duplicados de asociaciones película-actor y resuélvelos manualmente antes de añadir la restricción:
+
+```sql
+SELECT movie_id, actor_id, COUNT(*) AS total
+FROM movie_actors
+GROUP BY movie_id, actor_id
+HAVING COUNT(*) > 1;
+```
+
+Aplica estas migraciones una sola vez; no recrean la base ni eliminan registros:
+
+```sql
+ALTER TABLE users
+ADD COLUMN token_version INT NOT NULL DEFAULT 0;
+
+ALTER TABLE movie_actors
+ADD CONSTRAINT unique_movie_actor UNIQUE (movie_id, actor_id);
+```
+
+La restricción de reseñas también debe existir en instalaciones antiguas. Antes, identifica y resuelve manualmente cualquier duplicado:
 
 ```sql
 SELECT movie_id, user_id, COUNT(*) AS total

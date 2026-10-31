@@ -31,9 +31,12 @@ export default class AuthMiddleware {
         }
 
         try {
-            const user = await this.#userModel.findById(decoded.id);
+            const user = await this.#userModel.findAuthStateById(decoded.id);
             if (!user) {
                 return next(AppError.unauthorized('La cuenta asociada a este token ya no existe.'));
+            }
+            if (Number(decoded.tokenVersion ?? 0) !== Number(user.token_version)) {
+                return next(AppError.unauthorized('El token fue revocado.'));
             }
 
             req.user = {

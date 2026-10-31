@@ -1,5 +1,4 @@
 -- 01-schema.sql
-DROP DATABASE IF EXISTS karenflix_db;
 CREATE DATABASE IF NOT EXISTS karenflix_db;
 USE karenflix_db;
 
@@ -10,6 +9,7 @@ CREATE TABLE IF NOT EXISTS users (
     email VARCHAR(100) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
     role ENUM('admin', 'user') DEFAULT 'user',
+    token_version INT NOT NULL DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
@@ -33,6 +33,7 @@ CREATE TABLE IF NOT EXISTS movies (
     average_rating DECIMAL(4,2) DEFAULT NULL COMMENT 'Promedio ponderado calculado automáticamente por triggers',
     created_by INT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    KEY idx_movies_category_status (category_id, status),
     FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE RESTRICT,
     FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL
 ) ENGINE=InnoDB;
@@ -53,6 +54,7 @@ CREATE TABLE IF NOT EXISTS movie_actors (
     movie_id INT NOT NULL,
     actor_id INT NOT NULL,
     character_name VARCHAR(100),
+    UNIQUE KEY unique_movie_actor (movie_id, actor_id),
     FOREIGN KEY (movie_id) REFERENCES movies(id) ON DELETE CASCADE,
     FOREIGN KEY (actor_id) REFERENCES actors(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
@@ -95,5 +97,4 @@ CREATE TABLE IF NOT EXISTS review_reactions (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
--- Índices para optimizar búsquedas y filtrados
-CREATE INDEX idx_movies_category_status ON movies(category_id, status); 
+-- Los índices se declaran junto a sus respectivas tablas.
