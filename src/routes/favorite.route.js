@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { pool } from '../config/db.config.js';
+import Database from '../config/db.config.js';
 import AuthMiddleware from '../middlewares/auth.middleware.js';
 import { validationMiddleware } from '../middlewares/validation.middleware.js';
 import FavoriteModel from '../models/favorite.model.js';
@@ -10,7 +10,7 @@ import {
     favoriteIdParamValidator
 } from '../validators/favorite.validator.js';
 
-const favoriteModel = new FavoriteModel(pool);
+const favoriteModel = new FavoriteModel(Database.getPool());
 const favoriteService = new FavoriteService(favoriteModel);
 const favoriteController = new FavoriteController(favoriteService);
 const authMiddleware = new AuthMiddleware();
