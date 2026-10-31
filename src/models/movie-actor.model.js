@@ -19,7 +19,7 @@ export default class MovieActorModel {
                 a.name AS actor_name,
                 a.photo_url AS actor_photo_url
             FROM movie_actors ma
-            INNER JOIN movies m ON m.id = ma.movie_id
+            INNER JOIN movies m ON m.id = ma.movie_id AND m.status = 'approved'
             INNER JOIN actors a ON a.id = ma.actor_id
             ORDER BY ma.id DESC
         `;
@@ -27,7 +27,8 @@ export default class MovieActorModel {
         return rows;
     }
 
-    async getById(id) {
+    async getById(id, includePending = false) {
+        const visibilityCondition = includePending ? '' : " AND m.status = 'approved'";
         const query = `
             SELECT
                 ma.id,
@@ -44,6 +45,7 @@ export default class MovieActorModel {
             INNER JOIN movies m ON m.id = ma.movie_id
             INNER JOIN actors a ON a.id = ma.actor_id
             WHERE ma.id = ?
+            ${visibilityCondition}
         `;
         const [rows] = await this.#db.execute(query, [id]);
         return rows[0] ?? null;
@@ -59,6 +61,7 @@ export default class MovieActorModel {
                 a.name AS actor_name,
                 a.photo_url AS actor_photo_url
             FROM movie_actors ma
+            INNER JOIN movies m ON m.id = ma.movie_id AND m.status = 'approved'
             INNER JOIN actors a ON a.id = ma.actor_id
             WHERE ma.movie_id = ?
             ORDER BY ma.id ASC
@@ -79,7 +82,7 @@ export default class MovieActorModel {
                 m.image_url AS movie_image_url,
                 m.release_year
             FROM movie_actors ma
-            INNER JOIN movies m ON m.id = ma.movie_id
+            INNER JOIN movies m ON m.id = ma.movie_id AND m.status = 'approved'
             WHERE ma.actor_id = ?
             ORDER BY m.release_year DESC
         `;
@@ -109,6 +112,14 @@ export default class MovieActorModel {
     async movieExists(movieId) {
         const query = 'SELECT 1 FROM movies WHERE id = ?';
         const [rows] = await this.#db.execute(query, [movieId]);
+        return rows.length > 0;
+    }
+
+    async movieIsApproved(movieId) {
+        const [rows] = await this.#db.execute(
+            "SELECT 1 FROM movies WHERE id = ? AND status = 'approved'",
+            [movieId]
+        );
         return rows.length > 0;
     }
 
