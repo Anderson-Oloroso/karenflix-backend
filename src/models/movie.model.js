@@ -1,3 +1,18 @@
+const MOVIE_SELECT = `SELECT
+    m.id,
+    m.title,
+    m.description,
+    c.name AS category_name,
+    m.release_year,
+    m.image_url,
+    m.status,
+    m.average_rating,
+    u.username,
+    m.created_at
+FROM movies m
+INNER JOIN categories c ON c.id = m.category_id
+LEFT JOIN users u ON u.id = m.created_by`;
+
 export default class MovieModel {
     #db;
 
@@ -15,7 +30,7 @@ export default class MovieModel {
                 image_url,
                 status,
                 created_by
-            ) 
+            )
             VALUES (?, ?, ?, ?, ?, ?, ?)`,
             [
                 movie.title,
@@ -30,117 +45,33 @@ export default class MovieModel {
         return result;
     }
 
-    async getAll() {
-        const [movies] = await this.#db.query(
-            `SELECT 
-                m.id,
-                m.title,
-                m.description,
-                c.name AS category_name,
-                m.release_year,
-                m.image_url,
-                m.status,
-                m.average_rating,
-                u.username,
-                m.created_at
-            FROM movies m 
-            INNER JOIN categories c
-                ON c.id = m.category_id
-            LEFT JOIN users u
-                ON u.id = m.created_by
-            ORDER BY m.created_at DESC`
-        );
+    async getAll(filters = {}) {
+        return this.#getPage(filters, 'approved');
+    }
 
-        return movies;
+    async getPending(filters = {}) {
+        return this.#getPage(filters, 'pending');
     }
 
     async getById(id) {
-        const [movie] = await this.#db.query(
-            `SELECT 
-                m.id,
-                m.title,
-                m.description,
-                c.name AS category_name,
-                m.release_year,
-                m.image_url,
-                m.status,
-                m.average_rating,
-                u.username,
-                m.created_at
-            FROM movies m 
-            INNER JOIN categories c
-                ON c.id = m.category_id
-            LEFT JOIN users u
-                ON u.id = m.created_by
-            WHERE m.id = ?`,
+        const [rows] = await this.#db.execute(
+            `${MOVIE_SELECT}
+            WHERE m.id = ? AND m.status = 'approved'`,
             [id]
         );
-        return movie[0] ?? null;
-    }
-
-    async getByTitle(title) {
-        const [movie] = await this.#db.query(
-            `SELECT 
-                m.id,
-                m.title,
-                m.description,
-                c.name AS category_name,
-                m.release_year,
-                m.image_url,
-                m.status,
-                m.average_rating,
-                u.username,
-                m.created_at
-            FROM movies m 
-            INNER JOIN categories c
-                ON c.id = m.category_id
-            LEFT JOIN users u
-                ON u.id = m.created_by
-            WHERE m.title LIKE ?
-            ORDER BY m.created_at DESC`,
-            [`%${title}%`]
-        );
-
-        return movie;
-    }
-
-    async getByCategory(categoryId) {
-        const [movie] = await this.#db.query(
-            `SELECT 
-                m.id,
-                m.title,
-                m.description,
-                c.name AS category_name,
-                m.release_year,
-                m.image_url,
-                m.status,
-                m.average_rating,
-                u.username,
-                m.created_at
-            FROM movies m 
-            INNER JOIN categories c
-                ON c.id = m.category_id
-            LEFT JOIN users u
-                ON u.id = m.created_by
-            WHERE m.category_id = ?
-            ORDER BY m.created_at DESC`,
-            [categoryId]
-        );
-
-        return movie;
+        return rows[0] ?? null;
     }
 
     async exists(id) {
-        const [rows] = await this.#db.query(
+        const [rows] = await this.#db.execute(
             'SELECT id FROM movies WHERE id = ?',
             [id]
         );
-
         return rows.length > 0;
     }
 
     async categoryExists(categoryId) {
-        const [rows] = await this.#db.query(
+        const [rows] = await this.#db.execute(
             'SELECT id FROM categories WHERE id = ?',
             [categoryId]
         );
@@ -154,8 +85,7 @@ export default class MovieModel {
             query += ' AND id != ?';
             params.push(excludeId);
         }
-        const [rows] = await this.#db.query(query, params);
-
+        const [rows] = await this.#db.execute(query, params);
         return rows.length > 0;
     }
 
@@ -180,7 +110,6 @@ export default class MovieModel {
                 id
             ]
         );
-
         return result;
     }
 
@@ -198,5 +127,42 @@ export default class MovieModel {
             [id]
         );
         return result;
+    }
+
+    async #getPage(filters, status) {
+        const conditions = ['m.status = ?'];
+        const params = [status];
+
+        if (filters.category) {
+            conditions.push('m.category_id = ?');
+            params.push(filters.category);
+        }
+        if (filters.title) {
+            conditions.push('m.title LIKE ?');
+            params.push(`%${filters.title}%`);
+        }
+
+        const where = conditions.join(' AND ');
+        const page = filters.page ?? 1;
+        const limit = filters.limit ?? 20;
+        const offset = (page - 1) * limit;
+        const [movies] = await this.#db.execute(
+            `${MOVIE_SELECT}
+            WHERE ${where}
+            ORDER BY m.created_at DESC
+            LIMIT ? OFFSET ?`,
+            [...params, limit, offset]
+        );
+        const [countRows] = await this.#db.execute(
+            `SELECT COUNT(*) AS total FROM movies m WHERE ${where}`,
+            params
+        );
+
+        return {
+            movies,
+            total: Number(countRows[0].total),
+            page,
+            limit
+        };
     }
 }
