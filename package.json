@@ -11,9 +11,7 @@
     "express-validator": "^7.2.1",
     "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.24.6",
-    "passport-jwt": "^4.0.1",
     "semver": "^7.7.1",
-    "swagger-jsdoc": "^6.3.0",
     "swagger-ui-express": "^5.0.1"
   },
   "scripts": {
@@ -34,5 +32,10 @@
   "homepage": "https://github.com/Anderson-Oloroso/karenflix-backend#readme",
   "devDependencies": {
     "nodemon": "^3.1.14"
+  },
+  "overrides": {
+    "@mapbox/node-pre-gyp": {
+      "tar": "^7.5.22"
+    }
   }
 }
