@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { pool } from '../config/db.config.js';
+import Database from '../config/db.config.js';
 import MovieModel from '../models/movie.model.js';
 import MovieService from '../services/movie.service.js';
 import MovieController from '../controllers/movie.controller.js';
@@ -9,8 +9,9 @@ import updateMovieValidator from '../validators/movie.update.validator.js';
 import { validationMiddleware } from '../middlewares/validation.middleware.js';
 import AuthMiddleware from '../middlewares/auth.middleware.js';
 import { movieIdParamValidator } from '../validators/movie.update.validator.js';
+import movieQueryValidator from '../validators/movie.query.validator.js';
 
-// Ensamblaje
+const pool = Database.getPool();
 const movieModel = new MovieModel(pool);
 const movieService = new MovieService(movieModel);
 const movieController = new MovieController(movieService);
@@ -18,8 +19,9 @@ const authMiddleware = new AuthMiddleware();
 
 const router = Router();
 
-router.get('/', movieController.getAll);
+router.get('/pending', authMiddleware.requireAuth, authMiddleware.requireAdmin, movieQueryValidator, validationMiddleware, movieController.getPending);
 
+router.get('/', movieQueryValidator, validationMiddleware, movieController.getAll);
 router.get('/:id', movieIdParamValidator, validationMiddleware, movieController.getById);
 
 router.post('/', authMiddleware.requireAuth, createMovieValidator, validationMiddleware, movieController.create);
