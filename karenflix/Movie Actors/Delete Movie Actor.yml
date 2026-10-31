@@ -1,0 +1,19 @@
+info:
+  name: Delete Movie Actor
+  type: http
+  seq: 7
+
+http:
+  method: DELETE
+  url: "{{baseUrl}}/movie-actors/{{movieActorId}}"
+  headers:
+    - name: Authorization
+      value: "Bearer {{jwt}}"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false

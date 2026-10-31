@@ -1,0 +1,26 @@
+name: karenflix
+variables:
+  - name: baseUrl
+    value: http://localhost:4000/api/v1
+    description: base de la peticion
+  - name: movieId
+    value: "1"
+    description: ID existente de una película para requests que lo requieran
+  - name: categoryId
+    value: "1"
+    description: ID existente de una categoría
+  - name: actorId
+    value: "1"
+    description: ID existente de un actor
+  - name: movieActorId
+    value: "1"
+    description: ID existente de una relación película-actor
+  - name: favoriteId
+    value: "1"
+    description: ID existente de un favorito
+  - name: reviewId
+    value: "1"
+    description: ID existente de una reseña
+  - name: userId
+    value: "1"
+    description: ID de un usuario para requests administrativos

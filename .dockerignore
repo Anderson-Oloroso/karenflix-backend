@@ -1,0 +1,38 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Dependencias locales
+node_modules/
+
+# Entornos y secretos
+.env
+.env.*
+!.env.example
+
+# Control de versiones
+.git
+.gitignore
+
+# Docker & CI/CD
+Dockerfile
+docker-compose*.yml
+.dockerignore
+
+# Documentación y Diagramas
+README.md
+*.md
+database/diagrams/
+
+# Colecciones de pruebas API / IDEs
+karenflix/
+.vscode/
+.idea/
+
+# Archivos temporales de sistema
+.DS_Store
+Thumbs.db

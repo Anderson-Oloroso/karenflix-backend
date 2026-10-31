@@ -1,0 +1,25 @@
+info:
+  name: Toggle Review Reaction
+  type: http
+  seq: 3
+
+http:
+  method: POST
+  url: "{{baseUrl}}/reviews/{{reviewId}}/reactions"
+  headers:
+    - name: Authorization
+      value: "Bearer {{jwt}}"
+  body:
+    type: json
+    data: |-
+      {
+        "reaction_type": "like"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
