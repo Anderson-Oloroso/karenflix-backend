@@ -78,6 +78,7 @@ CREATE TABLE IF NOT EXISTS reviews (
     rating TINYINT NOT NULL CHECK (rating BETWEEN 1 AND 10),
     likes_count INT NOT NULL DEFAULT 0 COMMENT 'Contador de likes calculado automáticamente por triggers',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY unique_movie_user_review (movie_id, user_id),
     FOREIGN KEY (movie_id) REFERENCES movies(id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
@@ -95,6 +96,4 @@ CREATE TABLE IF NOT EXISTS review_reactions (
 ) ENGINE=InnoDB;
 
 -- Índices para optimizar búsquedas y filtrados
-CREATE INDEX idx_movies_title ON movies(title);
 CREATE INDEX idx_movies_category_status ON movies(category_id, status); 
-CREATE INDEX idx_reviews_movie_id ON reviews(movie_id);
