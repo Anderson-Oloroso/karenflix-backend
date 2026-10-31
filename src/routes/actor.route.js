@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { pool } from '../config/db.config.js';
+import Database from '../config/db.config.js';
 import ActorModel from '../models/actor.model.js';
 import ActorService from '../services/actor.service.js';
 import ActorController from '../controllers/actor.controller.js';
@@ -11,7 +11,7 @@ import {
     updateActorValidator
 } from '../validators/actor.validator.js';
 
-const actorModel = new ActorModel(pool);
+const actorModel = new ActorModel(Database.getPool());
 const actorService = new ActorService(actorModel);
 const actorController = new ActorController(actorService);
 const authMiddleware = new AuthMiddleware();
