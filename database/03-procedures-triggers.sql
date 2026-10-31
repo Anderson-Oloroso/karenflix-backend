@@ -10,9 +10,26 @@ DELIMITER $$
 CREATE PROCEDURE sp_recalculate_movie_rating(IN p_movie_id INT)
 BEGIN
     UPDATE movies
-    SET average_rating = (
+    SET average_rating = COALESCE((
         SELECT ROUND(AVG(rating), 2)
         FROM reviews
+        WHERE movie_id = p_movie_id
+    ), 0.00)
+    WHERE id = p_movie_id;
+END$$
+DELIMITER ;
+
+-- =========================================================================
+-- 2. PROCEDIMIENTO: Recálculo del total de favoritos de una película
+-- =========================================================================
+DROP PROCEDURE IF EXISTS sp_recalculate_movie_likes;
+DELIMITER $$
+CREATE PROCEDURE sp_recalculate_movie_likes(IN p_movie_id INT)
+BEGIN
+    UPDATE movies
+    SET likes_count = (
+        SELECT COUNT(*)
+        FROM favorites
         WHERE movie_id = p_movie_id
     )
     WHERE id = p_movie_id;
@@ -20,7 +37,7 @@ END$$
 DELIMITER ;
 
 -- =========================================================================
--- 2. PROCEDIMIENTO: Recálculo de Contador de Likes de una Reseña
+-- 3. PROCEDIMIENTO: Recálculo de Contador de Likes de una Reseña
 -- =========================================================================
 DROP PROCEDURE IF EXISTS sp_recalculate_review_likes;
 DELIMITER $$
@@ -37,7 +54,7 @@ END$$
 DELIMITER ;
 
 -- =========================================================================
--- 3. PROCEDIMIENTO: Recálculo Masivo de Calificaciones y Likes
+-- 4. PROCEDIMIENTO: Recálculo Masivo de Calificaciones y Likes
 -- =========================================================================
 DROP PROCEDURE IF EXISTS sp_recalculate_all_ratings;
 DELIMITER $$
@@ -50,7 +67,16 @@ BEGIN
         FROM reviews
         GROUP BY movie_id
     ) r ON m.id = r.movie_id
-    SET m.average_rating = r.avg_rating;
+    SET m.average_rating = COALESCE(r.avg_rating, 0.00);
+
+    -- Recalcula los favoritos de cada película
+    UPDATE movies m
+    LEFT JOIN (
+        SELECT movie_id, COUNT(*) AS total_likes
+        FROM favorites
+        GROUP BY movie_id
+    ) f ON m.id = f.movie_id
+    SET m.likes_count = COALESCE(f.total_likes, 0);
 
     -- Recalcula los likes de todas las reseñas
     UPDATE reviews rev
@@ -65,7 +91,7 @@ END$$
 DELIMITER ;
 
 -- =========================================================================
--- 4. TRIGGERS EN TABLA `reviews` (Actualización automática de average_rating)
+-- 5. TRIGGERS EN TABLA `reviews` (Actualización automática de average_rating)
 -- =========================================================================
 
 -- Trigger al insertar una reseña
@@ -107,7 +133,7 @@ END$$
 DELIMITER ;
 
 -- =========================================================================
--- 5. TRIGGERS EN TABLA `review_reactions` (Actualización automática de likes_count)
+-- 6. TRIGGERS EN TABLA `review_reactions` (Actualización automática de likes_count)
 -- =========================================================================
 
 -- Trigger al registrar una reacción (like/dislike)
@@ -145,6 +171,50 @@ AFTER DELETE ON review_reactions
 FOR EACH ROW
 BEGIN
     CALL sp_recalculate_review_likes(OLD.review_id);
+END$$
+DELIMITER ;
+
+-- =========================================================================
+-- 7. TRIGGERS EN `favorites` (Actualización automática de movies.likes_count)
+-- =========================================================================
+DROP TRIGGER IF EXISTS trg_favorites_after_insert;
+DELIMITER $$
+CREATE TRIGGER trg_favorites_after_insert
+AFTER INSERT ON favorites
+FOR EACH ROW
+BEGIN
+    UPDATE movies
+    SET likes_count = likes_count + 1
+    WHERE id = NEW.movie_id;
+END$$
+DELIMITER ;
+
+DROP TRIGGER IF EXISTS trg_favorites_after_update;
+DELIMITER $$
+CREATE TRIGGER trg_favorites_after_update
+AFTER UPDATE ON favorites
+FOR EACH ROW
+BEGIN
+    IF OLD.movie_id <> NEW.movie_id THEN
+        UPDATE movies
+        SET likes_count = likes_count + 1
+        WHERE id = NEW.movie_id;
+        UPDATE movies
+        SET likes_count = likes_count - 1
+        WHERE id = OLD.movie_id;
+    END IF;
+END$$
+DELIMITER ;
+
+DROP TRIGGER IF EXISTS trg_favorites_after_delete;
+DELIMITER $$
+CREATE TRIGGER trg_favorites_after_delete
+AFTER DELETE ON favorites
+FOR EACH ROW
+BEGIN
+    UPDATE movies
+    SET likes_count = likes_count - 1
+    WHERE id = OLD.movie_id;
 END$$
 DELIMITER ;
 
