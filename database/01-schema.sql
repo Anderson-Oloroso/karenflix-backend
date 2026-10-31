@@ -1,7 +1,4 @@
--- =========================================================================
--- KARENFLIX DATABASE SCHEMA - Versión 3FN Definitiva
--- =========================================================================
-DROP DATABASE IF EXISTS karenflix_db;
+-- 01-schema.sql
 CREATE DATABASE IF NOT EXISTS karenflix_db;
 USE karenflix_db;
 
@@ -12,6 +9,7 @@ CREATE TABLE IF NOT EXISTS users (
     email VARCHAR(100) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
     role ENUM('admin', 'user') DEFAULT 'user',
+    token_version INT NOT NULL DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
@@ -50,6 +48,9 @@ CREATE TABLE IF NOT EXISTS movies (
     likes_count INT NOT NULL DEFAULT 0 COMMENT 'Cantidad de usuarios que agregaron la película a favoritos',
     created_by INT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    KEY idx_movies_category_status (category_id, status),
+    FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE RESTRICT,
+    FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL
     CONSTRAINT fk_movie_director FOREIGN KEY (director_id) REFERENCES directors(id) ON DELETE RESTRICT,
     CONSTRAINT fk_movie_category FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE RESTRICT,
     CONSTRAINT fk_movie_creator FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL
@@ -71,6 +72,9 @@ CREATE TABLE IF NOT EXISTS movie_actors (
     movie_id INT NOT NULL,
     actor_id INT NOT NULL,
     character_name VARCHAR(100),
+    UNIQUE KEY unique_movie_actor (movie_id, actor_id),
+    FOREIGN KEY (movie_id) REFERENCES movies(id) ON DELETE CASCADE,
+    FOREIGN KEY (actor_id) REFERENCES actors(id) ON DELETE CASCADE
     CONSTRAINT fk_ma_movie FOREIGN KEY (movie_id) REFERENCES movies(id) ON DELETE CASCADE,
     CONSTRAINT fk_ma_actor FOREIGN KEY (actor_id) REFERENCES actors(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
@@ -113,6 +117,7 @@ CREATE TABLE IF NOT EXISTS review_reactions (
     CONSTRAINT fk_reaction_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
+-- Los índices se declaran junto a sus respectivas tablas.
 -- Índices estratégicos para optimizar búsquedas y filtrados en producción
 CREATE INDEX idx_movies_category_status ON movies(category_id, status);
 CREATE INDEX idx_movies_release_year ON movies(release_year);

@@ -20,7 +20,7 @@ export default class FavoriteModel {
             FROM favorites f
             INNER JOIN movies m ON m.id = f.movie_id
             INNER JOIN categories c ON c.id = m.category_id
-            WHERE f.user_id = ?
+            WHERE f.user_id = ? AND m.status = 'approved'
             ORDER BY f.created_at DESC`;
         const [rows] = await this.#db.execute(query, [userId]);
         return rows;
@@ -41,14 +41,14 @@ export default class FavoriteModel {
             FROM favorites f
             INNER JOIN movies m ON m.id = f.movie_id
             INNER JOIN categories c ON c.id = m.category_id
-            WHERE f.id = ? AND f.user_id = ?`;
+            WHERE f.id = ? AND f.user_id = ? AND m.status = 'approved'`;
         const [rows] = await this.#db.execute(query, [id, userId]);
         return rows[0] ?? null;
     }
 
     async movieExists(movieId) {
         const [rows] = await this.#db.execute(
-            'SELECT id FROM movies WHERE id = ?',
+            "SELECT id FROM movies WHERE id = ? AND status = 'approved'",
             [movieId]
         );
         return rows.length > 0;
