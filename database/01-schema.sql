@@ -21,13 +21,21 @@ CREATE TABLE IF NOT EXISTS categories (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
--- 3. Tabla de Películas / Series
--- 3. Tabla de Películas / Series (Actualizada)
+-- Tabla de Directores
+CREATE TABLE IF NOT EXISTS directors (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL UNIQUE,
+    biography TEXT NULL, -- Preparado para el futuro UX
+    photo_url VARCHAR(255) NULL, -- Preparado para el futuro UX
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB;
+
+-- Tabla de Películas / Series
 CREATE TABLE IF NOT EXISTS movies (
     id INT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(150) NOT NULL UNIQUE,
     description TEXT NOT NULL,
-    director VARCHAR(100) NOT NULL,
+    director_id INT NOT NULL,
     release_year INT NOT NULL,
     duration_minutes INT NOT NULL,
     age_rating VARCHAR(10) DEFAULT 'PG-13',
@@ -39,9 +47,11 @@ CREATE TABLE IF NOT EXISTS movies (
     average_rating DECIMAL(4,2) DEFAULT NULL COMMENT 'Promedio ponderado calculado automáticamente por triggers',
     created_by INT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (director_id) REFERENCES directors(id) ON DELETE RESTRICT,
     FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE RESTRICT,
     FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL
 ) ENGINE=InnoDB;
+
 -- 4. Tabla de Actores
 CREATE TABLE IF NOT EXISTS actors (
     id INT AUTO_INCREMENT PRIMARY KEY,
