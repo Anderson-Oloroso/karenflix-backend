@@ -104,12 +104,27 @@ BEGIN
                 WHERE user_id <> OLD.id
                 GROUP BY movie_id
         ) remaining_reviews ON remaining_reviews.movie_id = m.id
-        SET m.average_rating = remaining_reviews.avg_rating
+        SET m.average_rating = COALESCE(remaining_reviews.avg_rating, 0.00)
         WHERE EXISTS (
                 SELECT 1
                 FROM reviews deleted_reviews
                 WHERE deleted_reviews.movie_id = m.id
                     AND deleted_reviews.user_id = OLD.id
+        );
+
+        UPDATE movies m
+        LEFT JOIN (
+            SELECT movie_id, COUNT(*) AS total_favorites
+            FROM favorites
+            WHERE user_id <> OLD.id
+            GROUP BY movie_id
+        ) remaining_favorites ON remaining_favorites.movie_id = m.id
+        SET m.likes_count = COALESCE(remaining_favorites.total_favorites, 0)
+        WHERE EXISTS (
+            SELECT 1
+            FROM favorites deleted_favorites
+            WHERE deleted_favorites.movie_id = m.id
+                AND deleted_favorites.user_id = OLD.id
         );
 
         UPDATE reviews r

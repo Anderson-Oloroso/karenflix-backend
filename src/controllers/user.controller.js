@@ -10,6 +10,7 @@ export default class UserController {
         this.updateProfile = this.updateProfile.bind(this);
         this.deleteProfile = this.deleteProfile.bind(this);
         this.update = this.update.bind(this);
+        this.updateRole = this.updateRole.bind(this);
         this.delete = this.delete.bind(this);
     }
 
@@ -83,6 +84,25 @@ export default class UserController {
             res.status(200).json({
                 status: 'Success',
                 message: 'Usuario actualizado correctamente',
+                data: user
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async updateRole(req, res, next) {
+        try {
+            const user = await this.#userService.updateRole(
+                req.params.id,
+                req.body.role,
+                req.user.id,
+                req.body.admin_password
+            );
+
+            res.status(200).json({
+                status: 'Success',
+                message: 'Rol de usuario actualizado correctamente',
                 data: user
             });
         } catch (error) {

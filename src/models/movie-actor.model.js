@@ -5,7 +5,19 @@ export default class MovieActorModel {
         this.#db = db;
     }
 
-    async getAll() {
+    async getAll(filters = {}) {
+        const conditions = ["m.status = 'approved'"];
+        const params = [];
+
+        if (filters.movie_id) {
+            conditions.push('ma.movie_id = ?');
+            params.push(filters.movie_id);
+        }
+        if (filters.actor_id) {
+            conditions.push('ma.actor_id = ?');
+            params.push(filters.actor_id);
+        }
+
         const query = `
             SELECT
                 ma.id,
@@ -21,9 +33,10 @@ export default class MovieActorModel {
             FROM movie_actors ma
             INNER JOIN movies m ON m.id = ma.movie_id AND m.status = 'approved'
             INNER JOIN actors a ON a.id = ma.actor_id
+            WHERE ${conditions.join(' AND ')}
             ORDER BY ma.id DESC
         `;
-        const [rows] = await this.#db.query(query);
+        const [rows] = await this.#db.execute(query, params);
         return rows;
     }
 

@@ -23,6 +23,12 @@ export default class UserModel {
         return rows[0] ?? null;
     }
 
+    async findCredentialsById(id) {
+        const query = 'SELECT id, role, password_hash FROM users WHERE id = ?';
+        const [rows] = await this.#db.execute(query, [id]);
+        return rows[0] ?? null;
+    }
+
     async findAuthStateById(id) {
         const query = 'SELECT id, username, email, role, token_version FROM users WHERE id = ?';
         const [rows] = await this.#db.execute(query, [id]);
@@ -66,6 +72,14 @@ export default class UserModel {
             data.password_hash ?? null,
             id
         ]);
+        return result.affectedRows > 0;
+    }
+
+    async updateRoleById(id, role) {
+        const [result] = await this.#db.execute(
+            'UPDATE users SET role = ? WHERE id = ?',
+            [role, id]
+        );
         return result.affectedRows > 0;
     }
 

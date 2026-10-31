@@ -1,4 +1,5 @@
 import { body, param } from 'express-validator';
+import { ROLES } from '../constants/role.constant.js';
 
 const accountFields = ['username', 'email', 'password'];
 
@@ -36,4 +37,21 @@ export const updateAccountValidator = updateFields;
 export const userIdParamValidator = [
     param('id')
         .isInt({ min: 1 }).withMessage('El ID del usuario debe ser un número entero positivo')
+];
+
+export const updateUserRoleValidator = [
+    ...userIdParamValidator,
+    body('role')
+        .isIn(ROLES.all).withMessage('El rol debe ser admin o user'),
+    body('admin_password')
+        .isString().withMessage('La contraseña de administrador es obligatoria')
+        .notEmpty().withMessage('La contraseña de administrador es obligatoria'),
+    body().custom((_, { req }) => {
+        const unsupported = Object.keys(req.body ?? {})
+            .find(field => !['role', 'admin_password'].includes(field));
+        if (unsupported) {
+            throw new Error(`El campo ${unsupported} no se puede actualizar en esta ruta`);
+        }
+        return true;
+    })
 ];

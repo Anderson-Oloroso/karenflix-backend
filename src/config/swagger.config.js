@@ -24,6 +24,7 @@ const swaggerSpec = {
         { name: 'Auth' },
         { name: 'Categories' },
         { name: 'Movies' },
+        { name: 'Directors' },
         { name: 'Reviews' },
         { name: 'Reactions' },
         { name: 'Actors' },

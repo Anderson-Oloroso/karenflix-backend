@@ -179,8 +179,7 @@
             "schema": {
               "type": "object",
               "required": [
-                "name",
-                "biography"
+                "name"
               ],
               "properties": {
                 "name": {
@@ -191,7 +190,8 @@
                 "biography": {
                   "type": "string",
                   "minLength": 10,
-                  "maxLength": 500
+                  "maxLength": 500,
+                  "nullable": true
                 },
                 "birth_date": {
                   "type": "string",
@@ -805,13 +805,15 @@
         "Movie Actors"
       ],
       "summary": "Listar relaciones entre películas y actores",
+      "description": "Los filtros movie_id y actor_id se pueden combinar; si se envían ambos, se devuelve la intersección.",
       "parameters": [
         {
           "in": "query",
           "name": "movie_id",
           "required": false,
           "schema": {
-            "type": "integer"
+            "type": "integer",
+            "minimum": 1
           }
         },
         {
@@ -819,7 +821,8 @@
           "name": "actor_id",
           "required": false,
           "schema": {
-            "type": "integer"
+            "type": "integer",
+            "minimum": 1
           }
         }
       ],
@@ -2054,6 +2057,44 @@
         "404": {
           "$ref": "#/components/responses/NotFound"
         }
+      }
+    }
+  },
+  "/users/{id}/role": {
+    "patch": {
+      "tags": ["Users"],
+      "summary": "Actualizar el rol de un usuario",
+      "description": "Requiere que el administrador confirme su contraseña actual. No permite cambiar el propio rol.",
+      "security": [{"BearerAuth": []}],
+      "parameters": [
+        {
+          "in": "path",
+          "name": "id",
+          "required": true,
+          "schema": {"type": "integer", "minimum": 1}
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": ["role", "admin_password"],
+              "properties": {
+                "role": {"type": "string", "enum": ["admin", "user"]},
+                "admin_password": {"type": "string", "format": "password", "minLength": 1}
+              }
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {"description": "Rol actualizado."},
+        "400": {"$ref": "#/components/responses/BadRequest"},
+        "401": {"$ref": "#/components/responses/Unauthorized"},
+        "403": {"$ref": "#/components/responses/Forbidden"},
+        "404": {"$ref": "#/components/responses/NotFound"}
       }
     }
   },

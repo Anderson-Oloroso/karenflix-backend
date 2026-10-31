@@ -257,7 +257,7 @@ ADD CONSTRAINT unique_movie_user_review UNIQUE (movie_id, user_id);
 
 ## Datos iniciales
 
-`02-seeds.sql` agrega tres usuarios, cuatro categorías, cuatro películas, tres actores, asociaciones de reparto, favoritos, reseñas y reacciones de ejemplo. Las inserciones relacionadas usan identificadores asignados por el orden de inserción; por tanto, el script asume una base de datos vacía recién creada con `01-schema.sql`.
+`02-seeds.sql` agrega tres usuarios, seis categorías, cinco directores, ocho películas, seis actores, siete asociaciones de reparto, seis favoritos, seis reseñas y doce reacciones. Cada tabla tiene una sentencia `INSERT` de una sola línea con IDs explícitos para mantener sus relaciones; el script asume una base de datos vacía recién creada con `01-schema.sql` y fuerza la conexión de seeds a `utf8mb4`.
 
 Las contraseñas de los usuarios semilla están almacenadas como hashes bcrypt con coste 10 y pueden usarse para iniciar sesión:
 

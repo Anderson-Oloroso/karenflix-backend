@@ -9,15 +9,7 @@ export default class MovieActorService {
     }
 
     async getAll(filters = {}) {
-        if (filters.movie_id) {
-            return this.getByMovieId(filters.movie_id);
-        }
-
-        if (filters.actor_id) {
-            return this.getByActorId(filters.actor_id);
-        }
-
-        const rows = await this.#movieActorModel.getAll();
+        const rows = await this.#movieActorModel.getAll(filters);
         return MovieActorDTO.fromArray(rows);
     }
 

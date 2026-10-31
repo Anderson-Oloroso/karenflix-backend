@@ -1,4 +1,5 @@
 import AppError from '../utils/appError.util.js';
+import DirectorDTO from '../dtos/director.dto.js';
 
 export default class DirectorService {
     #directorModel;
@@ -8,7 +9,8 @@ export default class DirectorService {
     }
 
     async getAll() {
-        return this.#directorModel.getAll();
+        const directors = await this.#directorModel.getAll();
+        return DirectorDTO.fromArray(directors);
     }
 
     async getById(id, includeMovies = false) {
@@ -20,7 +22,7 @@ export default class DirectorService {
         if (includeMovies) {
             director.movies = await this.#directorModel.getMoviesByDirector(id);
         }
-        return director;
+        return new DirectorDTO(director).data;
     }
 
     async create(data) {
