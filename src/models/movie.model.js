@@ -2,15 +2,25 @@ const MOVIE_SELECT = `SELECT
     m.id,
     m.title,
     m.description,
+    m.director_id,
+    d.name AS director_name,
+    m.category_id,
     c.name AS category_name,
     m.release_year,
+    m.duration_minutes,
+    m.age_rating,
     m.image_url,
+    m.banner_url,
+    m.trailer_url,
     m.status,
     m.average_rating,
+    m.likes_count,
     u.username,
+    m.created_by,
     m.created_at
 FROM movies m
 INNER JOIN categories c ON c.id = m.category_id
+INNER JOIN directors d ON d.id = m.director_id
 LEFT JOIN users u ON u.id = m.created_by`;
 
 export default class MovieModel {
@@ -23,21 +33,22 @@ export default class MovieModel {
     async createMovie(movie) {
         const [result] = await this.#db.execute(
             `INSERT INTO movies (
-                title,
-                description,
-                category_id,
-                release_year,
-                image_url,
-                status,
-                created_by
+                title, description, director_id, category_id, release_year,
+                duration_minutes, age_rating, image_url, banner_url, trailer_url,
+                status, created_by
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?)`,
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
             [
                 movie.title,
                 movie.description,
+                movie.director_id,
                 movie.category_id,
                 movie.release_year,
+                movie.duration_minutes,
+                movie.age_rating ?? 'PG-13',
                 movie.image_url,
+                movie.banner_url ?? null,
+                movie.trailer_url ?? null,
                 movie.status || 'pending',
                 movie.created_by
             ]
@@ -78,6 +89,14 @@ export default class MovieModel {
         return rows.length > 0;
     }
 
+    async directorExists(directorId) {
+        const [rows] = await this.#db.execute(
+            'SELECT id FROM directors WHERE id = ?',
+            [directorId]
+        );
+        return rows.length > 0;
+    }
+
     async existTitle(title, excludeId = null) {
         let query = 'SELECT id FROM movies WHERE title = ?';
         const params = [title];
@@ -90,25 +109,31 @@ export default class MovieModel {
     }
 
     async updateMovie(id, movie) {
+        const fields = {
+            title: 'title',
+            description: 'description',
+            director_id: 'director_id',
+            category_id: 'category_id',
+            release_year: 'release_year',
+            duration_minutes: 'duration_minutes',
+            age_rating: 'age_rating',
+            image_url: 'image_url',
+            banner_url: 'banner_url',
+            trailer_url: 'trailer_url',
+            status: 'status'
+        };
+        const updates = Object.entries(fields)
+            .filter(([field]) => Object.hasOwn(movie, field))
+            .map(([field, column]) => ({ column, value: movie[field] }));
+
+        if (updates.length === 0) {
+            return false;
+        }
+
+        const assignments = updates.map(({ column }) => `${column} = ?`).join(', ');
         const [result] = await this.#db.execute(
-            `UPDATE movies
-            SET
-                title = COALESCE(?, title),
-                description = COALESCE(?, description),
-                category_id = COALESCE(?, category_id),
-                release_year = COALESCE(?, release_year),
-                image_url = COALESCE(?, image_url),
-                status = COALESCE(?, status)
-            WHERE id = ?`,
-            [
-                movie.title ?? null,
-                movie.description ?? null,
-                movie.category_id ?? null,
-                movie.release_year ?? null,
-                movie.image_url ?? null,
-                movie.status ?? null,
-                id
-            ]
+            `UPDATE movies SET ${assignments} WHERE id = ?`,
+            [...updates.map(({ value }) => value), id]
         );
         return result;
     }
