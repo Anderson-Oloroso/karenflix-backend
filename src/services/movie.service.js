@@ -19,6 +19,10 @@ export default class MovieService {
             throw AppError.notFound(`La categoría con id ${movieData.category_id} no existe.`);
         }
 
+        if (!(await this.#movieModel.directorExists(movieData.director_id))) {
+            throw AppError.notFound(`El director con id ${movieData.director_id} no existe.`);
+        }
+
         try {
             return await this.#movieModel.createMovie(movieData);
         } catch (error) {
@@ -64,8 +68,14 @@ export default class MovieService {
             }
         }
 
-        if (movieData.category_id && !(await this.#movieModel.categoryExists(movieData.category_id))) {
+        if (Object.hasOwn(movieData, 'category_id')
+            && !(await this.#movieModel.categoryExists(movieData.category_id))) {
             throw AppError.notFound(`La categoría con id ${movieData.category_id} no existe.`);
+        }
+
+        if (Object.hasOwn(movieData, 'director_id')
+            && !(await this.#movieModel.directorExists(movieData.director_id))) {
+            throw AppError.notFound(`El director con id ${movieData.director_id} no existe.`);
         }
 
         try {
