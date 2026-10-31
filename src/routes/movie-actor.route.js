@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { pool } from '../config/db.config.js';
+import Database from '../config/db.config.js';
 import MovieActorModel from '../models/movie-actor.model.js';
 import MovieActorService from '../services/movie-actor.service.js';
 import MovieActorController from '../controllers/movie-actor.controller.js';
@@ -7,7 +7,7 @@ import AuthMiddleware from '../middlewares/auth.middleware.js';
 import { validationMiddleware } from '../middlewares/validation.middleware.js';
 import { movieActorIdParamValidator, createMovieActorValidator, updateMovieActorValidator, movieIdParamValidator, actorIdParamValidator } from '../validators/movie-actor.validator.js';
 
-const movieActorModel = new MovieActorModel(pool);
+const movieActorModel = new MovieActorModel(Database.getPool());
 const movieActorService = new MovieActorService(movieActorModel);
 const movieActorController = new MovieActorController(movieActorService);
 const authMiddleware = new AuthMiddleware();
