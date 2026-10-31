@@ -16,12 +16,11 @@ INSERT INTO categories (name, description) VALUES
 ('Drama', 'Historias profundas centradas en el desarrollo de personajes y conflictos emocionales.');
 
 -- 3. Inserción de Películas (created_by = 1 corresponde a admin_karen)
-INSERT INTO movies (title, description, category_id, release_year, image_url, status, created_by) VALUES
-('Inception', 'Un ladrón que roba secretos corporativos a través de los sueños.', 1, 2010, 'https://images.unsplash.com/photo-1534447677768-be436bb09401', 'approved', 1),
-('Interstellar', 'Un equipo de exploradores viaja a través de un agujero de gusano en busca de un nuevo hogar.', 1, 2014, 'https://images.unsplash.com/photo-1451187580459-43490279c0fa', 'approved', 1),
-('Spider-Man: Into the Spider-Verse', 'Miles Morales se convierte en el Hombre Araña de su universo y cruza caminos con otros.', 3, 2018, 'https://images.unsplash.com/photo-1635805737707-575885ab0820', 'approved', 1),
-('The Matrix', 'Un hacker descubre que la realidad cotidiana es una simulación creada por máquinas.', 1, 1999, 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5', 'pending', 1);
-
+INSERT INTO movies (title, description, director, release_year, duration_minutes, age_rating, category_id, image_url, banner_url, trailer_url, status, created_by) VALUES
+('Inception', 'Un ladrón que roba secretos corporativos a través de los sueños.', 'Christopher Nolan', 2010, 148, 'PG-13', 1, 'https://images.unsplash.com/photo-1534447677768-be436bb09401', 'https://images.unsplash.com/photo-banner-1.jpg', 'https://www.youtube.com/watch?v=YoHD9XEInc0', 'approved', 1),
+('Interstellar', 'Un equipo de exploradores viaja a través de un agujero de gusano en busca de un nuevo hogar.', 'Christopher Nolan', 2014, 169, 'PG-13', 1, 'https://images.unsplash.com/photo-1451187580459-43490279c0fa', 'https://images.unsplash.com/photo-banner-2.jpg', 'https://www.youtube.com/watch?v=zSWdZVtXT7E', 'approved', 1),
+('Spider-Man: Into the Spider-Verse', 'Miles Morales se convierte en el Hombre Araña de su universo.', 'Bob Persichetti', 2018, 117, 'PG', 3, 'https://images.unsplash.com/photo-1635805737707-575885ab0820', 'https://images.unsplash.com/photo-banner-3.jpg', 'https://www.youtube.com/watch?v=g4Hbz2jLxvQ', 'approved', 1),
+('The Matrix', 'Un hacker descubre que la realidad cotidiana es una simulación.', 'Lana Wachowski', 1999, 136, 'R', 1, 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5', 'https://images.unsplash.com/photo-banner-4.jpg', 'https://www.youtube.com/watch?v=vKQi3bBA1y8', 'pending', 1);
 -- 4. Inserción de Actores
 INSERT INTO actors (name, biography, birth_date, photo_url) VALUES
 ('Leonardo DiCaprio', 'Actor y productor de cine estadounidense, ganador del Óscar.', '1974-11-11', 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d'),
