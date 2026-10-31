@@ -15,7 +15,7 @@ El SQL es la fuente de verdad. Si este documento y el esquema difieren, prevalec
 
 ## Alcance
 
-El esquema cubre usuarios, categorías, películas, actores, la relación entre películas y actores, favoritos, reseñas y reacciones a reseñas. Se implementa en MySQL con InnoDB. Este documento describe las tablas y reglas definidas en `01-schema.sql`.
+El esquema cubre usuarios, categorías, directores, películas, actores, la relación entre películas y actores, favoritos, reseñas y reacciones a reseñas. Se implementa en MySQL con InnoDB. Este documento describe las tablas y reglas definidas en `01-schema.sql`.
 
 > **Advertencia:** `01-schema.sql` comienza con `DROP DATABASE IF EXISTS karenflix_db`. Ejecutarlo elimina la base de datos existente y todos sus datos antes de crearla nuevamente. No ejecutes ese script en un entorno con información que quieras conservar.
 
@@ -38,11 +38,26 @@ erDiagram
         atributo id PK
         atributo title UK
         atributo description
+        atributo director_id FK
         atributo category_id FK
         atributo release_year
+        atributo duration_minutes
+        atributo age_rating
         atributo image_url
+        atributo banner_url
+        atributo trailer_url
         atributo status
+        atributo average_rating
+        atributo likes_count
         atributo created_by FK
+        atributo created_at
+    }
+
+    DIRECTORS {
+        atributo id PK
+        atributo name UK
+        atributo biography
+        atributo photo_url
         atributo created_at
     }
 
@@ -95,6 +110,7 @@ erDiagram
     }
 
     USERS o|--o{ MOVIES : crea
+    DIRECTORS ||--o{ MOVIES : dirige
     CATEGORIES ||--o{ MOVIES : clasifica
     MOVIES ||--o{ MOVIE_ACTORS : incluye
     ACTORS ||--o{ MOVIE_ACTORS : participa
@@ -114,7 +130,8 @@ erDiagram
 | --- | --- |
 | `users` | `id` (PK), `username` (`VARCHAR(50)`, NOT NULL, UK), `email` (`VARCHAR(100)`, NOT NULL, UK), `password_hash` (`VARCHAR(255)`, NOT NULL), `role` (`ENUM('admin', 'user')`, predeterminado `'user'`), `created_at` (`TIMESTAMP`, predeterminado `CURRENT_TIMESTAMP`) |
 | `categories` | `id` (PK), `name` (`VARCHAR(50)`, NOT NULL, UK), `description` (`TEXT`, NOT NULL), `created_at` (`TIMESTAMP`, predeterminado `CURRENT_TIMESTAMP`) |
-| `movies` | `id` (PK), `title` (`VARCHAR(150)`, NOT NULL, UK), `description` (`TEXT`, NOT NULL), `category_id` (`INT`, NOT NULL, FK), `release_year` (`INT`, NOT NULL), `image_url` (`VARCHAR(255)`, nullable), `status` (`ENUM('pending', 'approved')`, predeterminado `'pending'`), `average_rating` (`DECIMAL(4,2)`, nullable, calculado por triggers), `created_by` (`INT`, nullable, FK con `ON DELETE SET NULL`), `created_at` (`TIMESTAMP`, predeterminado `CURRENT_TIMESTAMP`) |
+| `directors` | `id` (PK), `name` (`VARCHAR(100)`, NOT NULL, UK), `biography` (`TEXT`, nullable), `photo_url` (`VARCHAR(255)`, nullable), `created_at` (`TIMESTAMP`, predeterminado `CURRENT_TIMESTAMP`) |
+| `movies` | `id` (PK), `title` (`VARCHAR(150)`, NOT NULL, UK), `description` (`TEXT`, NOT NULL), `director_id` (`INT`, NOT NULL, FK con `ON DELETE RESTRICT`), `category_id` (`INT`, NOT NULL, FK con `ON DELETE RESTRICT`), `release_year` (`INT`, NOT NULL), `duration_minutes` (`INT`, NOT NULL), `age_rating` (`VARCHAR(10)`, predeterminado `'PG-13'`), `image_url` (`VARCHAR(255)`, NOT NULL), `banner_url` y `trailer_url` (`VARCHAR(255)`, nullable), `status` (`ENUM('pending', 'approved', 'rejected')`, predeterminado `'pending'`), `average_rating` (`DECIMAL(4,2)`, NOT NULL, predeterminado `0.00`, calculado por triggers), `likes_count` (`INT`, NOT NULL, predeterminado `0`, total de favoritos actualizado por triggers), `created_by` (`INT`, nullable, FK con `ON DELETE SET NULL`), `created_at` (`TIMESTAMP`, predeterminado `CURRENT_TIMESTAMP`) |
 | `actors` | `id` (PK), `name` (`VARCHAR(100)`, NOT NULL), `biography` (`TEXT`, nullable), `birth_date` (`DATE`, nullable), `photo_url` (`VARCHAR(255)`, nullable), `created_at` (`TIMESTAMP`, predeterminado `CURRENT_TIMESTAMP`) |
 | `movie_actors` | `id` (PK), `movie_id` (`INT`, NOT NULL, FK), `actor_id` (`INT`, NOT NULL, FK), `character_name` (`VARCHAR(100)`, nullable) |
 | `favorites` | `id` (PK), `user_id` (`INT`, NOT NULL, FK), `movie_id` (`INT`, NOT NULL, FK), `created_at` (`TIMESTAMP`, predeterminado `CURRENT_TIMESTAMP`), UNIQUE (`user_id`, `movie_id`) |
@@ -129,6 +146,7 @@ En la tabla, el lado “uno” indica que cada registro dependiente se relaciona
 | --- | --- | --- |
 | `users` crea `movies` | Un usuario a cero o muchas películas; una película puede tener cero o un usuario creador | `movies.created_by` es nullable. Si se elimina al usuario, la película se conserva y el campo queda en `NULL`. |
 | `categories` clasifica `movies` | Una categoría a cero o muchas películas | Cada película pertenece a una categoría. |
+| `directors` dirige `movies` | Un director a cero o muchas películas | Cada película tiene un director; no se puede eliminar un director asociado (`ON DELETE RESTRICT`). |
 | `movies` relaciona `movie_actors` | Una película a cero o muchos registros de reparto | Cada registro de reparto pertenece a una película. |
 | `actors` relaciona `movie_actors` | Un actor a cero o muchas películas | `movie_actors` permite asociar varios actores con una película y varias películas con un actor. |
 | `users` guarda `favorites` | Un usuario a cero o muchos favoritos | Cada favorito pertenece a un usuario y a una película. |
@@ -144,7 +162,9 @@ Las siguientes reglas están declaradas en `01-schema.sql`:
 
 - `users.username`, `users.email`, `categories.name` y `movies.title` son obligatorios y únicos.
 - `users.role` admite `'admin'` o `'user'` y tiene `'user'` como valor predeterminado. La columna no está declarada `NOT NULL`.
-- `movies.status` admite `'pending'` o `'approved'` y tiene `'pending'` como valor predeterminado. La columna no está declarada `NOT NULL`.
+- `movies.status` admite `'pending'`, `'approved'` o `'rejected'` y tiene `'pending'` como valor predeterminado. La columna no está declarada `NOT NULL`.
+- `movies.likes_count` refleja el total de filas de `favorites` de esa película y se mantiene con procedimientos y triggers.
+- `movies.average_rating` admite calificaciones de hasta `10.00`; el procedimiento devuelve `0.00` si todavía no hay reseñas.
 - `review_reactions.reaction_type` admite `'like'` o `'dislike'` y es obligatorio.
 - `reviews.rating` es obligatorio y tiene una restricción `CHECK` de 1 a 10, inclusive.
 - `reviews` impone unicidad compuesta en (`movie_id`, `user_id`): cada usuario puede publicar como máximo una reseña por película.
@@ -152,6 +172,7 @@ Las siguientes reglas están declaradas en `01-schema.sql`:
 - Al eliminar una reseña, sus reacciones se eliminan en cascada.
 - Al eliminar una película, se eliminan en cascada sus reseñas, favoritos y asociaciones con actores (`movie_actors`).
 - No se puede eliminar una categoría mientras tenga películas asociadas (`ON DELETE RESTRICT`).
+- No se puede eliminar un director mientras tenga películas asociadas (`ON DELETE RESTRICT`).
 - Al eliminar un actor, se eliminan en cascada sus asociaciones con películas; no se eliminan las películas.
 - `review_reactions` impone unicidad compuesta en (`review_id`, `user_id`): un usuario no puede registrar más de una reacción por reseña.
 - Las claves foráneas son obligatorias salvo `movies.created_by`, que admite `NULL` para conservar películas cuando se elimina a su creador.
@@ -170,6 +191,8 @@ Esta sección distingue las claves que crean índices para integridad de los ín
 | `users` | `email` | `UNIQUE`. |
 | `categories` | `id` | Clave primaria. |
 | `categories` | `name` | `UNIQUE`. |
+| `directors` | `id` | Clave primaria. |
+| `directors` | `name` | `UNIQUE`. |
 | `movies` | `id` | Clave primaria. |
 | `movies` | `title` | `UNIQUE`. |
 | `actors` | `id` | Clave primaria. |
@@ -186,6 +209,7 @@ Esta sección distingue las claves que crean índices para integridad de los ín
 | Nombre | Tabla | Columnas | Declaración y propósito |
 | --- | --- | --- | --- |
 | `idx_movies_category_status` | `movies` | (`category_id`, `status`) | Índice compuesto para consultas que filtran por categoría y estado; su prefijo también cubre `category_id` para la clave foránea. |
+| `idx_movies_release_year` | `movies` | (`release_year`) | Índice para búsquedas y filtros por año de lanzamiento. |
 
 Las restricciones `UNIQUE` de `movies.title` y `reviews(movie_id, user_id)` también crean índices que apoyan las búsquedas por esas columnas. Los índices internos que MySQL/InnoDB genere para claves foráneas no cubiertas por los índices existentes pueden depender de cómo se cree la tabla.
 
