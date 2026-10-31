@@ -1,8 +1,6 @@
-import { body, param } from 'express-validator';
+import { body } from 'express-validator';
+import { validationMiddleware } from '../middlewares/validation.middleware.js';
 import { ROLES } from '../constants/role.constant.js';
-import ValidationMiddleware from '../middlewares/validation.middleware.js';
-
-export const managerValidationErrors = ValidationMiddleware.validate;
 
 export const validationsRegister = [
     body('username')
@@ -24,7 +22,7 @@ export const validationsRegister = [
         .optional()
         .isIn([ROLES.USER]).withMessage('El rol de administrador no puede asignarse durante el registro'),
 
-    managerValidationErrors
+    validationMiddleware
 ];
 
 export const validationsLogin = [
@@ -48,12 +46,5 @@ export const validationsLogin = [
         return true;
     }),
 
-    managerValidationErrors
-];
-
-export const validationsUserId = [
-    param('id')
-        .isInt({ min: 1 }).withMessage('El ID de usuario debe ser un número entero válido'),
-
-    managerValidationErrors
+    validationMiddleware
 ];
