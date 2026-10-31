@@ -1,0 +1,50 @@
+import { body } from 'express-validator';
+import { validationMiddleware } from '../middlewares/validation.middleware.js';
+import { ROLES } from '../constants/role.constant.js';
+
+export const validationsRegister = [
+    body('username')
+        .trim()
+        .notEmpty().withMessage('El nombre de usuario es obligatorio')
+        .isLength({ min: 3, max: 50 }).withMessage('El username debe tener entre 3 y 50 caracteres'),
+
+    body('email')
+        .trim()
+        .notEmpty().withMessage('El correo es obligatorio')
+        .isEmail().withMessage('Debe ser un correo electrónico válido')
+        .normalizeEmail(),
+
+    body('password')
+        .notEmpty().withMessage('La contraseña es obligatoria')
+        .isLength({ min: 6 }).withMessage('La contraseña debe tener al menos 6 caracteres'),
+
+    body('role')
+        .optional()
+        .isIn([ROLES.USER]).withMessage('El rol de administrador no puede asignarse durante el registro'),
+
+    validationMiddleware
+];
+
+export const validationsLogin = [
+    body('email')
+        .optional()
+        .trim()
+        .isEmail().withMessage('Debe ser un correo válido'),
+
+    body('username')
+        .optional()
+        .trim()
+        .notEmpty().withMessage('El username no puede estar vacío'),
+
+    body('password')
+        .notEmpty().withMessage('La contraseña es obligatoria'),
+
+    body().custom((_, { req }) => {
+        if (Boolean(req.body.email) === Boolean(req.body.username)) {
+            throw new Error('Proporcione exactamente uno de los campos: email o username');
+        }
+        return true;
+    }),
+
+    validationMiddleware
+];

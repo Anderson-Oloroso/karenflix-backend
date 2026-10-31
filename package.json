@@ -1,0 +1,41 @@
+{
+  "name": "karenflix-backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-rate-limit": "^7.5.0",
+    "express-validator": "^7.2.1",
+    "jsonwebtoken": "^9.0.2",
+    "mysql2": "^3.24.6",
+    "semver": "^7.7.1",
+    "swagger-ui-express": "^5.0.1"
+  },
+  "scripts": {
+    "dev": "nodemon src/server.js --quiet",
+    "start": "node src/server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Anderson-Oloroso/karenflix-backend.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/Anderson-Oloroso/karenflix-backend/issues"
+  },
+  "homepage": "https://github.com/Anderson-Oloroso/karenflix-backend#readme",
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  },
+  "overrides": {
+    "@mapbox/node-pre-gyp": {
+      "tar": "^7.5.22"
+    }
+  }
+}
