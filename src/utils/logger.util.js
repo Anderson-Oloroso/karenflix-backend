@@ -4,6 +4,14 @@ export default class Logger {
     }
 
     static error(entry) {
-        console.error(`${entry.timestamp} ${entry.method} ${entry.user} ${entry.route} ${entry.statusCode} ${entry.responseTimeMs}ms`);
+        const request = [
+            entry.timestamp,
+            entry.method,
+            entry.user,
+            entry.route,
+            entry.statusCode,
+            entry.responseTimeMs === undefined ? null : `${entry.responseTimeMs}ms`
+        ].filter(value => value !== null).join(' ');
+        console.error([request, entry.message, entry.stack].filter(Boolean).join('\n'));
     }
 }
