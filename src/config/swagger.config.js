@@ -44,10 +44,23 @@ const swaggerSpec = {
                                 title: { type: 'string' },
                                 description: { type: 'string' },
                                 category: { type: 'string' },
+                                director: {
+                                    type: 'object',
+                                    nullable: true,
+                                    properties: {
+                                        id: { type: 'integer' },
+                                        name: { type: 'string' }
+                                    }
+                                },
                                 releaseYear: { type: 'integer' },
-                                imageUrl: { type: 'string', nullable: true },
-                                status: { type: 'string', enum: ['pending', 'approved'] },
-                                averageRating: { type: 'number', nullable: true },
+                                durationMinutes: { type: 'integer' },
+                                ageRating: { type: 'string' },
+                                imageUrl: { type: 'string' },
+                                bannerUrl: { type: 'string', nullable: true },
+                                trailerUrl: { type: 'string', nullable: true },
+                                status: { type: 'string', enum: ['pending', 'approved', 'rejected'] },
+                                averageRating: { type: 'number' },
+                                likesCount: { type: 'integer', minimum: 0 },
                                 createBy: { type: 'string', nullable: true },
                                 createAt: { type: 'string', format: 'date-time' }
                             }
