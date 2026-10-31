@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { pool } from '../config/db.config.js';
+import Database from '../config/db.config.js';
 import AuthMiddleware from '../middlewares/auth.middleware.js';
 import validationMiddleware from '../middlewares/validation.middleware.js';
 import UserModel from '../models/user.model.js';
@@ -7,7 +7,7 @@ import UserService from '../services/user.service.js';
 import UserController from '../controllers/user.controller.js';
 import { updateAccountValidator, userIdParamValidator } from '../validators/user.validator.js';
 
-const userModel = new UserModel(pool);
+const userModel = new UserModel(Database.getPool());
 const userService = new UserService(userModel);
 const userController = new UserController(userService);
 const authMiddleware = new AuthMiddleware();
