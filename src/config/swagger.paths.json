@@ -1013,13 +1013,20 @@
       ],
       "responses": {
         "200": {
-          "description": "Lista de películas."
+          "description": "Página del catálogo de películas aprobadas.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MoviePageResponse"
+              }
+            }
+          }
         },
         "400": {
           "$ref": "#/components/responses/BadRequest"
         }
       },
-      "description": "Solo devuelve películas aprobadas. Ordena el catálogo por calificación ponderada."
+      "description": "Solo devuelve películas aprobadas, ordenadas por fecha de creación."
     },
     "post": {
       "tags": [
@@ -1683,6 +1690,7 @@
         "Movies"
       ],
       "summary": "Listar películas pendientes de aprobación",
+      "description": "Disponible únicamente para usuarios con rol admin.",
       "security": [
         {
           "BearerAuth": []
@@ -1726,7 +1734,17 @@
       ],
       "responses": {
         "200": {
-          "description": "Lista de películas pendientes."
+          "description": "Página de películas pendientes de aprobación.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MoviePageResponse"
+              }
+            }
+          }
+        },
+        "400": {
+          "$ref": "#/components/responses/BadRequest"
         },
         "401": {
           "$ref": "#/components/responses/Unauthorized"
@@ -1847,6 +1865,9 @@
       "responses": {
         "200": {
           "description": "Reseña eliminada."
+        },
+        "400": {
+          "$ref": "#/components/responses/BadRequest"
         },
         "401": {
           "$ref": "#/components/responses/Unauthorized"
