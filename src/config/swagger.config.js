@@ -48,10 +48,19 @@ const swaggerSpec = {
                     message: { type: 'string', example: 'Error de validación' },
                     mensaje: { type: 'string', example: 'Solicitud inválida' },
                     errors: {
-                        type: 'array',
-                        items: { type: 'object' }
+                        oneOf: [
+                            { type: 'array', items: { type: 'object' } },
+                            { type: 'object' }
+                        ],
+                        nullable: true
                     },
-                    errores: { type: 'object', nullable: true },
+                    errores: {
+                        oneOf: [
+                            { type: 'array', items: { type: 'object' } },
+                            { type: 'object' }
+                        ],
+                        nullable: true
+                    },
                     metodo: { type: 'string' },
                     url: { type: 'string' }
                 }
