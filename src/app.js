@@ -1,4 +1,5 @@
 import express from 'express';
+import passport from './config/passport.config.js';
 import apiRoutes from './routes/index.js';
 import RateLimitMiddleware from './middlewares/rateLimit.middleware.js';
 import ErrorMiddleware from './middlewares/error.middleware.js';
@@ -29,6 +30,7 @@ export class App {
         this.#app.use(RateLimitMiddleware.globalLimiter);
         this.#app.use(express.json());
         this.#app.use(express.urlencoded({ extended: true }));
+        this.#app.use(passport.initialize());
     }
 
     #initRoutes() {

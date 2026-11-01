@@ -6,13 +6,13 @@ export default class UserModel {
     }
 
     async findByUsername(username) {
-        const query = 'SELECT id, username, email, password_hash, role, created_at FROM users WHERE username = ?';
+        const query = 'SELECT id, username, email, password_hash, role, token_version, created_at FROM users WHERE username = ?';
         const [rows] = await this.#db.execute(query, [username]);
         return rows[0] ?? null;
     }
 
     async findByEmail(email) {
-        const query = 'SELECT id, username, email, password_hash, role, created_at FROM users WHERE email = ?';
+        const query = 'SELECT id, username, email, password_hash, role, token_version, created_at FROM users WHERE email = ?';
         const [rows] = await this.#db.execute(query, [email]);
         return rows[0] ?? null;
     }
@@ -21,6 +21,24 @@ export default class UserModel {
         const query = 'SELECT id, username, email, role, created_at FROM users WHERE id = ?';
         const [rows] = await this.#db.execute(query, [id]);
         return rows[0] ?? null;
+    }
+
+    async findCredentialsById(id) {
+        const query = 'SELECT id, role, password_hash FROM users WHERE id = ?';
+        const [rows] = await this.#db.execute(query, [id]);
+        return rows[0] ?? null;
+    }
+
+    async findAuthStateById(id) {
+        const query = 'SELECT id, username, email, role, token_version FROM users WHERE id = ?';
+        const [rows] = await this.#db.execute(query, [id]);
+        return rows[0] ?? null;
+    }
+
+    async incrementTokenVersion(id) {
+        const query = 'UPDATE users SET token_version = token_version + 1 WHERE id = ?';
+        const [result] = await this.#db.execute(query, [id]);
+        return result.affectedRows > 0;
     }
 
     async getAll() {
@@ -54,6 +72,14 @@ export default class UserModel {
             data.password_hash ?? null,
             id
         ]);
+        return result.affectedRows > 0;
+    }
+
+    async updateRoleById(id, role) {
+        const [result] = await this.#db.execute(
+            'UPDATE users SET role = ? WHERE id = ?',
+            [role, id]
+        );
         return result.affectedRows > 0;
     }
 

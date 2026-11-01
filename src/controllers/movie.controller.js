@@ -39,6 +39,7 @@ export default class MovieController {
             const filters = {
                 category: req.query.category ? Number(req.query.category) : undefined,
                 title: req.query.title,
+                sort: req.query.sort || 'recent',
                 page: Number(req.query.page || 1),
                 limit: Number(req.query.limit || 20)
             };
@@ -63,6 +64,7 @@ export default class MovieController {
             const filters = {
                 category: req.query.category ? Number(req.query.category) : undefined,
                 title: req.query.title,
+                sort: req.query.sort || 'recent',
                 page: Number(req.query.page || 1),
                 limit: Number(req.query.limit || 20)
             };

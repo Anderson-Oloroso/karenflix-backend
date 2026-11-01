@@ -9,15 +9,7 @@ export default class MovieActorService {
     }
 
     async getAll(filters = {}) {
-        if (filters.movie_id) {
-            return this.getByMovieId(filters.movie_id);
-        }
-
-        if (filters.actor_id) {
-            return this.getByActorId(filters.actor_id);
-        }
-
-        const rows = await this.#movieActorModel.getAll();
+        const rows = await this.#movieActorModel.getAll(filters);
         return MovieActorDTO.fromArray(rows);
     }
 
@@ -68,11 +60,19 @@ export default class MovieActorService {
             throw AppError.conflict('El actor ya se encuentra asignado a esta película');
         }
 
-        const insertId = await this.#movieActorModel.create({
-            movie_id: movieId,
-            actor_id: actorId,
-            character_name: data.character_name ?? null
-        });
+        let insertId;
+        try {
+            insertId = await this.#movieActorModel.create({
+                movie_id: movieId,
+                actor_id: actorId,
+                character_name: data.character_name ?? null
+            });
+        } catch (error) {
+            if (error.code === 'ER_DUP_ENTRY') {
+                throw AppError.conflict('El actor ya se encuentra asignado a esta película');
+            }
+            throw error;
+        }
 
         const created = await this.#movieActorModel.getById(insertId, true);
         if (!created) {
@@ -112,7 +112,14 @@ export default class MovieActorService {
             }
         }
 
-        await this.#movieActorModel.update(id, data);
+        try {
+            await this.#movieActorModel.update(id, data);
+        } catch (error) {
+            if (error.code === 'ER_DUP_ENTRY') {
+                throw AppError.conflict('Ya existe otra asignación con esta película y actor');
+            }
+            throw error;
+        }
         const updated = await this.#movieActorModel.getById(id, true);
         return new MovieActorDTO(updated).data;
     }

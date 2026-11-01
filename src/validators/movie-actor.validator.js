@@ -1,4 +1,17 @@
-import { body, param } from 'express-validator';
+import { body, param, query } from 'express-validator';
+
+export const movieActorQueryValidator = [
+    query('movie_id')
+        .optional()
+        .isInt({ min: 1 })
+        .withMessage('El ID de la película debe ser un número entero positivo')
+        .toInt(),
+    query('actor_id')
+        .optional()
+        .isInt({ min: 1 })
+        .withMessage('El ID del actor debe ser un número entero positivo')
+        .toInt()
+];
 
 export const movieActorIdParamValidator = [
     param('id')

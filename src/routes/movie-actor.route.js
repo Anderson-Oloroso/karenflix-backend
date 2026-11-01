@@ -5,7 +5,14 @@ import MovieActorService from '../services/movie-actor.service.js';
 import MovieActorController from '../controllers/movie-actor.controller.js';
 import AuthMiddleware from '../middlewares/auth.middleware.js';
 import { validationMiddleware } from '../middlewares/validation.middleware.js';
-import { movieActorIdParamValidator, createMovieActorValidator, updateMovieActorValidator, movieIdParamValidator, actorIdParamValidator } from '../validators/movie-actor.validator.js';
+import {
+	movieActorIdParamValidator,
+	createMovieActorValidator,
+	updateMovieActorValidator,
+	movieIdParamValidator,
+	actorIdParamValidator,
+	movieActorQueryValidator
+} from '../validators/movie-actor.validator.js';
 
 const movieActorModel = new MovieActorModel(Database.getPool());
 const movieActorService = new MovieActorService(movieActorModel);
@@ -15,7 +22,7 @@ const authMiddleware = new AuthMiddleware();
 const movieActorRouter = Router();
 
 // Rutas públicas
-movieActorRouter.get('/', movieActorController.getAll);
+movieActorRouter.get('/', movieActorQueryValidator, validationMiddleware, movieActorController.getAll);
 
 movieActorRouter.get('/:id', movieActorIdParamValidator, validationMiddleware, movieActorController.getById);
 

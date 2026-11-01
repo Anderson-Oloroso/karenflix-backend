@@ -29,6 +29,123 @@
       }
     }
   },
+  "/directors": {
+    "get": {
+      "tags": ["Directors"],
+      "summary": "Listar directores",
+      "responses": {
+        "200": {
+          "description": "Lista de directores."
+        }
+      }
+    },
+    "post": {
+      "tags": ["Directors"],
+      "summary": "Crear director",
+      "security": [{"BearerAuth": []}],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": ["name"],
+              "properties": {
+                "name": {"type": "string", "minLength": 2, "maxLength": 100}
+              }
+            }
+          }
+        }
+      },
+      "responses": {
+        "201": {"description": "Director creado."},
+        "400": {"$ref": "#/components/responses/BadRequest"},
+        "401": {"$ref": "#/components/responses/Unauthorized"},
+        "403": {"$ref": "#/components/responses/Forbidden"},
+        "409": {"$ref": "#/components/responses/Conflict"}
+      }
+    }
+  },
+  "/directors/{id}": {
+    "get": {
+      "tags": ["Directors"],
+      "summary": "Obtener director por ID",
+      "parameters": [
+        {
+          "in": "path",
+          "name": "id",
+          "required": true,
+          "schema": {"type": "integer", "minimum": 1}
+        },
+        {
+          "in": "query",
+          "name": "includeMovies",
+          "required": false,
+          "schema": {"type": "boolean"}
+        }
+      ],
+      "responses": {
+        "200": {"description": "Director encontrado."},
+        "400": {"$ref": "#/components/responses/BadRequest"},
+        "404": {"$ref": "#/components/responses/NotFound"}
+      }
+    },
+    "put": {
+      "tags": ["Directors"],
+      "summary": "Actualizar director",
+      "security": [{"BearerAuth": []}],
+      "parameters": [
+        {
+          "in": "path",
+          "name": "id",
+          "required": true,
+          "schema": {"type": "integer", "minimum": 1}
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "minProperties": 1,
+              "properties": {
+                "name": {"type": "string", "minLength": 2, "maxLength": 100}
+              }
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {"description": "Director actualizado."},
+        "400": {"$ref": "#/components/responses/BadRequest"},
+        "401": {"$ref": "#/components/responses/Unauthorized"},
+        "403": {"$ref": "#/components/responses/Forbidden"},
+        "404": {"$ref": "#/components/responses/NotFound"},
+        "409": {"$ref": "#/components/responses/Conflict"}
+      }
+    },
+    "delete": {
+      "tags": ["Directors"],
+      "summary": "Eliminar director sin películas asociadas",
+      "security": [{"BearerAuth": []}],
+      "parameters": [
+        {
+          "in": "path",
+          "name": "id",
+          "required": true,
+          "schema": {"type": "integer", "minimum": 1}
+        }
+      ],
+      "responses": {
+        "200": {"description": "Director eliminado."},
+        "401": {"$ref": "#/components/responses/Unauthorized"},
+        "403": {"$ref": "#/components/responses/Forbidden"},
+        "404": {"$ref": "#/components/responses/NotFound"},
+        "409": {"$ref": "#/components/responses/Conflict"}
+      }
+    }
+  },
   "/actors": {
     "get": {
       "tags": [
@@ -58,8 +175,7 @@
             "schema": {
               "type": "object",
               "required": [
-                "name",
-                "biography"
+                "name"
               ],
               "properties": {
                 "name": {
@@ -70,7 +186,8 @@
                 "biography": {
                   "type": "string",
                   "minLength": 10,
-                  "maxLength": 500
+                  "maxLength": 500,
+                  "nullable": true
                 },
                 "birth_date": {
                   "type": "string",
@@ -684,13 +801,15 @@
         "Movie Actors"
       ],
       "summary": "Listar relaciones entre películas y actores",
+      "description": "Los filtros movie_id y actor_id se pueden combinar; si se envían ambos, se devuelve la intersección.",
       "parameters": [
         {
           "in": "query",
           "name": "movie_id",
           "required": false,
           "schema": {
-            "type": "integer"
+            "type": "integer",
+            "minimum": 1
           }
         },
         {
@@ -698,7 +817,8 @@
           "name": "actor_id",
           "required": false,
           "schema": {
-            "type": "integer"
+            "type": "integer",
+            "minimum": 1
           }
         }
       ],
@@ -1009,6 +1129,17 @@
             "maximum": 100,
             "default": 20
           }
+        },
+        {
+          "in": "query",
+          "name": "sort",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "enum": ["recent", "popular", "ranking"],
+            "default": "recent"
+          },
+          "description": "Ordena por fecha, popularidad (favoritos) o ranking ponderado."
         }
       ],
       "responses": {
@@ -1026,7 +1157,7 @@
           "$ref": "#/components/responses/BadRequest"
         }
       },
-      "description": "Solo devuelve películas aprobadas, ordenadas por fecha de creación."
+      "description": "Solo devuelve películas aprobadas. El ranking pondera 70% calificación con decaimiento temporal (vida media de 180 días), 20% proporción de likes y 10% actualidad de la reseña más reciente."
     },
     "post": {
       "tags": [
@@ -1048,8 +1179,10 @@
               "required": [
                 "title",
                 "description",
+                "director_id",
                 "category_id",
-                "release_year"
+                "release_year",
+                "duration_minutes"
               ],
               "properties": {
                 "title": {
@@ -1065,14 +1198,41 @@
                   "type": "integer",
                   "minimum": 1
                 },
+                "director_id": {
+                  "type": "integer",
+                  "minimum": 1
+                },
                 "release_year": {
                   "type": "integer",
-                  "minimum": 1900
+                  "minimum": 1888
+                },
+                "duration_minutes": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 1000
+                },
+                "age_rating": {
+                  "type": "string",
+                  "maxLength": 10,
+                  "default": "PG-13"
                 },
                 "image_url": {
                   "type": "string",
                   "format": "uri",
-                  "nullable": true
+                  "nullable": true,
+                  "maxLength": 255
+                },
+                "banner_url": {
+                  "type": "string",
+                  "format": "uri",
+                  "nullable": true,
+                  "maxLength": 255
+                },
+                "trailer_url": {
+                  "type": "string",
+                  "format": "uri",
+                  "nullable": true,
+                  "maxLength": 255
                 }
               }
             }
@@ -1166,20 +1326,47 @@
                   "type": "integer",
                   "minimum": 1
                 },
+                "director_id": {
+                  "type": "integer",
+                  "minimum": 1
+                },
                 "release_year": {
                   "type": "integer",
-                  "minimum": 1900
+                  "minimum": 1888
+                },
+                "duration_minutes": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 1000
+                },
+                "age_rating": {
+                  "type": "string",
+                  "maxLength": 10
                 },
                 "image_url": {
                   "type": "string",
                   "format": "uri",
-                  "nullable": true
+                  "nullable": true,
+                  "maxLength": 255
+                },
+                "banner_url": {
+                  "type": "string",
+                  "format": "uri",
+                  "nullable": true,
+                  "maxLength": 255
+                },
+                "trailer_url": {
+                  "type": "string",
+                  "format": "uri",
+                  "nullable": true,
+                  "maxLength": 255
                 },
                 "status": {
                   "type": "string",
                   "enum": [
                     "pending",
-                    "approved"
+                    "approved",
+                    "rejected"
                   ]
                 }
               }
@@ -1368,7 +1555,14 @@
       ],
       "responses": {
         "200": {
-          "description": "Lista de reseñas de la película."
+          "description": "Lista de reseñas de la película.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewListResponse"
+              }
+            }
+          }
         },
         "400": {
           "$ref": "#/components/responses/BadRequest"
@@ -1448,6 +1642,131 @@
         },
         "409": {
           "$ref": "#/components/responses/Conflict"
+        }
+      }
+    }
+  },
+  "/movies/{id}/reviews/{reviewId}": {
+    "put": {
+      "tags": [
+        "Reviews"
+      ],
+      "summary": "Actualizar una reseña propia",
+      "description": "Solo el autor de la reseña puede actualizarla.",
+      "security": [
+        {
+          "BearerAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "in": "path",
+          "name": "id",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        {
+          "in": "path",
+          "name": "reviewId",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "minProperties": 1,
+              "properties": {
+                "rating": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 10
+                },
+                "title": {
+                  "type": "string",
+                  "minLength": 3,
+                  "maxLength": 100
+                },
+                "comment": {
+                  "type": "string",
+                  "minLength": 10,
+                  "maxLength": 1000
+                }
+              }
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Reseña actualizada."
+        },
+        "400": {
+          "$ref": "#/components/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/components/responses/Forbidden"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    },
+    "delete": {
+      "tags": [
+        "Reviews"
+      ],
+      "summary": "Eliminar una reseña propia",
+      "description": "Solo el autor de la reseña puede eliminarla.",
+      "security": [
+        {
+          "BearerAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "in": "path",
+          "name": "id",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        {
+          "in": "path",
+          "name": "reviewId",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Reseña eliminada."
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/components/responses/Forbidden"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
         }
       }
     }
@@ -1878,6 +2197,44 @@
         "404": {
           "$ref": "#/components/responses/NotFound"
         }
+      }
+    }
+  },
+  "/users/{id}/role": {
+    "patch": {
+      "tags": ["Users"],
+      "summary": "Actualizar el rol de un usuario",
+      "description": "Requiere que el administrador confirme su contraseña actual. No permite cambiar el propio rol.",
+      "security": [{"BearerAuth": []}],
+      "parameters": [
+        {
+          "in": "path",
+          "name": "id",
+          "required": true,
+          "schema": {"type": "integer", "minimum": 1}
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": ["role", "admin_password"],
+              "properties": {
+                "role": {"type": "string", "enum": ["admin", "user"]},
+                "admin_password": {"type": "string", "format": "password", "minLength": 1}
+              }
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {"description": "Rol actualizado."},
+        "400": {"$ref": "#/components/responses/BadRequest"},
+        "401": {"$ref": "#/components/responses/Unauthorized"},
+        "403": {"$ref": "#/components/responses/Forbidden"},
+        "404": {"$ref": "#/components/responses/NotFound"}
       }
     }
   },
