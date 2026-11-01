@@ -15,9 +15,14 @@ http:
       {
         "title": "Película de ejemplo",
         "description": "Descripción de ejemplo con al menos diez caracteres.",
+        "director_id": 1,
         "category_id": 1,
         "release_year": 2024,
-        "image_url": "https://example.com/movie.jpg"
+        "duration_minutes": 120,
+        "age_rating": "PG-13",
+        "image_url": "https://example.com/movie.jpg",
+        "banner_url": "https://example.com/movie-banner.jpg",
+        "trailer_url": "https://www.youtube.com/watch?v=example"
       }
   auth: inherit
 

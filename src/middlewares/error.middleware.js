@@ -20,10 +20,15 @@ export default class ErrorMiddleware {
             });
         }
 
+        const message = statusCode >= 500 ? 'Error interno del servidor' : err.message;
+        const errors = statusCode >= 500 ? null : err.details || null;
+
         res.status(statusCode).json({
             status,
-            mensaje: statusCode >= 500 ? 'Error interno del servidor' : err.message,
-            errores: statusCode >= 500 ? null : err.details || null
+            message,
+            errors,
+            mensaje: message,
+            errores: errors
         });
     }
 

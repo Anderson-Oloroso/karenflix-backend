@@ -14,10 +14,19 @@ export default class ReviewModel {
                 r.title,
                 r.comment,
                 r.rating,
-                r.likes_count,
+                COALESCE(reaction_counts.likes, 0) AS likes_count,
+                COALESCE(reaction_counts.dislikes, 0) AS dislikes_count,
                 r.created_at
             FROM reviews r
             INNER JOIN users u ON u.id = r.user_id
+            LEFT JOIN (
+                SELECT
+                    review_id,
+                    SUM(reaction_type = 'like') AS likes,
+                    SUM(reaction_type = 'dislike') AS dislikes
+                FROM review_reactions
+                GROUP BY review_id
+            ) reaction_counts ON reaction_counts.review_id = r.id
             WHERE r.movie_id = ?
             ORDER BY r.created_at DESC`,
             [movieId]

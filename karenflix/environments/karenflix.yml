@@ -6,6 +6,9 @@ variables:
   - name: movieId
     value: "1"
     description: ID existente de una película para requests que lo requieran
+  - name: directorId
+    value: "1"
+    description: ID existente de un director
   - name: categoryId
     value: "1"
     description: ID existente de una categoría

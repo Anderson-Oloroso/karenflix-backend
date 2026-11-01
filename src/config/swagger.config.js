@@ -1,7 +1,9 @@
 import { readFileSync } from 'node:fs';
 import swaggerUi from 'swagger-ui-express';
+import 'dotenv/config';
 import { API_PREFIX, API_VERSION } from './api.config.js';
 
+const PORT = process.env.PORT || 4000;
 const paths = JSON.parse(readFileSync(new URL('./swagger.paths.json', import.meta.url), 'utf8'));
 
 const swaggerSpec = {
@@ -9,12 +11,26 @@ const swaggerSpec = {
     info: {
         title: 'KarenFlix API',
         version: API_VERSION,
-        description: 'API REST de KarenFlix'
+        description: 'Documentación interactiva de la API REST de KarenFlix.'
     },
     servers: [
         {
-            url: API_PREFIX
+            url: `http://localhost:${PORT}${API_PREFIX}`,
+            description: 'Servidor local'
         }
+    ],
+    tags: [
+        { name: 'Health' },
+        { name: 'Auth' },
+        { name: 'Categories' },
+        { name: 'Movies' },
+        { name: 'Directors' },
+        { name: 'Reviews' },
+        { name: 'Reactions' },
+        { name: 'Actors' },
+        { name: 'Favorites' },
+        { name: 'Movie Actors' },
+        { name: 'Users' }
     ],
     components: {
         securitySchemes: {
@@ -25,6 +41,30 @@ const swaggerSpec = {
             }
         },
         schemas: {
+            ErrorResponse: {
+                type: 'object',
+                properties: {
+                    status: { type: 'string', example: 'Fail' },
+                    message: { type: 'string', example: 'Error de validación' },
+                    mensaje: { type: 'string', example: 'Solicitud inválida' },
+                    errors: {
+                        oneOf: [
+                            { type: 'array', items: { type: 'object' } },
+                            { type: 'object' }
+                        ],
+                        nullable: true
+                    },
+                    errores: {
+                        oneOf: [
+                            { type: 'array', items: { type: 'object' } },
+                            { type: 'object' }
+                        ],
+                        nullable: true
+                    },
+                    metodo: { type: 'string' },
+                    url: { type: 'string' }
+                }
+            },
             MoviePageResponse: {
                 type: 'object',
                 required: ['status', 'total', 'page', 'limit', 'totalPages', 'data'],
@@ -44,31 +84,111 @@ const swaggerSpec = {
                                 title: { type: 'string' },
                                 description: { type: 'string' },
                                 category: { type: 'string' },
+                                director: {
+                                    type: 'object',
+                                    nullable: true,
+                                    properties: {
+                                        id: { type: 'integer' },
+                                        name: { type: 'string' }
+                                    }
+                                },
                                 releaseYear: { type: 'integer' },
+                                durationMinutes: { type: 'integer' },
+                                ageRating: { type: 'string' },
                                 imageUrl: { type: 'string', nullable: true },
-                                status: { type: 'string', enum: ['pending', 'approved'] },
-                                averageRating: { type: 'number', nullable: true },
+                                bannerUrl: { type: 'string', nullable: true },
+                                trailerUrl: { type: 'string', nullable: true },
+                                status: { type: 'string', enum: ['pending', 'approved', 'rejected'] },
+                                averageRating: { type: 'number' },
+                                rankingScore: { type: 'number', nullable: true },
+                                likesCount: { type: 'integer', minimum: 0 },
                                 createBy: { type: 'string', nullable: true },
                                 createAt: { type: 'string', format: 'date-time' }
                             }
                         }
                     }
                 }
+            },
+            Review: {
+                type: 'object',
+                required: ['id', 'movieId', 'user', 'title', 'comment', 'rating'],
+                properties: {
+                    id: { type: 'integer' },
+                    movieId: { type: 'integer' },
+                    user: { type: 'string' },
+                    title: { type: 'string' },
+                    comment: { type: 'string' },
+                    rating: { type: 'integer', minimum: 1, maximum: 10 },
+                    likesCount: { type: 'integer', minimum: 0 },
+                    dislikesCount: { type: 'integer', minimum: 0 },
+                    createdAt: { type: 'string', format: 'date-time' }
+                }
+            },
+            ReviewListResponse: {
+                type: 'object',
+                required: ['status', 'total', 'data'],
+                properties: {
+                    status: { type: 'string', example: 'success' },
+                    total: { type: 'integer', minimum: 0 },
+                    data: {
+                        type: 'array',
+                        items: { $ref: '#/components/schemas/Review' }
+                    }
+                }
             }
         },
         responses: {
-            BadRequest: { description: 'Solicitud inválida.' },
-            Unauthorized: { description: 'Autenticación requerida o inválida.' },
-            Forbidden: { description: 'Permisos insuficientes.' },
-            NotFound: { description: 'Recurso no encontrado.' },
-            Conflict: { description: 'El recurso ya existe.' },
-            InternalServerError: { description: 'Error interno del servidor.' }
+            BadRequest: {
+                description: 'La solicitud contiene datos inválidos.',
+                content: {
+                    'application/json': {
+                        schema: { $ref: '#/components/schemas/ErrorResponse' }
+                    }
+                }
+            },
+            Unauthorized: {
+                description: 'Se requiere autenticación JWT válida.',
+                content: {
+                    'application/json': {
+                        schema: { $ref: '#/components/schemas/ErrorResponse' }
+                    }
+                }
+            },
+            Forbidden: {
+                description: 'El usuario autenticado no tiene permisos suficientes.',
+                content: {
+                    'application/json': {
+                        schema: { $ref: '#/components/schemas/ErrorResponse' }
+                    }
+                }
+            },
+            NotFound: {
+                description: 'No se encontró el recurso solicitado.',
+                content: {
+                    'application/json': {
+                        schema: { $ref: '#/components/schemas/ErrorResponse' }
+                    }
+                }
+            },
+            Conflict: {
+                description: 'La operación entra en conflicto con un recurso existente.',
+                content: {
+                    'application/json': {
+                        schema: { $ref: '#/components/schemas/ErrorResponse' }
+                    }
+                }
+            },
+            InternalServerError: {
+                description: 'Se produjo un error interno del servidor.'
+            }
         }
     },
     paths
 };
 
-export const swaggerDocs = (app) => {
+export function swaggerDocs(app) {
     app.get('/api-docs.json', (req, res) => res.json(swaggerSpec));
     app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-};
+}
+
+export default swaggerSpec;

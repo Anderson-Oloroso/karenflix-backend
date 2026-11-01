@@ -8,8 +8,8 @@ export const createActorValidator = [
         .notEmpty().withMessage('El nombre del actor es obligatorio')
         .isLength({ min: 2, max: 100 }).withMessage('El nombre debe tener entre 2 y 100 caracteres'),
     body('biography')
-        .trim()
-        .notEmpty().withMessage('La biografía es obligatoria')
+        .optional({ nullable: true })
+        .isString().withMessage('La biografía debe ser texto')
         .isLength({ min: 10, max: 500 }).withMessage('La biografía debe tener entre 10 y 500 caracteres'),
     body('birth_date')
         .optional({ nullable: true })

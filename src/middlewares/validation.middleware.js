@@ -6,7 +6,13 @@ export default class ValidationMiddleware {
         const errors = validationResult(req);
 
         if (!errors.isEmpty()) {
-            return next(AppError.badRequest('Error de validación.', errors.array()));
+            const details = errors.array().map(({ type, msg, path, location }) => ({
+                type,
+                msg,
+                path,
+                location
+            }));
+            return next(AppError.badRequest('Error de validación.', details));
         }
         return next();
     }

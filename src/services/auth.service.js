@@ -68,10 +68,17 @@ export default class AuthService {
             role: userRecord.role
         };
 
-        const token = jwt.sign(user, process.env.JWT_SECRET, {
+        const token = jwt.sign({
+            ...user,
+            tokenVersion: Number(userRecord.token_version)
+        }, process.env.JWT_SECRET, {
             expiresIn: process.env.JWT_EXPIRES_IN || process.env.JWT_EXPIRATION || '24h'
         });
 
         return { user, token };
+    }
+
+    async logout(userId) {
+        await this.#userModel.incrementTokenVersion(userId);
     }
 }
