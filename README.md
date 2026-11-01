@@ -63,9 +63,11 @@ El frontend es un repositorio independiente: [karenflix-frontend](https://github
 | `DB_PASSWORD` | Contraseña MySQL de la aplicación | Requerida |
 | `DB_NAME` | Base de datos | Requerida |
 | `DB_CONNECTION_LIMIT` | Conexiones del pool | `10` |
+| `DB_SSL` | Habilita TLS para MySQL administrado | `false`; usa `true` para Aiven |
+| `DB_SSL_CA` | Certificado CA PEM para validar MySQL TLS | Opcional; configurar con el CA de Aiven |
 | `JWT_SECRET` | Secreto para firmar/verificar JWT | Requerida; usa un secreto largo y aleatorio |
 | `JWT_EXPIRES_IN` | Vigencia del token | `24h` |
-| `CORS_ORIGIN` | Orígenes permitidos, separados por comas | Puertos locales `5500`, `5173` y `3000` |
+| `CORS_ORIGIN` | Orígenes permitidos, separados por comas | GitHub Pages del frontend y puertos locales `5500`, `5173` y `3000` |
 | `RATE_LIMIT_WINDOW_MS` | Ventana del límite global en milisegundos | `900000` |
 | `RATE_LIMIT_MAX_REQUESTS` | Solicitudes por ventana y cliente | `100` |
 
@@ -171,7 +173,8 @@ Las operaciones críticas de reseñas y reacciones se ejecutan dentro de transac
 - Consultas parametrizadas para los valores recibidos por la API.
 - Autorización por roles y verificación de propiedad de reseñas en el backend.
 - Contraseñas almacenadas como hashes bcrypt; JWT y secretos configurados mediante variables de entorno.
-- Configura `CORS_ORIGIN` con los dominios reales al desplegar.
+- Configura `CORS_ORIGIN` con los dominios reales al desplegar. El frontend GitHub Pages usa el origen `https://ixenbrandonestiben-lang.github.io` (sin la ruta del repositorio).
+- Para Aiven, configura `DB_SSL=true` y pega el certificado CA del servicio en `DB_SSL_CA`.
 - Ajusta las credenciales de seeds, la clave JWT y los permisos de MySQL antes de exponer un entorno.
 
 ## Entrega académica
