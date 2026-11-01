@@ -2,7 +2,7 @@
 
 ¡Bienvenida y bienvenido! Esta guía explica qué hace el backend de KarenFlix, cómo ponerlo en marcha y cómo probar sus funciones, incluso si es tu primer contacto con un proyecto de software.
 
-## 🍽️ Primero, una analogía: KarenFlix es un restaurante
+## Primero, una analogía: KarenFlix es un restaurante
 
 Imagina que KarenFlix es un restaurante de películas:
 
@@ -21,13 +21,13 @@ Imagina que KarenFlix es un restaurante de películas:
 
 En palabras sencillas, el backend recibe solicitudes, aplica las reglas de KarenFlix, consulta o modifica la despensa y devuelve una respuesta.
 
-## 🎬 ¿Qué es KarenFlix?
+## ¿Qué es KarenFlix?
 
 KarenFlix es una API para una plataforma de películas y recomendaciones. Permite consultar un catálogo, organizar películas por categoría y director, registrar usuarios y administrar funciones como favoritos, reseñas y reacciones.
 
 Una **API** es una forma ordenada para que dos programas se comuniquen. Este backend ofrece una API web que puede usar el frontend, Insomnia u otra aplicación autorizada.
 
-## 🧰 Tecnologías
+## Tecnologías
 
 - **Node.js:** el motor que ejecuta el backend.
 - **Express:** organiza las rutas y recibe las solicitudes web.
@@ -35,7 +35,7 @@ Una **API** es una forma ordenada para que dos programas se comuniquen. Este bac
 - **JSON Web Token (JWT):** una credencial temporal que permite reconocer a una persona en las operaciones protegidas.
 - **Docker Compose (opcional):** inicia el backend y MySQL juntos, como dos servicios coordinados.
 
-## 🔄 El camino de un registro o inicio de sesión
+## El camino de un registro o inicio de sesión
 
 1. La persona completa el formulario en el frontend o prepara una solicitud en Insomnia.
 2. El frontend envía a la API los datos como una nota JSON. El backend recibe, por ejemplo, el correo y la contraseña.
@@ -47,7 +47,7 @@ Una **API** es una forma ordenada para que dos programas se comuniquen. Este bac
 
 La creación de una cuenta asigna el rol normal `user`. El registro público no permite convertirse en administrador.
 
-## ✅ Antes de empezar
+## Antes de empezar
 
 Hay dos formas de ejecutar KarenFlix:
 
@@ -63,7 +63,7 @@ En ambos casos necesitarás:
 - **Insomnia**, para probar la API sin tener que crear una pantalla frontend.
 - **Docker Desktop**, solo si eliges la forma recomendada con Docker Compose.
 
-## 🚀 Instalación y ejecución con Docker Compose
+## Instalación y ejecución con Docker Compose
 
 Esta opción configura una base de datos MySQL y el backend como servicios coordinados.
 
@@ -137,7 +137,7 @@ http://localhost:4000/api-docs
 
 Esta página muestra la documentación interactiva de la API. También puedes probar las solicitudes con Insomnia siguiendo el catálogo de esta guía.
 
-## 🖥️ Instalación local con MySQL Workbench (sin Docker)
+## Instalación local con MySQL Workbench (sin Docker)
 
 Usa estas instrucciones si ya tienes MySQL Server instalado y prefieres iniciarlo desde tu computadora.
 
@@ -169,7 +169,7 @@ Usa estas instrucciones si ya tienes MySQL Server instalado y prefieres iniciarl
 
 Si prefieres usar un MySQL de Docker desde una instalación local del backend, el host y puerto son distintos: normalmente `DB_HOST=localhost` y `DB_PORT=3307`. Para una instalación local, usa el puerto de tu propio servicio MySQL.
 
-## 🗂️ ¿Qué contiene cada carpeta?
+## ¿Qué contiene cada carpeta?
 
 El trabajo del backend vive principalmente dentro de `src/`:
 
@@ -191,7 +191,13 @@ El trabajo del backend vive principalmente dentro de `src/`:
 | `src/server.js` | Conecta a la base de datos y enciende el servidor web. |
 | `.env.example` | Muestra los nombres de las opciones de configuración; `.env` guarda los valores de tu equipo. |
 
-## 🧪 Probar solicitudes con Insomnia
+## Diagrama de la base de datos
+
+El siguiente diagrama muestra las tablas principales y sus relaciones. Consulta también la [documentación del modelo de datos](./database/README.md).
+
+![Diagrama de la base de datos KarenFlix](./database/diagrams/wkb_karenflix.png)
+
+## Probar solicitudes con Insomnia
 
 En Insomnia, crea una solicitud nueva, elige el método y pega la URL. Para solicitudes que envían JSON, abre **Body > JSON** y pega el ejemplo. Los ejemplos usan el puerto predeterminado:
 
@@ -207,7 +213,7 @@ Todas las rutas de la API empiezan con `/api/v1`. Para las operaciones protegida
 |---|---|---|---|---|
 | Comprobar que la API responde | `GET` | `http://localhost:4000/api/v1` | No | No aplica |
 
-### 🔐 Autenticación y cuenta
+### Autenticación y cuenta
 
 | Acción | Método | URL | Token / permiso | Cuerpo JSON |
 |---|---|---|---|---|
@@ -258,7 +264,7 @@ La respuesta correcta incluye un campo `jwt`. Copia su valor para las próximas 
 }
 ```
 
-### 🏷️ Categorías
+### Categorías
 
 | Acción | Método | URL | Token / permiso | Cuerpo JSON |
 |---|---|---|---|---|
@@ -277,7 +283,7 @@ La respuesta correcta incluye un campo `jwt`. Copia su valor para las próximas 
 
 Para actualizar, puedes enviar solo el campo que cambia.
 
-### 🎥 Directores
+### Directores
 
 | Acción | Método | URL | Token / permiso | Cuerpo JSON |
 |---|---|---|---|---|
@@ -297,7 +303,7 @@ Para actualizar, puedes enviar solo el campo que cambia.
 
 `biography` y `photo_url` son opcionales. Para actualizar, envía al menos un campo.
 
-### 🎭 Actores
+### Actores
 
 | Acción | Método | URL | Token / permiso | Cuerpo JSON |
 |---|---|---|---|---|
@@ -318,7 +324,7 @@ Para actualizar, puedes enviar solo el campo que cambia.
 
 `birth_date` debe usar el formato `AAAA-MM-DD` y no puede ser una fecha futura. `birth_date` y `photo_url` son opcionales. Para actualizar, envía al menos un campo.
 
-### 🍿 Películas
+### Películas
 
 | Acción | Método | URL | Token / permiso | Cuerpo JSON |
 |---|---|---|---|---|
@@ -363,7 +369,7 @@ Usa IDs que ya existan en tu base de datos. El estado inicial es `pending`; el r
 
 Los estados permitidos para la actualización son `pending`, `approved` y `rejected`.
 
-### ⭐ Favoritos
+### Favoritos
 
 | Acción | Método | URL | Token / permiso | Cuerpo JSON |
 |---|---|---|---|---|
@@ -379,7 +385,7 @@ Los estados permitidos para la actualización son `pending`, `approved` y `rejec
 
 En la ruta DELETE, `:id` es el identificador del favorito, no el identificador de la película.
 
-### 📝 Reseñas e interacciones
+### Reseñas e interacciones
 
 | Acción | Método | URL | Token / permiso | Cuerpo JSON |
 |---|---|---|---|---|
@@ -420,7 +426,7 @@ La calificación debe ser un número entero entre 1 y 10. Cada cuenta puede publ
 
 El valor de `reaction_type` puede ser `like` o `dislike`. `:id` es el identificador de la reseña.
 
-### 🎬 Relación entre películas y actores
+### Relación entre películas y actores
 
 | Acción | Método | URL | Token / permiso | Cuerpo JSON |
 |---|---|---|---|---|
@@ -442,7 +448,7 @@ El valor de `reaction_type` puede ser `like` o `dislike`. `:id` es el identifica
 
 Los identificadores deben corresponder a películas y actores existentes; `character_name` es opcional.
 
-## 🔑 ¿Cómo enviar el token en Insomnia?
+## ¿Cómo enviar el token en Insomnia?
 
 1. Envía primero la solicitud de inicio de sesión.
 2. En la respuesta, busca el campo `data.jwt` y copia su valor completo.
@@ -454,10 +460,10 @@ Los identificadores deben corresponder a películas y actores existentes; `chara
 
 Si el token caducó, inicia sesión otra vez y utiliza el nuevo. Para una acción reservada a administradores necesitas una cuenta con ese rol; un token de usuario normal no basta.
 
-## 🛟 ¿Necesitas ayuda?
+## ¿Necesitas ayuda?
 
 Consulta [TROUBLESHOOTING.md](./TROUBLESHOOTING.md) para resolver problemas de MySQL, puertos ocupados, credenciales, correos duplicados y tokens.
 
-## 📌 Alcance de este repositorio
+## Alcance de este repositorio
 
 Este repositorio contiene la documentación y el código del **backend** de KarenFlix. No incluye el frontend ni un enlace confirmado a su repositorio; por eso esta guía no enlaza proyectos de terceros que podrían no corresponder al equipo.

@@ -21,6 +21,10 @@ El esquema cubre usuarios, categorías, directores, películas, actores, la rela
 
 ## Diagrama entidad-relación lógico
 
+El diagrama visual generado desde el esquema MySQL está disponible a continuación:
+
+![Diagrama de la base de datos KarenFlix](./diagrams/wkb_karenflix.png)
+
 La siguiente versión Mermaid representa las entidades y relaciones implementadas. El tipo `atributo` es un marcador genérico de Mermaid; los tipos concretos están definidos en `01-schema.sql`.
 
 ```mermaid
