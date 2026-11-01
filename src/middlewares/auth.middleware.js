@@ -1,54 +1,21 @@
-import jwt from 'jsonwebtoken';
+import passport from 'passport';
 import { ROLES } from '../constants/role.constant.js';
-import Database from '../config/db.config.js';
-import UserModel from '../models/user.model.js';
 import AppError from '../utils/appError.util.js';
 
 export default class AuthMiddleware {
-    #jwtSecret;
-    #userModel;
-
-    constructor(jwtSecret = process.env.JWT_SECRET, userModel = new UserModel(Database.getPool())) {
-        this.#jwtSecret = jwtSecret;
-        this.#userModel = userModel;
+    constructor() {
         this.requireAuth = this.requireAuth.bind(this);
         this.requireAdmin = this.requireAdmin.bind(this);
     }
 
-    async requireAuth(req, _res, next) {
-        const authHeader = req.headers.authorization;
-        const bearerToken = authHeader?.startsWith('Bearer ') ? authHeader.split(' ')[1] : null;
+    requireAuth(req, res, next) {
+        passport.authenticate('jwt', { session: false }, (error, user) => {
+            if (error) return next(error);
+            if (!user) return next(AppError.unauthorized('Token inválido, expirado o revocado.'));
 
-        if (!bearerToken) {
-            return next(AppError.unauthorized('Se requiere un token Bearer.'));
-        }
-
-        let decoded;
-        try {
-            decoded = jwt.verify(bearerToken, this.#jwtSecret);
-        } catch {
-            return next(AppError.unauthorized('Token inválido o expirado.'));
-        }
-
-        try {
-            const user = await this.#userModel.findAuthStateById(decoded.id);
-            if (!user) {
-                return next(AppError.unauthorized('La cuenta asociada a este token ya no existe.'));
-            }
-            if (Number(decoded.tokenVersion ?? 0) !== Number(user.token_version)) {
-                return next(AppError.unauthorized('El token fue revocado.'));
-            }
-
-            req.user = {
-                ...decoded,
-                username: user.username,
-                email: user.email,
-                role: user.role
-            };
+            req.user = user;
             return next();
-        } catch (error) {
-            return next(error);
-        }
+        })(req, res, next);
     }
 
     requireAdmin(req, _res, next) {

@@ -51,9 +51,7 @@
               "type": "object",
               "required": ["name"],
               "properties": {
-                "name": {"type": "string", "minLength": 2, "maxLength": 100},
-                "biography": {"type": "string", "nullable": true, "maxLength": 5000},
-                "photo_url": {"type": "string", "format": "uri", "nullable": true}
+                "name": {"type": "string", "minLength": 2, "maxLength": 100}
               }
             }
           }
@@ -112,9 +110,7 @@
               "type": "object",
               "minProperties": 1,
               "properties": {
-                "name": {"type": "string", "minLength": 2, "maxLength": 100},
-                "biography": {"type": "string", "nullable": true, "maxLength": 5000},
-                "photo_url": {"type": "string", "format": "uri", "nullable": true}
+                "name": {"type": "string", "minLength": 2, "maxLength": 100}
               }
             }
           }
@@ -1133,6 +1129,17 @@
             "maximum": 100,
             "default": 20
           }
+        },
+        {
+          "in": "query",
+          "name": "sort",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "enum": ["recent", "popular", "ranking"],
+            "default": "recent"
+          },
+          "description": "Ordena por fecha, popularidad (favoritos) o ranking ponderado."
         }
       ],
       "responses": {
@@ -1150,7 +1157,7 @@
           "$ref": "#/components/responses/BadRequest"
         }
       },
-      "description": "Solo devuelve películas aprobadas, ordenadas por fecha de creación."
+      "description": "Solo devuelve películas aprobadas. El ranking pondera 70% calificación con decaimiento temporal (vida media de 180 días), 20% proporción de likes y 10% actualidad de la reseña más reciente."
     },
     "post": {
       "tags": [
@@ -1175,8 +1182,7 @@
                 "director_id",
                 "category_id",
                 "release_year",
-                "duration_minutes",
-                "image_url"
+                "duration_minutes"
               ],
               "properties": {
                 "title": {
@@ -1213,6 +1219,7 @@
                 "image_url": {
                   "type": "string",
                   "format": "uri",
+                  "nullable": true,
                   "maxLength": 255
                 },
                 "banner_url": {
@@ -1339,6 +1346,7 @@
                 "image_url": {
                   "type": "string",
                   "format": "uri",
+                  "nullable": true,
                   "maxLength": 255
                 },
                 "banner_url": {
@@ -1547,7 +1555,14 @@
       ],
       "responses": {
         "200": {
-          "description": "Lista de reseñas de la película."
+          "description": "Lista de reseñas de la película.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewListResponse"
+              }
+            }
+          }
         },
         "400": {
           "$ref": "#/components/responses/BadRequest"
@@ -1627,6 +1642,131 @@
         },
         "409": {
           "$ref": "#/components/responses/Conflict"
+        }
+      }
+    }
+  },
+  "/movies/{id}/reviews/{reviewId}": {
+    "put": {
+      "tags": [
+        "Reviews"
+      ],
+      "summary": "Actualizar una reseña propia",
+      "description": "Solo el autor de la reseña puede actualizarla.",
+      "security": [
+        {
+          "BearerAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "in": "path",
+          "name": "id",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        {
+          "in": "path",
+          "name": "reviewId",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "minProperties": 1,
+              "properties": {
+                "rating": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 10
+                },
+                "title": {
+                  "type": "string",
+                  "minLength": 3,
+                  "maxLength": 100
+                },
+                "comment": {
+                  "type": "string",
+                  "minLength": 10,
+                  "maxLength": 1000
+                }
+              }
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Reseña actualizada."
+        },
+        "400": {
+          "$ref": "#/components/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/components/responses/Forbidden"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    },
+    "delete": {
+      "tags": [
+        "Reviews"
+      ],
+      "summary": "Eliminar una reseña propia",
+      "description": "Solo el autor de la reseña puede eliminarla.",
+      "security": [
+        {
+          "BearerAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "in": "path",
+          "name": "id",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        {
+          "in": "path",
+          "name": "reviewId",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Reseña eliminada."
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/components/responses/Forbidden"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
         }
       }
     }

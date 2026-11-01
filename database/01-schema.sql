@@ -23,12 +23,10 @@ CREATE TABLE IF NOT EXISTS categories (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
--- 3. Tabla de Directores (Normalizada, preparada para futura UX/biografías)
+-- 3. Tabla de Directores
 CREATE TABLE IF NOT EXISTS directors (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL UNIQUE,
-    biography TEXT NULL,
-    photo_url VARCHAR(255) NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
@@ -42,7 +40,7 @@ CREATE TABLE IF NOT EXISTS movies (
     duration_minutes INT NOT NULL,
     age_rating VARCHAR(10) DEFAULT 'PG-13',
     category_id INT NOT NULL,
-    image_url VARCHAR(255) NOT NULL,
+    image_url VARCHAR(255) NULL,
     banner_url VARCHAR(255) NULL,
     trailer_url VARCHAR(255) NULL,
     status ENUM('pending', 'approved', 'rejected') DEFAULT 'pending',

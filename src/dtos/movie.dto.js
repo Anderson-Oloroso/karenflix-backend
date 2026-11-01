@@ -13,6 +13,7 @@ export default class MovieDTO {
     #trailerUrl;
     #status;
     #averageRating;
+    #rankingScore;
     #likesCount;
     #createBy;
     #createAt;
@@ -34,6 +35,9 @@ export default class MovieDTO {
         this.#averageRating = movie.average_rating !== undefined && movie.average_rating !== null
             ? Number(movie.average_rating)
             : 0;
+        this.#rankingScore = movie.ranking_score !== undefined && movie.ranking_score !== null
+            ? Number(movie.ranking_score)
+            : null;
         this.#likesCount = Number(movie.likes_count ?? 0);
         this.#createBy = movie.username || movie.created_by;
         this.#createAt = movie.created_at || movie.create_at;
@@ -56,6 +60,7 @@ export default class MovieDTO {
             trailerUrl: this.#trailerUrl,
             status: this.#status,
             averageRating: this.#averageRating,
+            ...(this.#rankingScore !== null && { rankingScore: this.#rankingScore }),
             likesCount: this.#likesCount,
             createBy: this.#createBy,
             createAt: this.#createAt   

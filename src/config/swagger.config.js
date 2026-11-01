@@ -48,10 +48,19 @@ const swaggerSpec = {
                     message: { type: 'string', example: 'Error de validación' },
                     mensaje: { type: 'string', example: 'Solicitud inválida' },
                     errors: {
-                        type: 'array',
-                        items: { type: 'object' }
+                        oneOf: [
+                            { type: 'array', items: { type: 'object' } },
+                            { type: 'object' }
+                        ],
+                        nullable: true
                     },
-                    errores: { type: 'object', nullable: true },
+                    errores: {
+                        oneOf: [
+                            { type: 'array', items: { type: 'object' } },
+                            { type: 'object' }
+                        ],
+                        nullable: true
+                    },
                     metodo: { type: 'string' },
                     url: { type: 'string' }
                 }
@@ -86,16 +95,44 @@ const swaggerSpec = {
                                 releaseYear: { type: 'integer' },
                                 durationMinutes: { type: 'integer' },
                                 ageRating: { type: 'string' },
-                                imageUrl: { type: 'string' },
+                                imageUrl: { type: 'string', nullable: true },
                                 bannerUrl: { type: 'string', nullable: true },
                                 trailerUrl: { type: 'string', nullable: true },
                                 status: { type: 'string', enum: ['pending', 'approved', 'rejected'] },
                                 averageRating: { type: 'number' },
+                                rankingScore: { type: 'number', nullable: true },
                                 likesCount: { type: 'integer', minimum: 0 },
                                 createBy: { type: 'string', nullable: true },
                                 createAt: { type: 'string', format: 'date-time' }
                             }
                         }
+                    }
+                }
+            },
+            Review: {
+                type: 'object',
+                required: ['id', 'movieId', 'user', 'title', 'comment', 'rating'],
+                properties: {
+                    id: { type: 'integer' },
+                    movieId: { type: 'integer' },
+                    user: { type: 'string' },
+                    title: { type: 'string' },
+                    comment: { type: 'string' },
+                    rating: { type: 'integer', minimum: 1, maximum: 10 },
+                    likesCount: { type: 'integer', minimum: 0 },
+                    dislikesCount: { type: 'integer', minimum: 0 },
+                    createdAt: { type: 'string', format: 'date-time' }
+                }
+            },
+            ReviewListResponse: {
+                type: 'object',
+                required: ['status', 'total', 'data'],
+                properties: {
+                    status: { type: 'string', example: 'success' },
+                    total: { type: 'integer', minimum: 0 },
+                    data: {
+                        type: 'array',
+                        items: { $ref: '#/components/schemas/Review' }
                     }
                 }
             }

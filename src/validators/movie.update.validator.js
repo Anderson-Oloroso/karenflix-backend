@@ -48,10 +48,8 @@ const updateMovieValidator = [
         .isLength({ min: 1, max: 10 })
         .withMessage('La clasificación debe tener entre 1 y 10 caracteres'),
     body('image_url')
-        .optional()
+        .optional({ nullable: true, checkFalsy: true })
         .trim()
-        .notEmpty()
-        .withMessage('La URL de la imagen no puede estar vacía')
         .isLength({ max: 255 })
         .withMessage('La URL de la imagen no puede superar los 255 caracteres')
         .isURL()

@@ -11,6 +11,10 @@ const movieQueryValidator = [
         .trim()
         .notEmpty()
         .withMessage('El título de búsqueda no puede estar vacío'),
+    query('sort')
+        .optional()
+        .isIn(['recent', 'popular', 'ranking'])
+        .withMessage('El orden debe ser recent, popular o ranking'),
     query('page')
         .optional()
         .isInt({ min: 1 })

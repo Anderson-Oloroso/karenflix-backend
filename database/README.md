@@ -57,8 +57,6 @@ erDiagram
     DIRECTORS {
         atributo id PK
         atributo name UK
-        atributo biography
-        atributo photo_url
         atributo created_at
     }
 
@@ -131,13 +129,20 @@ erDiagram
 | --- | --- |
 | `users` | `id` (PK), `username` (`VARCHAR(50)`, NOT NULL, UK), `email` (`VARCHAR(100)`, NOT NULL, UK), `password_hash` (`VARCHAR(255)`, NOT NULL), `role` (`ENUM('admin', 'user')`, predeterminado `'user'`), `token_version` (`INT`, NOT NULL, predeterminado `0`), `created_at` (`TIMESTAMP`, predeterminado `CURRENT_TIMESTAMP`) |
 | `categories` | `id` (PK), `name` (`VARCHAR(50)`, NOT NULL, UK), `description` (`TEXT`, NOT NULL), `created_at` (`TIMESTAMP`, predeterminado `CURRENT_TIMESTAMP`) |
-| `directors` | `id` (PK), `name` (`VARCHAR(100)`, NOT NULL, UK), `biography` (`TEXT`, nullable), `photo_url` (`VARCHAR(255)`, nullable), `created_at` (`TIMESTAMP`, predeterminado `CURRENT_TIMESTAMP`) |
-| `movies` | `id` (PK), `title` (`VARCHAR(150)`, NOT NULL, UK), `description` (`TEXT`, NOT NULL), `director_id` (`INT`, NOT NULL, FK con `ON DELETE RESTRICT`), `category_id` (`INT`, NOT NULL, FK con `ON DELETE RESTRICT`), `release_year` (`INT`, NOT NULL), `duration_minutes` (`INT`, NOT NULL), `age_rating` (`VARCHAR(10)`, predeterminado `'PG-13'`), `image_url` (`VARCHAR(255)`, NOT NULL), `banner_url` y `trailer_url` (`VARCHAR(255)`, nullable), `status` (`ENUM('pending', 'approved', 'rejected')`, predeterminado `'pending'`), `average_rating` (`DECIMAL(4,2)`, NOT NULL, predeterminado `0.00`, calculado por triggers), `likes_count` (`INT`, NOT NULL, predeterminado `0`, total de favoritos actualizado por triggers), `created_by` (`INT`, nullable, FK con `ON DELETE SET NULL`), `created_at` (`TIMESTAMP`, predeterminado `CURRENT_TIMESTAMP`) |
+| `directors` | `id` (PK), `name` (`VARCHAR(100)`, NOT NULL, UK), `created_at` (`TIMESTAMP`, predeterminado `CURRENT_TIMESTAMP`) |
+| `movies` | `id` (PK), `title` (`VARCHAR(150)`, NOT NULL, UK), `description` (`TEXT`, NOT NULL), `director_id` (`INT`, NOT NULL, FK con `ON DELETE RESTRICT`), `category_id` (`INT`, NOT NULL, FK con `ON DELETE RESTRICT`), `release_year` (`INT`, NOT NULL), `duration_minutes` (`INT`, NOT NULL), `age_rating` (`VARCHAR(10)`, predeterminado `'PG-13'`), `image_url` (`VARCHAR(255)`, nullable), `banner_url` y `trailer_url` (`VARCHAR(255)`, nullable; `trailer_url` admite una URL de YouTube), `status` (`ENUM('pending', 'approved', 'rejected')`, predeterminado `'pending'`), `average_rating` (`DECIMAL(4,2)`, NOT NULL, predeterminado `0.00`, calculado por triggers), `likes_count` (`INT`, NOT NULL, predeterminado `0`, total de favoritos actualizado por triggers), `created_by` (`INT`, nullable, FK con `ON DELETE SET NULL`), `created_at` (`TIMESTAMP`, predeterminado `CURRENT_TIMESTAMP`) |
 | `actors` | `id` (PK), `name` (`VARCHAR(100)`, NOT NULL), `biography` (`TEXT`, nullable), `birth_date` (`DATE`, nullable), `photo_url` (`VARCHAR(255)`, nullable), `created_at` (`TIMESTAMP`, predeterminado `CURRENT_TIMESTAMP`) |
 | `movie_actors` | `id` (PK), `movie_id` (`INT`, NOT NULL, FK), `actor_id` (`INT`, NOT NULL, FK), `character_name` (`VARCHAR(100)`, nullable), UNIQUE (`movie_id`, `actor_id`) |
 | `favorites` | `id` (PK), `user_id` (`INT`, NOT NULL, FK), `movie_id` (`INT`, NOT NULL, FK), `created_at` (`TIMESTAMP`, predeterminado `CURRENT_TIMESTAMP`), UNIQUE (`user_id`, `movie_id`) |
 | `reviews` | `id` (PK), `movie_id` (`INT`, NOT NULL, FK), `user_id` (`INT`, NOT NULL, FK), `title` (`VARCHAR(100)`, NOT NULL), `comment` (`TEXT`, NOT NULL), `rating` (`TINYINT`, NOT NULL, CHECK entre 1 y 10), `likes_count` (`INT`, NOT NULL, predeterminado `0`, calculado por triggers), `created_at` (`TIMESTAMP`, predeterminado `CURRENT_TIMESTAMP`), UNIQUE (`movie_id`, `user_id`) |
 | `review_reactions` | `id` (PK), `review_id` (`INT`, NOT NULL, FK), `user_id` (`INT`, NOT NULL, FK), `reaction_type` (`ENUM('like', 'dislike')`, NOT NULL), `created_at` (`TIMESTAMP`, predeterminado `CURRENT_TIMESTAMP`), UNIQUE (`review_id`, `user_id`) |
+
+Para una base ya creada, aplica una sola vez cada migración después de respaldarla:
+
+- [`migrations/20261031_remove_director_metadata.sql`](./migrations/20261031_remove_director_metadata.sql) elimina biografía y foto de directores.
+- [`migrations/20261101_make_movie_image_url_nullable.sql`](./migrations/20261101_make_movie_image_url_nullable.sql) permite películas sin imagen.
+
+El esquema nuevo ya crea `directors` sin biografía ni foto y permite `movies.image_url` nulo.
 
 ## Relaciones y cardinalidades
 
