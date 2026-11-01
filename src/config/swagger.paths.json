@@ -51,9 +51,7 @@
               "type": "object",
               "required": ["name"],
               "properties": {
-                "name": {"type": "string", "minLength": 2, "maxLength": 100},
-                "biography": {"type": "string", "nullable": true, "maxLength": 5000},
-                "photo_url": {"type": "string", "format": "uri", "nullable": true}
+                "name": {"type": "string", "minLength": 2, "maxLength": 100}
               }
             }
           }
@@ -112,9 +110,7 @@
               "type": "object",
               "minProperties": 1,
               "properties": {
-                "name": {"type": "string", "minLength": 2, "maxLength": 100},
-                "biography": {"type": "string", "nullable": true, "maxLength": 5000},
-                "photo_url": {"type": "string", "format": "uri", "nullable": true}
+                "name": {"type": "string", "minLength": 2, "maxLength": 100}
               }
             }
           }

@@ -7,14 +7,14 @@ export default class DirectorModel {
 
     async getAll() {
         const [rows] = await this.#db.execute(
-            'SELECT id, name, biography, photo_url, created_at FROM directors ORDER BY name ASC'
+            'SELECT id, name, created_at FROM directors ORDER BY name ASC'
         );
         return rows;
     }
 
     async getById(id) {
         const [rows] = await this.#db.execute(
-            'SELECT id, name, biography, photo_url, created_at FROM directors WHERE id = ?',
+            'SELECT id, name, created_at FROM directors WHERE id = ?',
             [id]
         );
         return rows[0] ?? null;
@@ -52,17 +52,15 @@ export default class DirectorModel {
 
     async create(data) {
         const [result] = await this.#db.execute(
-            'INSERT INTO directors (name, biography, photo_url) VALUES (?, ?, ?)',
-            [data.name, data.biography ?? null, data.photo_url ?? null]
+            'INSERT INTO directors (name) VALUES (?)',
+            [data.name]
         );
         return result.insertId;
     }
 
     async update(id, data) {
         const fields = {
-            name: 'name',
-            biography: 'biography',
-            photo_url: 'photo_url'
+            name: 'name'
         };
         const updates = Object.entries(fields)
             .filter(([field]) => Object.hasOwn(data, field))

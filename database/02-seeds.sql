@@ -16,12 +16,12 @@ INSERT INTO categories (id, name, description) VALUES
   (5, 'Aventura', 'Relatos de viajes, descubrimientos y desafíos.'),
   (6, 'Fantasía', 'Historias con mundos imaginarios y elementos extraordinarios.');
 
-INSERT INTO directors (id, name, biography, photo_url) VALUES
-  (1, 'Christopher Nolan', 'Director y guionista conocido por sus historias de ciencia ficción y misterio.', 'https://images.unsplash.com/photo-1534528741775-53994a69daeb'),
-  (2, 'Bob Persichetti', 'Director y animador especializado en historias visuales.', 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d'),
-  (3, 'Lana Wachowski', 'Directora y guionista de historias de ciencia ficción.', 'https://images.unsplash.com/photo-1494790108377-be9c29b29330'),
-  (4, 'Sofía Beltrán', 'Directora ficticia interesada en aventuras de personajes cotidianos.', 'https://images.unsplash.com/photo-1534528741775-53994a69daeb'),
-  (5, 'Iván Cruz', 'Director ficticio de relatos de misterio y fantasía.', 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e');
+INSERT INTO directors (id, name) VALUES
+  (1, 'Christopher Nolan'),
+  (2, 'Bob Persichetti'),
+  (3, 'Lana Wachowski'),
+  (4, 'Sofía Beltrán'),
+  (5, 'Iván Cruz');
 
 INSERT INTO movies (id, title, description, director_id, release_year, duration_minutes, age_rating, category_id, image_url, banner_url, trailer_url, status, created_by) VALUES
   (1, 'Inception', 'Un ladrón roba secretos corporativos dentro de los sueños.', 1, 2010, 148, 'PG-13', 1, 'https://images.unsplash.com/photo-1534447677768-be436bb09401', 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23', 'https://www.youtube.com/watch?v=YoHD9XEInc0', 'approved', 1),
@@ -29,7 +29,7 @@ INSERT INTO movies (id, title, description, director_id, release_year, duration_
   (3, 'Spider-Man: Into the Spider-Verse', 'Miles Morales cruza caminos con héroes de otros universos.', 2, 2018, 117, 'PG', 3, 'https://images.unsplash.com/photo-1635805737707-575885ab0820', 'https://images.unsplash.com/photo-1563089145-599997674d42', 'https://www.youtube.com/watch?v=g4Hbz2jLxvQ', 'approved', 1),
   (4, 'The Matrix', 'Un hacker descubre que la realidad es una simulación.', 3, 1999, 136, 'R', 1, 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5', 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b', 'https://www.youtube.com/watch?v=vKQi3bBA1y8', 'pending', 1),
   (5, 'Horizonte de Papel', 'Una cartógrafa descubre rutas que solo aparecen al anochecer.', 4, 2022, 110, 'PG', 5, 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee', NULL, NULL, 'approved', 1),
-  (6, 'La Última Frecuencia', 'Un técnico recibe señales de una estación que dejó de existir.', 5, 2024, 104, 'PG-13', 1, 'https://images.unsplash.com/photo-1519608487953-e999c86e7455', NULL, 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', 'pending', 1),
+  (6, 'La Última Frecuencia', 'Un técnico recibe señales de una estación que dejó de existir.', 5, 2024, 104, 'PG-13', 1, 'https://images.unsplash.com/photo-1519608487953-e999c86e7455', NULL, NULL, 'pending', 1),
   (7, 'Jardín de Ceniza', 'Dos hermanas reconstruyen un invernadero después de una tormenta.', 4, 2021, 126, 'PG-13', 4, 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b', 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e', NULL, 'approved', 1),
   (8, 'Faro de Invierno', 'Una aprendiz cuida un faro que guía barcos entre islas invisibles.', 5, 2023, 98, 'PG', 6, 'https://images.unsplash.com/photo-1518837695005-2083093ee35b', NULL, NULL, 'rejected', 1);
 
