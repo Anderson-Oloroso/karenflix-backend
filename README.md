@@ -164,14 +164,6 @@ database/
 
 Las operaciones críticas de reseñas y reacciones se ejecutan dentro de transacciones InnoDB. Passport JWT vuelve a consultar el estado del usuario y verifica la versión del token, lo que permite revocar sesiones. Los errores HTTP se centralizan en un middleware.
 
-### Actualizar una base existente
-
-Respalda la base antes de aplicar una vez cada migración pertinente:
-
-- [`database/migrations/20261031_remove_director_metadata.sql`](./database/migrations/20261031_remove_director_metadata.sql)
-- [`database/migrations/20261101_make_movie_image_url_nullable.sql`](./database/migrations/20261101_make_movie_image_url_nullable.sql)
-
-`01-schema.sql` crea el esquema nuevo; no altera tablas que ya existen.
 
 ## Principios y consideraciones
 
@@ -188,23 +180,17 @@ Respalda la base antes de aplicar una vez cada migración pertinente:
 
 - Brandon Estiben Ixén Teleguario — Developer.
 - Anderson Oloroso García — Developer.
-- Scrum Master — **PENDIENTE: agregar nombre y asignación**.
-- Product Owner — **PENDIENTE: agregar nombre y asignación**.
+
 
 ### Seguimiento SCRUM
 
 Tablero del equipo en [Monday.com](https://ixenbrandonestibens-team-squad.monday.com/boards/18437954558).
 
-- Sprint 1 — **PENDIENTE: agregar fechas, objetivo e historias de usuario**.
-- Sprint 2 — **PENDIENTE: agregar fechas, objetivo e historias de usuario**.
-- Evidencias del tablero — **PENDIENTE: agregar enlaces o capturas**.
 
 ### Materiales de entrega
 
-- PDF de planeación SCRUM — **PENDIENTE: agregar el documento final y enlazarlo aquí**.
-- Video de demostración (máximo 10 minutos, integrantes en cámara, código y recorrido funcional) — **PENDIENTE: agregar el enlace final aquí**.
+- PDF de planeación SCRUM — [SCRUM.pdf](https://drive.google.com/drive/folders/1RAnTXVnz4HJQQlliIRE3cq6Hid5QzcgF?usp=drive_link).
 
-No se generaron el PDF ni el video. El frontend contiene `public/karenflix_intro.mp4`, pero no se ha validado como el video de entrega solicitado.
 
 ## Créditos
 
