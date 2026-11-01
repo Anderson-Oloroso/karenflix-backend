@@ -195,3 +195,4 @@ Tablero del equipo en [Monday.com](https://ixenbrandonestibens-team-squad.monday
 ## Créditos
 
 Proyecto académico KarenFlix. Backend: [Anderson-Oloroso/karenflix-backend](https://github.com/Anderson-Oloroso/karenflix-backend). Frontend: [ixenbrandonestiben-lang/karenflix-frontend](https://github.com/ixenbrandonestiben-lang/karenflix-frontend).
+
