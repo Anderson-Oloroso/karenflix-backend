@@ -16,6 +16,12 @@ El frontend es un repositorio independiente: [karenflix-frontend](https://github
 
 > MySQL se utiliza por el requisito académico del equipo. No se usa MongoDB ni Mongoose.
 
+## Diagrama de la base de datos
+
+![Diagrama entidad-relación de KarenFlix](./database/diagrams/wkb_karenflix.png)
+
+Consulta la [documentación completa del esquema, relaciones e índices](./database/README.md).
+
 ## Requisitos
 
 - Node.js 20 o posterior y npm.
