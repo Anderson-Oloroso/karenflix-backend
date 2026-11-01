@@ -1,4 +1,4 @@
-# 🛠️ KarenFlix: guía paso a paso para resolver problemas
+# KarenFlix: guía paso a paso para resolver problemas
 
 Esta guía te acompaña en algunos errores comunes. No necesitas saber programación para seguirla: lee cada paso en orden y evita compartir contraseñas o tokens mientras pides ayuda.
 
@@ -166,7 +166,7 @@ Si recibes `401` otra vez, inicia sesión para obtener un token nuevo y verifica
 
 **Diferencia importante:** `403 Forbidden` normalmente significa que sí hay una sesión válida, pero esa cuenta no tiene el permiso necesario. Por ejemplo, las acciones de administración requieren una cuenta con rol de administrador. Registrarse desde el formulario público crea una cuenta normal.
 
-## 🧭 Si el problema continúa
+## Si el problema continúa
 
 1. Copia el mensaje de error de la terminal, pero elimina contraseñas, tokens, direcciones privadas y cualquier dato personal.
 2. Anota cuál operación estabas intentando y qué puerto usas.

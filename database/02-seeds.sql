@@ -21,7 +21,16 @@ INSERT INTO directors (id, name) VALUES
   (2, 'Bob Persichetti'),
   (3, 'Lana Wachowski'),
   (4, 'Sofía Beltrán'),
-  (5, 'Iván Cruz');
+  (5, 'Iván Cruz'),
+  (6, 'Hayao Miyazaki'),
+  (7, 'Bong Joon-ho'),
+  (8, 'Steven Spielberg'),
+  (9, 'Peter Jackson'),
+  (10, 'Francis Ford Coppola'),
+  (11, 'Robert Zemeckis'),
+  (12, 'George Lucas'),
+  (13, 'Lee Unkrich'),
+  (14, 'Katsuhiro Otomo');
 
 INSERT INTO movies (id, title, description, director_id, release_year, duration_minutes, age_rating, category_id, image_url, banner_url, trailer_url, status, created_by) VALUES
   (1, 'Inception', 'Un ladrón roba secretos corporativos dentro de los sueños.', 1, 2010, 148, 'PG-13', 1, 'https://images.unsplash.com/photo-1534447677768-be436bb09401', 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23', 'https://www.youtube.com/watch?v=YoHD9XEInc0', 'approved', 1),
@@ -32,6 +41,18 @@ INSERT INTO movies (id, title, description, director_id, release_year, duration_
   (6, 'La Última Frecuencia', 'Un técnico recibe señales de una estación que dejó de existir.', 5, 2024, 104, 'PG-13', 1, 'https://images.unsplash.com/photo-1519608487953-e999c86e7455', NULL, NULL, 'pending', 1),
   (7, 'Jardín de Ceniza', 'Dos hermanas reconstruyen un invernadero después de una tormenta.', 4, 2021, 126, 'PG-13', 4, 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b', 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e', NULL, 'approved', 1),
   (8, 'Faro de Invierno', 'Una aprendiz cuida un faro que guía barcos entre islas invisibles.', 5, 2023, 98, 'PG', 6, 'https://images.unsplash.com/photo-1518837695005-2083093ee35b', NULL, NULL, 'rejected', 1);
+
+INSERT INTO movies (id, title, description, director_id, release_year, duration_minutes, age_rating, category_id, image_url, banner_url, trailer_url, status, created_by) VALUES
+  (9, 'The Dark Knight', 'Batman intenta detener la ola de crímenes del Joker en Gotham City.', 1, 2008, 152, 'PG-13', 2, NULL, NULL, NULL, 'approved', 1),
+  (10, 'Spirited Away', 'Chihiro busca rescatar a sus padres en un mundo habitado por espíritus.', 6, 2001, 125, 'PG', 3, NULL, NULL, NULL, 'approved', 1),
+  (11, 'Parasite', 'La familia Kim se incorpora gradualmente a la vida de la familia Park.', 7, 2019, 132, 'R', 4, NULL, NULL, NULL, 'approved', 1),
+  (12, 'Jurassic Park', 'Un parque con dinosaurios clonados pierde el control de sus sistemas de seguridad.', 8, 1993, 127, 'PG-13', 5, NULL, NULL, NULL, 'approved', 1),
+  (13, 'The Lord of the Rings: The Fellowship of the Ring', 'Frodo emprende un viaje para destruir el Anillo Único con la ayuda de una comunidad.', 9, 2001, 178, 'PG-13', 6, NULL, NULL, NULL, 'approved', 1),
+  (14, 'The Godfather', 'La familia Corleone afronta conflictos de poder dentro del crimen organizado.', 10, 1972, 175, 'R', 4, NULL, NULL, NULL, 'approved', 1),
+  (15, 'Back to the Future', 'Marty McFly viaja accidentalmente al pasado y debe ayudar a que sus padres se conozcan.', 11, 1985, 116, 'PG', 1, NULL, NULL, NULL, 'approved', 1),
+  (16, 'Star Wars: Episode IV - A New Hope', 'Luke Skywalker se une a la Alianza Rebelde en su lucha contra el Imperio Galáctico.', 12, 1977, 121, 'PG', 1, NULL, NULL, NULL, 'approved', 1),
+  (17, 'Coco', 'Miguel llega al Mundo de los Muertos y descubre la historia de su familia.', 13, 2017, 105, 'PG', 3, NULL, NULL, NULL, 'approved', 1),
+  (18, 'Akira', 'En Neo-Tokyo, una banda de motociclistas queda envuelta en una crisis ligada a poderes psíquicos.', 14, 1988, 124, 'R', 1, NULL, NULL, NULL, 'approved', 1);
 
 INSERT INTO actors (id, name, biography, birth_date, photo_url) VALUES
   (1, 'Leonardo DiCaprio', 'Actor conocido por sus papeles en dramas y ciencia ficción.', '1974-11-11', 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d'),
