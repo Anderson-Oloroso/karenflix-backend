@@ -16,6 +16,12 @@ El frontend es un repositorio independiente: [karenflix-frontend](https://github
 
 > MySQL se utiliza por el requisito académico del equipo. No se usa MongoDB ni Mongoose.
 
+## Diagrama de la base de datos
+
+![Diagrama entidad-relación de KarenFlix](./database/diagrams/wkb_karenflix.png)
+
+Consulta la [documentación completa del esquema, relaciones e índices](./database/README.md).
+
 ## Requisitos
 
 - Node.js 20 o posterior y npm.
@@ -38,8 +44,8 @@ El frontend es un repositorio independiente: [karenflix-frontend](https://github
 
 3. Crea `.env` a partir de `.env.example` y configura la conexión, el secreto JWT y el origen del frontend. `.env` está excluido de Git:
 
-   ```powershell
-   Copy-Item .env.example .env
+   ```bash
+   cp .env.example .env
    ```
 
 4. Inicia el servidor:
@@ -65,7 +71,7 @@ El frontend es un repositorio independiente: [karenflix-frontend](https://github
 | `DB_CONNECTION_LIMIT` | Conexiones del pool | `10` |
 | `JWT_SECRET` | Secreto para firmar/verificar JWT | Requerida; usa un secreto largo y aleatorio |
 | `JWT_EXPIRES_IN` | Vigencia del token | `24h` |
-| `CORS_ORIGIN` | Orígenes permitidos, separados por comas | Puertos locales `5500`, `5173` y `3000` |
+| `CORS_ORIGIN` | Orígenes permitidos, separados por comas | GitHub Pages del frontend y puertos locales `5500`, `5173` y `3000` |
 | `RATE_LIMIT_WINDOW_MS` | Ventana del límite global en milisegundos | `900000` |
 | `RATE_LIMIT_MAX_REQUESTS` | Solicitudes por ventana y cliente | `100` |
 
@@ -171,7 +177,7 @@ Las operaciones críticas de reseñas y reacciones se ejecutan dentro de transac
 - Consultas parametrizadas para los valores recibidos por la API.
 - Autorización por roles y verificación de propiedad de reseñas en el backend.
 - Contraseñas almacenadas como hashes bcrypt; JWT y secretos configurados mediante variables de entorno.
-- Configura `CORS_ORIGIN` con los dominios reales al desplegar.
+- Configura `CORS_ORIGIN` con los dominios reales al desplegar. El frontend GitHub Pages usa el origen `https://ixenbrandonestiben-lang.github.io` (sin la ruta del repositorio).
 - Ajusta las credenciales de seeds, la clave JWT y los permisos de MySQL antes de exponer un entorno.
 
 ## Entrega académica

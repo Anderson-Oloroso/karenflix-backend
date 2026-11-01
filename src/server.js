@@ -19,7 +19,8 @@ export class Server {
             this.#app.listen(this.#port, () => {
                 console.log(`servidor ejecutandose en el puerto: ${this.#port}`);
                 console.log(`modo: ${process.env.NODE_ENV}`);
-                console.log(`API: http://localhost:${this.#port}${API_PREFIX}`);
+                const baseUrl = process.env.RENDER_EXTERNAL_URL || `http://localhost:${this.#port}`;
+                console.log(`API: ${baseUrl}${API_PREFIX}`);
             });
         } catch (error) {
             console.error('Error al iniciar el servidor:', error.message);
