@@ -1129,6 +1129,17 @@
             "maximum": 100,
             "default": 20
           }
+        },
+        {
+          "in": "query",
+          "name": "sort",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "enum": ["recent", "popular", "ranking"],
+            "default": "recent"
+          },
+          "description": "Ordena por fecha, popularidad (favoritos) o ranking ponderado."
         }
       ],
       "responses": {
@@ -1146,7 +1157,7 @@
           "$ref": "#/components/responses/BadRequest"
         }
       },
-      "description": "Solo devuelve películas aprobadas, ordenadas por fecha de creación."
+      "description": "Solo devuelve películas aprobadas. El ranking pondera 70% calificación con decaimiento temporal (vida media de 180 días), 20% proporción de likes y 10% actualidad de la reseña más reciente."
     },
     "post": {
       "tags": [

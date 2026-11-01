@@ -23,6 +23,47 @@ INNER JOIN categories c ON c.id = m.category_id
 INNER JOIN directors d ON d.id = m.director_id
 LEFT JOIN users u ON u.id = m.created_by`;
 
+const RANKING_JOINS = `LEFT JOIN (
+    SELECT
+        movie_id,
+        SUM(rating * POWER(0.5, GREATEST(TIMESTAMPDIFF(SECOND, created_at, CURRENT_TIMESTAMP), 0) / (180 * 86400)))
+            / NULLIF(SUM(POWER(0.5, GREATEST(TIMESTAMPDIFF(SECOND, created_at, CURRENT_TIMESTAMP), 0) / (180 * 86400))), 0)
+            AS weighted_rating,
+        MAX(created_at) AS latest_review_at
+    FROM reviews
+    GROUP BY movie_id
+) rating_stats ON rating_stats.movie_id = m.id
+LEFT JOIN (
+    SELECT
+        r.movie_id,
+        SUM(rr.reaction_type = 'like') AS likes,
+        SUM(rr.reaction_type = 'dislike') AS dislikes
+    FROM reviews r
+    INNER JOIN review_reactions rr ON rr.review_id = r.id
+    GROUP BY r.movie_id
+) reaction_stats ON reaction_stats.movie_id = m.id`;
+
+const RANKING_SCORE = `ROUND(
+    0.70 * COALESCE(rating_stats.weighted_rating, 0)
+    + 0.20 * COALESCE(
+        10 * reaction_stats.likes / NULLIF(reaction_stats.likes + reaction_stats.dislikes, 0),
+        0
+    )
+    + 0.10 * COALESCE(
+        10 * POWER(
+            0.5,
+            GREATEST(TIMESTAMPDIFF(SECOND, rating_stats.latest_review_at, CURRENT_TIMESTAMP), 0) / (180 * 86400)
+        ),
+        0
+    ),
+    2
+)`;
+
+const MOVIE_SELECT_WITH_RANKING = MOVIE_SELECT.replace(
+    '\nFROM movies m',
+    `,\n    ${RANKING_SCORE} AS ranking_score\nFROM movies m`
+) + `\n${RANKING_JOINS}`;
+
 export default class MovieModel {
     #db;
 
@@ -171,10 +212,15 @@ export default class MovieModel {
         const page = filters.page ?? 1;
         const limit = filters.limit ?? 20;
         const offset = (page - 1) * limit;
+        const orderBy = {
+            recent: 'm.created_at DESC',
+            popular: 'm.likes_count DESC, ranking_score DESC',
+            ranking: 'ranking_score DESC, m.average_rating DESC'
+        }[filters.sort] || 'm.created_at DESC';
         const [movies] = await this.#db.execute(
-            `${MOVIE_SELECT}
+            `${MOVIE_SELECT_WITH_RANKING}
             WHERE ${where}
-            ORDER BY m.created_at DESC
+            ORDER BY ${orderBy}, m.created_at DESC
             LIMIT ? OFFSET ?`,
             [...params, limit, offset]
         );
