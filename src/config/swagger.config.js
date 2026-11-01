@@ -108,6 +108,33 @@ const swaggerSpec = {
                         }
                     }
                 }
+            },
+            Review: {
+                type: 'object',
+                required: ['id', 'movieId', 'user', 'title', 'comment', 'rating'],
+                properties: {
+                    id: { type: 'integer' },
+                    movieId: { type: 'integer' },
+                    user: { type: 'string' },
+                    title: { type: 'string' },
+                    comment: { type: 'string' },
+                    rating: { type: 'integer', minimum: 1, maximum: 10 },
+                    likesCount: { type: 'integer', minimum: 0 },
+                    dislikesCount: { type: 'integer', minimum: 0 },
+                    createdAt: { type: 'string', format: 'date-time' }
+                }
+            },
+            ReviewListResponse: {
+                type: 'object',
+                required: ['status', 'total', 'data'],
+                properties: {
+                    status: { type: 'string', example: 'success' },
+                    total: { type: 'integer', minimum: 0 },
+                    data: {
+                        type: 'array',
+                        items: { $ref: '#/components/schemas/Review' }
+                    }
+                }
             }
         },
         responses: {

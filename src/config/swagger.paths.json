@@ -1555,7 +1555,14 @@
       ],
       "responses": {
         "200": {
-          "description": "Lista de reseñas de la película."
+          "description": "Lista de reseñas de la película.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewListResponse"
+              }
+            }
+          }
         },
         "400": {
           "$ref": "#/components/responses/BadRequest"
@@ -1635,6 +1642,131 @@
         },
         "409": {
           "$ref": "#/components/responses/Conflict"
+        }
+      }
+    }
+  },
+  "/movies/{id}/reviews/{reviewId}": {
+    "put": {
+      "tags": [
+        "Reviews"
+      ],
+      "summary": "Actualizar una reseña propia",
+      "description": "Solo el autor de la reseña puede actualizarla.",
+      "security": [
+        {
+          "BearerAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "in": "path",
+          "name": "id",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        {
+          "in": "path",
+          "name": "reviewId",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "minProperties": 1,
+              "properties": {
+                "rating": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 10
+                },
+                "title": {
+                  "type": "string",
+                  "minLength": 3,
+                  "maxLength": 100
+                },
+                "comment": {
+                  "type": "string",
+                  "minLength": 10,
+                  "maxLength": 1000
+                }
+              }
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Reseña actualizada."
+        },
+        "400": {
+          "$ref": "#/components/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/components/responses/Forbidden"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
+        }
+      }
+    },
+    "delete": {
+      "tags": [
+        "Reviews"
+      ],
+      "summary": "Eliminar una reseña propia",
+      "description": "Solo el autor de la reseña puede eliminarla.",
+      "security": [
+        {
+          "BearerAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "in": "path",
+          "name": "id",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        {
+          "in": "path",
+          "name": "reviewId",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Reseña eliminada."
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/components/responses/Forbidden"
+        },
+        "404": {
+          "$ref": "#/components/responses/NotFound"
         }
       }
     }
