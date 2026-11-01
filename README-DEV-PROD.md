@@ -11,8 +11,8 @@ Esta guía cubre los dos repositorios:
 
 1. En la carpeta del backend, crea el archivo local de variables:
 
-   ```powershell
-   Copy-Item .env.example .env
+   ```bash
+   cp .env.example .env
    ```
 
 2. Edita `.env`. Para el Compose incluido, conserva `DB_HOST=localhost` y `DB_PORT=3307` para la conexión local desde herramientas externas. Compose configura el backend para conectarse al servicio MySQL interno `db:3306`.
@@ -39,7 +39,7 @@ Cuando el frontend se sirve desde `localhost` o `127.0.0.1`, su cliente usa `htt
    npm run dev
    ```
 
-`npm run dev` utiliza nodemon. La conexión puede ser a MySQL local o a un servicio remoto; `DB_SSL=true` habilita TLS para MySQL administrado.
+`npm run dev` utiliza nodemon. La conexión puede ser a MySQL local o a un servicio remoto usando las variables `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD` y `DB_NAME`.
 
 ## Producción
 
@@ -63,8 +63,6 @@ Variables para el backend con MySQL en Aiven:
 | `DB_USER` | Usuario de Aiven |
 | `DB_PASSWORD` | Contraseña vigente de Aiven |
 | `DB_NAME` | Nombre de la base que contiene las tablas y semillas |
-| `DB_SSL` | `true` |
-| `DB_SSL_CA` | Certificado CA PEM descargado de Aiven |
 | `DB_CONNECTION_LIMIT` | `10` |
 | `JWT_SECRET` | Secreto largo, aleatorio y exclusivo de producción |
 | `JWT_EXPIRES_IN` | `24h` |
@@ -72,7 +70,9 @@ Variables para el backend con MySQL en Aiven:
 | `RATE_LIMIT_WINDOW_MS` | `900000` |
 | `RATE_LIMIT_MAX_REQUESTS` | `100` |
 
-Pega el certificado completo en `DB_SSL_CA`; si Render requiere una sola línea, conserva los saltos como `\n`. La base `DB_NAME` debe existir y tener el esquema aplicado. No uses `DB_ROOT_PASSWORD`: la aplicación se conecta con `DB_USER` y `DB_PASSWORD`.
+La base `DB_NAME` debe existir y tener el esquema aplicado. No uses `DB_ROOT_PASSWORD`: la aplicación se conecta con `DB_USER` y `DB_PASSWORD`.
+
+> El código actual no configura TLS para MySQL. La captura del panel Aiven mostraba `SSL mode: REQUIRED`; si esa instancia exige TLS, la conexión del backend puede fallar aunque las credenciales sean correctas.
 
 El dominio de CORS es el origen del frontend, sin la ruta del repositorio. La API debe responder en `https://karenflix-backend.onrender.com/api/v1`.
 

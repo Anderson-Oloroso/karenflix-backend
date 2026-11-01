@@ -44,8 +44,8 @@ Consulta la [documentación completa del esquema, relaciones e índices](./datab
 
 3. Crea `.env` a partir de `.env.example` y configura la conexión, el secreto JWT y el origen del frontend. `.env` está excluido de Git:
 
-   ```powershell
-   Copy-Item .env.example .env
+   ```bash
+   cp .env.example .env
    ```
 
 4. Inicia el servidor:
@@ -69,8 +69,6 @@ Consulta la [documentación completa del esquema, relaciones e índices](./datab
 | `DB_PASSWORD` | Contraseña MySQL de la aplicación | Requerida |
 | `DB_NAME` | Base de datos | Requerida |
 | `DB_CONNECTION_LIMIT` | Conexiones del pool | `10` |
-| `DB_SSL` | Habilita TLS para MySQL administrado | `false`; usa `true` para Aiven |
-| `DB_SSL_CA` | Certificado CA PEM para validar MySQL TLS | Opcional; configurar con el CA de Aiven |
 | `JWT_SECRET` | Secreto para firmar/verificar JWT | Requerida; usa un secreto largo y aleatorio |
 | `JWT_EXPIRES_IN` | Vigencia del token | `24h` |
 | `CORS_ORIGIN` | Orígenes permitidos, separados por comas | GitHub Pages del frontend y puertos locales `5500`, `5173` y `3000` |
@@ -180,7 +178,6 @@ Las operaciones críticas de reseñas y reacciones se ejecutan dentro de transac
 - Autorización por roles y verificación de propiedad de reseñas en el backend.
 - Contraseñas almacenadas como hashes bcrypt; JWT y secretos configurados mediante variables de entorno.
 - Configura `CORS_ORIGIN` con los dominios reales al desplegar. El frontend GitHub Pages usa el origen `https://ixenbrandonestiben-lang.github.io` (sin la ruta del repositorio).
-- Para Aiven, configura `DB_SSL=true` y pega el certificado CA del servicio en `DB_SSL_CA`.
 - Ajusta las credenciales de seeds, la clave JWT y los permisos de MySQL antes de exponer un entorno.
 
 ## Entrega académica
