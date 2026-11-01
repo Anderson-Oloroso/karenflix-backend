@@ -184,7 +184,27 @@ Respalda la base antes de aplicar una vez cada migración pertinente:
 
 ## Entrega académica
 
-La planeación SCRUM (roles, sprints, historias, herramienta y evidencias), el PDF de planeación y el video de demostración son entregables del equipo; deben agregarse y enlazarse cuando estén disponibles. Este repositorio no incluye esos materiales por defecto.
+### Equipo
+
+- Brandon Estiben Ixén Teleguario — Developer.
+- Anderson Oloroso García — Developer.
+- Scrum Master — **PENDIENTE: agregar nombre y asignación**.
+- Product Owner — **PENDIENTE: agregar nombre y asignación**.
+
+### Seguimiento SCRUM
+
+Tablero del equipo en [Monday.com](https://ixenbrandonestibens-team-squad.monday.com/boards/18437954558).
+
+- Sprint 1 — **PENDIENTE: agregar fechas, objetivo e historias de usuario**.
+- Sprint 2 — **PENDIENTE: agregar fechas, objetivo e historias de usuario**.
+- Evidencias del tablero — **PENDIENTE: agregar enlaces o capturas**.
+
+### Materiales de entrega
+
+- PDF de planeación SCRUM — **PENDIENTE: agregar el documento final y enlazarlo aquí**.
+- Video de demostración (máximo 10 minutos, integrantes en cámara, código y recorrido funcional) — **PENDIENTE: agregar el enlace final aquí**.
+
+No se generaron el PDF ni el video. El frontend contiene `public/karenflix_intro.mp4`, pero no se ha validado como el video de entrega solicitado.
 
 ## Créditos
 
