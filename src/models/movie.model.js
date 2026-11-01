@@ -87,7 +87,7 @@ export default class MovieModel {
                 movie.release_year,
                 movie.duration_minutes,
                 movie.age_rating ?? 'PG-13',
-                movie.image_url,
+                movie.image_url || null,
                 movie.banner_url ?? null,
                 movie.trailer_url ?? null,
                 movie.status || 'pending',
@@ -165,7 +165,10 @@ export default class MovieModel {
         };
         const updates = Object.entries(fields)
             .filter(([field]) => Object.hasOwn(movie, field))
-            .map(([field, column]) => ({ column, value: movie[field] }));
+            .map(([field, column]) => ({
+                column,
+                value: field === 'image_url' && !movie[field] ? null : movie[field]
+            }));
 
         if (updates.length === 0) {
             return false;

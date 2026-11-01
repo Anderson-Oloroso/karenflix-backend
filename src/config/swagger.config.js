@@ -86,11 +86,12 @@ const swaggerSpec = {
                                 releaseYear: { type: 'integer' },
                                 durationMinutes: { type: 'integer' },
                                 ageRating: { type: 'string' },
-                                imageUrl: { type: 'string' },
+                                imageUrl: { type: 'string', nullable: true },
                                 bannerUrl: { type: 'string', nullable: true },
                                 trailerUrl: { type: 'string', nullable: true },
                                 status: { type: 'string', enum: ['pending', 'approved', 'rejected'] },
                                 averageRating: { type: 'number' },
+                                rankingScore: { type: 'number', nullable: true },
                                 likesCount: { type: 'integer', minimum: 0 },
                                 createBy: { type: 'string', nullable: true },
                                 createAt: { type: 'string', format: 'date-time' }

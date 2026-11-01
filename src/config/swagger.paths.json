@@ -1182,8 +1182,7 @@
                 "director_id",
                 "category_id",
                 "release_year",
-                "duration_minutes",
-                "image_url"
+                "duration_minutes"
               ],
               "properties": {
                 "title": {
@@ -1220,6 +1219,7 @@
                 "image_url": {
                   "type": "string",
                   "format": "uri",
+                  "nullable": true,
                   "maxLength": 255
                 },
                 "banner_url": {
@@ -1346,6 +1346,7 @@
                 "image_url": {
                   "type": "string",
                   "format": "uri",
+                  "nullable": true,
                   "maxLength": 255
                 },
                 "banner_url": {
