@@ -9,12 +9,14 @@ import directorRouter from './director.route.js';
 import favoriteRouter from './favorite.route.js';
 import movieActorRouter from './movie-actor.route.js';
 import userRouter, { userProfileRouter } from './user.route.js';
+import historialRouter from './hitorial.router.js';
 
 const apiRouter = Router();
 
 apiRouter.use('/auth', authRouter);
 apiRouter.use('/auth/profile', userProfileRouter);
 
+apiRouter.use('/users/me/history', historialRouter);
 apiRouter.use('/users/me', userProfileRouter);
 apiRouter.use('/users', userRouter);
 apiRouter.use('/movies', movieRoutes);
