@@ -15,7 +15,7 @@ El SQL es la fuente de verdad. Si este documento y el esquema difieren, prevalec
 
 ## Alcance
 
-El esquema cubre usuarios, categorías, directores, películas, actores, la relación entre películas y actores, favoritos, reseñas y reacciones a reseñas. Se implementa en MySQL con InnoDB. Este documento describe las tablas y reglas definidas en `01-schema.sql`.
+El esquema cubre usuarios, categorías, directores, películas, actores, la relación entre películas y actores, favoritos, reseñas, historial de acciones y reacciones a reseñas. Se implementa en MySQL con InnoDB. Este documento describe las tablas y reglas definidas en `01-schema.sql`.
 
  `01-schema.sql` no elimina la base de datos ni los datos existentes. `CREATE TABLE IF NOT EXISTS` solo crea tablas faltantes; no aplica cambios a tablas que ya existen. Para actualizar una instalación existente, aplica las migraciones documentadas más abajo.
 
@@ -139,6 +139,7 @@ erDiagram
 | `movie_actors` | `id` (PK), `movie_id` (`INT`, NOT NULL, FK), `actor_id` (`INT`, NOT NULL, FK), `character_name` (`VARCHAR(100)`, nullable), UNIQUE (`movie_id`, `actor_id`) |
 | `favorites` | `id` (PK), `user_id` (`INT`, NOT NULL, FK), `movie_id` (`INT`, NOT NULL, FK), `created_at` (`TIMESTAMP`, predeterminado `CURRENT_TIMESTAMP`), UNIQUE (`user_id`, `movie_id`) |
 | `reviews` | `id` (PK), `movie_id` (`INT`, NOT NULL, FK), `user_id` (`INT`, NOT NULL, FK), `title` (`VARCHAR(100)`, NOT NULL), `comment` (`TEXT`, NOT NULL), `rating` (`TINYINT`, NOT NULL, CHECK entre 1 y 10), `likes_count` (`INT`, NOT NULL, predeterminado `0`, calculado por triggers), `created_at` (`TIMESTAMP`, predeterminado `CURRENT_TIMESTAMP`), UNIQUE (`movie_id`, `user_id`) |
+| `historial` | `id` (PK), `user_id` (`INT`, NOT NULL, FK con `ON DELETE CASCADE`), `action` (`ENUM('create', 'update', 'delete')`, NOT NULL), `review_id` y `movie_id` (`INT`, NOT NULL; se conservan aunque se elimine la reseña), `created_at` (`TIMESTAMP`, predeterminado `CURRENT_TIMESTAMP`), índices por usuario/fecha y usuario/acción/fecha |
 | `review_reactions` | `id` (PK), `review_id` (`INT`, NOT NULL, FK), `user_id` (`INT`, NOT NULL, FK), `reaction_type` (`ENUM('like', 'dislike')`, NOT NULL), `created_at` (`TIMESTAMP`, predeterminado `CURRENT_TIMESTAMP`), UNIQUE (`review_id`, `user_id`) |
 
 Para una base ya creada, aplica una sola vez cada migración después de respaldarla:
@@ -163,6 +164,7 @@ En la tabla, el lado “uno” indica que cada registro dependiente se relaciona
 | `movies` aparece en `favorites` | Una película a cero o muchos favoritos | La combinación usuario-película no se puede repetir. |
 | `movies` recibe `reviews` | Una película a cero o muchas reseñas | Cada reseña corresponde a una película. |
 | `users` publica `reviews` | Un usuario a cero o muchas reseñas | Cada reseña corresponde a un usuario autor. |
+| `users` registra `historial` | Un usuario a cero o muchas acciones | Las acciones se guardan aunque se elimine la reseña asociada. |
 | `reviews` recibe `review_reactions` | Una reseña a cero o muchas reacciones | Cada reacción corresponde a una reseña. |
 | `users` registra `review_reactions` | Un usuario a cero o muchas reacciones | Cada reacción corresponde a un usuario. |
 

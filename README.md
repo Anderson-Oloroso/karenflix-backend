@@ -97,6 +97,7 @@ El inicio de sesión y el registro tienen un límite adicional de 20 solicitudes
 | `GET`, `POST`, `PUT`, `DELETE` | `/categories` y `/categories/:id` | Lectura pública; escritura administrador |
 | `GET`, `POST` | `/movies/:id/reviews` | Lectura pública; escritura JWT |
 | `PUT`, `DELETE` | `/movies/:id/reviews/:reviewId` | JWT; solo el autor |
+| `GET` | `/users/me/history` | JWT; historial propio, filtrable por fecha y acción |
 | `POST` | `/reviews/:id/reactions` | JWT; no permite reaccionar a la reseña propia |
 | `GET`, `POST`, `DELETE` | `/favorites` y `/favorites/:id` | JWT |
 
@@ -146,6 +147,15 @@ Content-Type: application/json
 ```
 
 Para dar o alternar una reacción se envía `{"reaction_type":"like"}` o `{"reaction_type":"dislike"}` a `POST /api/v1/reviews/:id/reactions`. Repetir la misma reacción la elimina.
+
+### Consultar el historial de reseñas
+
+```http
+GET /api/v1/users/me/history?from=2026-01-01&to=2026-01-31&action=update
+Authorization: ******
+```
+
+Los filtros `from` y `to` son fechas inclusivas con formato `YYYY-MM-DD`; `action` admite `create`, `update` o `delete`. La respuesta se ordena de la acción más reciente a la más antigua y solo incluye acciones del usuario autenticado. Cada publicación, edición o eliminación de reseña se registra automáticamente.
 
 Los errores incluyen `message` y `errors`; también se conservan `mensaje` y `errores` por compatibilidad. Los errores de validación no devuelven los valores enviados.
 
@@ -201,4 +211,3 @@ Tablero del equipo en [Monday.com](https://ixenbrandonestibens-team-squad.monday
 ## Créditos
 
 Proyecto académico KarenFlix. Backend: [Anderson-Oloroso/karenflix-backend](https://github.com/Anderson-Oloroso/karenflix-backend). Frontend: [ixenbrandonestiben-lang/karenflix-frontend](https://github.com/ixenbrandonestiben-lang/karenflix-frontend).
-
