@@ -3,13 +3,15 @@ import ReviewDTO from '../dtos/review.dto.js';
 
 export default class ReviewService {
     #reviewModel;
+    #historialModel;
     #pool;
 
-    constructor(reviewModel, pool) {
-        if (!reviewModel || !pool) {
-            throw new Error('reviewModel y pool son requeridos en ReviewService');
+    constructor(reviewModel, historialModel, pool) {
+        if (!reviewModel || !historialModel || !pool) {
+            throw new Error('reviewModel, historialModel y pool son requeridos en ReviewService');
         }
         this.#reviewModel = reviewModel;
+        this.#historialModel = historialModel;
         this.#pool = pool;
     }
 
@@ -30,6 +32,12 @@ export default class ReviewService {
                     movie_id: movieId,
                     user_id: userId,
                     ...reviewData
+                }, connection);
+                await this.#historialModel.insert({
+                    user_id: userId,
+                    action: 'create',
+                    review_id: result.insertId,
+                    movie_id: movieId
                 }, connection);
                 return { id: result.insertId };
             } catch (error) {
@@ -56,6 +64,12 @@ export default class ReviewService {
             const review = await this.#reviewModel.getByIdForUpdate(reviewId, connection);
             this.#assertReviewOwner(review, movieId, userId);
             await this.#reviewModel.updateById(reviewId, reviewData, connection);
+            await this.#historialModel.insert({
+                user_id: userId,
+                action: 'update',
+                review_id: reviewId,
+                movie_id: movieId
+            }, connection);
             return { id: Number(reviewId) };
         });
     }
@@ -65,6 +79,12 @@ export default class ReviewService {
             const review = await this.#reviewModel.getByIdForUpdate(reviewId, connection);
             this.#assertReviewOwner(review, movieId, userId);
             await this.#reviewModel.deleteById(reviewId, connection);
+            await this.#historialModel.insert({
+                user_id: userId,
+                action: 'delete',
+                review_id: reviewId,
+                movie_id: movieId
+            }, connection);
             return { id: Number(reviewId) };
         });
     }
