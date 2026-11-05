@@ -102,7 +102,20 @@ CREATE TABLE IF NOT EXISTS reviews (
     CONSTRAINT fk_review_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
--- 9. Tabla de Reacciones (Likes / Dislikes en Reseñas)
+-- 9. Historial de acciones sobre reseñas
+CREATE TABLE IF NOT EXISTS historial (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    action ENUM('create', 'update', 'delete') NOT NULL,
+    review_id INT NOT NULL,
+    movie_id INT NOT NULL,
+    created_at TIMESTAMP  DEFAULT CURRENT_TIMESTAMP,
+    KEY idx_historial_user_date (user_id, created_at),
+    KEY idx_historial_user_action_date (user_id, action, created_at),
+    CONSTRAINT fk_historial_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+-- 10. Tabla de Reacciones (Likes / Dislikes en Reseñas)
 CREATE TABLE IF NOT EXISTS review_reactions (
     id INT AUTO_INCREMENT PRIMARY KEY,
     review_id INT NOT NULL,
