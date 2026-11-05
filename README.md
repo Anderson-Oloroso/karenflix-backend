@@ -155,7 +155,7 @@ GET /api/v1/users/me/history?from=2026-01-01&to=2026-01-31&action=update
 Authorization: ******
 ```
 
-Los filtros `from` y `to` son fechas inclusivas con formato `YYYY-MM-DD`; `action` admite `create`, `update` o `delete`. La respuesta se ordena de la acción más reciente a la más antigua y solo incluye acciones del usuario autenticado. Cada publicación, edición o eliminación de reseña se registra automáticamente.
+`action` admite `create`, `update` o `delete`. La respuesta se ordena de la acción más reciente a la más antigua y solo incluye acciones del usuario autenticado. Cada publicación, edición o eliminación de reseña se registra automáticamente.
 
 Los errores incluyen `message` y `errors`; también se conservan `mensaje` y `errores` por compatibilidad. Los errores de validación no devuelven los valores enviados.
 

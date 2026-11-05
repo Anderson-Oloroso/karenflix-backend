@@ -109,7 +109,7 @@ CREATE TABLE IF NOT EXISTS historial (
     action ENUM('create', 'update', 'delete') NOT NULL,
     review_id INT NOT NULL,
     movie_id INT NOT NULL,
-    created_at TIMESTAMP  DEFAULT CURRENT_TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     KEY idx_historial_user_date (user_id, created_at),
     KEY idx_historial_user_action_date (user_id, action, created_at),
     CONSTRAINT fk_historial_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
