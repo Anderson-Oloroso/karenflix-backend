@@ -1,7 +1,11 @@
 import Logger from '../utils/logger.util.js';
+import HistoryUserModel from '../models/history-user.model.js';
+import Database from '../config/db.config.js';
+import HistoryUserController from '../controllers/history-users.controller.js';
+import HistoryUserService from '../services/history-user.service.js';
 
 export default class LoggerMiddleware {
-    static handle(req, res, next) {
+    static async handle(req, res, next) {
         const startTime = Date.now();
 
         res.on('finish', () => {
@@ -25,6 +29,12 @@ export default class LoggerMiddleware {
 
             Logger.info(entry);
         });
+    
+        const historyUserModel = new HistoryUserModel(Database.getPool());
+        const historyUserService = new HistoryUserService(historyUserModel);
+        const historyUserController = new HistoryUserController(historyUserService);
+
+        await historyUserController.createHistory(req, res, next);
 
         next();
     }
