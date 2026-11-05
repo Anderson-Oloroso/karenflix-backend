@@ -29,6 +29,8 @@ Esta guía cubre los dos repositorios:
 
 Cuando el frontend se sirve desde `localhost` o `127.0.0.1`, su cliente usa `http://localhost:4000/api/v1`. Las semillas de `database/` se ejecutan automáticamente solo al inicializar un volumen MySQL nuevo; no se vuelven a ejecutar por levantar Compose otra vez.
 
+Si la base ya existía antes de agregar el historial de reseñas, aplica una vez `database/migrations/20261105_create_history_users.sql`. No borres el volumen para aplicar el cambio.
+
 ### Backend sin Docker
 
 1. Asegúrate de tener MySQL en ejecución y configura `.env` con su host, puerto, usuario, contraseña y base de datos. Para un MySQL instalado directamente, el puerto suele ser `3306`; para el MySQL de Compose, desde Windows se usa `3307`.

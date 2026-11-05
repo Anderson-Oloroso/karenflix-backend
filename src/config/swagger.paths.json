@@ -1577,7 +1577,7 @@
         "Reviews"
       ],
       "summary": "Crear una reseña para una película",
-      "description": "La creación se procesa mediante el servicio transaccional de reseñas.",
+      "description": "La creación y su evento de auditoría se guardan en la misma transacción.",
       "security": [
         {
           "BearerAuth": []
@@ -1652,7 +1652,7 @@
         "Reviews"
       ],
       "summary": "Actualizar una reseña propia",
-      "description": "Solo el autor de la reseña puede actualizarla.",
+      "description": "Solo el autor puede actualizar la reseña. El cambio y su evento de auditoría se guardan en la misma transacción.",
       "security": [
         {
           "BearerAuth": []
@@ -1729,7 +1729,7 @@
         "Reviews"
       ],
       "summary": "Eliminar una reseña propia",
-      "description": "Solo el autor de la reseña puede eliminarla.",
+      "description": "Solo el autor puede eliminar la reseña. La eliminación y su evento de auditoría se guardan en la misma transacción.",
       "security": [
         {
           "BearerAuth": []
@@ -2235,6 +2235,79 @@
         "401": {"$ref": "#/components/responses/Unauthorized"},
         "403": {"$ref": "#/components/responses/Forbidden"},
         "404": {"$ref": "#/components/responses/NotFound"}
+      }
+    }
+  },
+  "/history/{id}": {
+    "get": {
+      "tags": [
+        "History"
+      ],
+      "summary": "Consultar historial de reseñas de un usuario",
+      "description": "Registra automáticamente las operaciones exitosas de crear, actualizar y eliminar reseñas. El usuario puede consultar su propio historial; los administradores pueden consultar el de cualquier usuario.",
+      "security": [
+        {
+          "BearerAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "in": "path",
+          "name": "id",
+          "required": true,
+          "description": "ID del usuario cuyo historial se consulta.",
+          "schema": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Historial de reseñas del usuario.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "string",
+                    "example": "success"
+                  },
+                  "data": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": { "type": "integer" },
+                        "user_id": { "type": "integer" },
+                        "action_type": {
+                          "type": "string",
+                          "enum": ["CREATE", "UPDATE", "DELETE"]
+                        },
+                        "status_code": { "type": "integer" },
+                        "url": { "type": "string" },
+                        "created_at": {
+                          "type": "string",
+                          "format": "date-time"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "400": {
+          "$ref": "#/components/responses/BadRequest"
+        },
+        "401": {
+          "$ref": "#/components/responses/Unauthorized"
+        },
+        "403": {
+          "$ref": "#/components/responses/Forbidden"
+        }
       }
     }
   },

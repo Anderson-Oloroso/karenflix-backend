@@ -13,7 +13,9 @@ export default class ErrorMiddleware {
             Logger.error({
                 timestamp: new Date().toISOString(),
                 method: req.method,
-                route: req.path,
+                user: req.user?.username ?? 'anonymous',
+                userId: req.user?.id ?? req.user?.sub ?? 'anonymous',
+                route: req.originalUrl.split('?')[0],
                 statusCode,
                 message,
                 stack

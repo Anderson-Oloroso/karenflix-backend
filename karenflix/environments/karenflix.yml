@@ -27,3 +27,5 @@ variables:
   - name: userId
     value: "1"
     description: ID de un usuario para requests administrativos
+  - name: jwt
+    value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJhZG1pbl9rYXJlbiIsImVtYWlsIjoiYWRtaW5Aa2FyZW5mbGl4LmNvbSIsInJvbGUiOiJhZG1pbiIsInRva2VuVmVyc2lvbiI6MCwiaWF0IjoxNzkzOTE5NjAwLCJleHAiOjE3OTQwMDYwMDB9.GalS9ovVus8Y-BV6J3WpbjhnDKPxgu8hur92zEIIIRs

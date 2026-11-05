@@ -2,6 +2,7 @@ import { Router } from 'express';
 import Database from '../config/db.config.js';
 import AuthMiddleware from '../middlewares/auth.middleware.js';
 import ReviewModel from '../models/review.model.js';
+import HistoryUserModel from '../models/history-user.model.js';
 import ReviewService from '../services/review.service.js';
 import ReviewController from '../controllers/review.controller.js';
 import {
@@ -14,7 +15,8 @@ import { validationMiddleware } from '../middlewares/validation.middleware.js';
 
 const pool = Database.getPool();
 const reviewModel = new ReviewModel(pool);
-const reviewService = new ReviewService(reviewModel, pool);
+const historyUserModel = new HistoryUserModel(pool);
+const reviewService = new ReviewService(reviewModel, historyUserModel, pool);
 const reviewController = new ReviewController(reviewService);
 const auth = new AuthMiddleware();
 

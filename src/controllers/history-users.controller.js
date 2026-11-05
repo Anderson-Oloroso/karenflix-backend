@@ -1,3 +1,6 @@
+import AppError from '../utils/appError.util.js';
+import { ROLES } from '../constants/role.constant.js';
+
 export default class HistoryUserController {
   #historyUserService;
 
@@ -8,8 +11,12 @@ export default class HistoryUserController {
 
   async getUserHistory(req, res, next) {
     try {
-      
-      const userId = req.user.id ?? req.user.sub;
+      const userId = Number(req.params.id);
+      const authenticatedUserId = Number(req.user.id ?? req.user.sub);
+      if (userId !== authenticatedUserId && req.user.role !== ROLES.ADMIN) {
+        throw AppError.forbidden('Solo puedes consultar tu propio historial.');
+      }
+
       const filters = {
         action_type: req.query.action_type || null,
         start_date: req.query.start_date || null,
@@ -25,23 +32,4 @@ export default class HistoryUserController {
       next(error);
     }
   }
-
-  async createHistory(req, res, next) {
-    try {
-      const history = {
-        user_id: req.user.id ?? req.user.sub,
-        action_type: req.body.action_type,
-        status_code: req.body.status_code,
-        url: req.body.url
-      };
-      const result = await this.#historyUserService.createHistory(history);
-
-      return res.status(201).json({
-        status: 'success',
-        data: result
-      });
-    } catch (error) {
-      next(error);
-    }
-  }
-}   
+}

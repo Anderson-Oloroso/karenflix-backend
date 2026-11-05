@@ -125,7 +125,7 @@ En Docker Compose, el usuario y contraseña de la aplicación deben coincidir co
    - `01-schema.sql`
    - `02-seeds.sql`
    - `03-procedures-triggers.sql`
-4. Antes de ejecutar `01-schema.sql`, verifica que no haya información que quieras conservar: ese archivo elimina y vuelve a crear `karenflix_db`.
+4. `01-schema.sql` no elimina la base ni los datos existentes. Para una base que ya existe, aplica las migraciones necesarias de `database/migrations/`; no borres el volumen de Docker como solución a un cambio de esquema.
 
 ### Paso 5: reiniciar y probar
 

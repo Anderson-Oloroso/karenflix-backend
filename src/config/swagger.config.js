@@ -30,6 +30,7 @@ const swaggerSpec = {
         { name: 'Actors' },
         { name: 'Favorites' },
         { name: 'Movie Actors' },
+        { name: 'History' },
         { name: 'Users' }
     ],
     components: {

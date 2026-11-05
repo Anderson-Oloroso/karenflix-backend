@@ -8,12 +8,6 @@ export default class HistoryUserService {
     this.#historyUserModel = historyUserModel;
   }
 
-  async createHistory(history) {
-    const historyDto = new HistoryUserDto(history);
-    const result = await this.#historyUserModel.createHistory(historyDto.data);
-    return result;
-  }
-
   async getUserHistory(userId, filters = {}) {
     try {
       const rows = await this.#historyUserModel.getUserById(userId, filters);

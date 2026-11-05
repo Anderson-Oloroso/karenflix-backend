@@ -1,14 +1,18 @@
 export default class Logger {
     static info(entry) {
-        console.info(`${entry.timestamp} ${entry.method} ${entry.user} ${entry.route} ${entry.statusCode} ${entry.responseTimeMs}ms`);
+        const method = `${entry.method}${entry.isPreflight ? ' (preflight)' : ''}`;
+        console.info(`${entry.timestamp} ${method} ${entry.route} user: ${entry.user} userId: ${entry.userId} origin: ${entry.origin} allowedOrigin: ${entry.allowedOrigin} ${entry.statusCode} ${entry.responseTimeMs}ms`);
     }
 
     static error(entry) {
         const request = [
             entry.timestamp,
-            entry.method,
-            entry.user,
+            `${entry.method}${entry.isPreflight ? ' (preflight)' : ''}`,
+            `user: ${entry.user ?? 'anonymous'}`,
+            `userId: ${entry.userId ?? 'anonymous'}`,
             entry.route,
+            `origin: ${entry.origin ?? 'none'}`,
+            `allowedOrigin: ${entry.allowedOrigin ?? 'none'}`,
             entry.statusCode,
             entry.responseTimeMs === undefined ? null : `${entry.responseTimeMs}ms`
         ].filter(value => value !== null).join(' ');

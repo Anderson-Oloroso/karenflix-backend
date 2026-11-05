@@ -3,17 +3,16 @@ import ReviewDTO from '../dtos/review.dto.js';
 
 export default class ReviewService {
     #reviewModel;
+    #historyUserModel;
     #pool;
 
-    constructor(reviewModel, pool) {
-        if (!reviewModel || !pool) {
-            throw new Error('reviewModel y pool son requeridos en ReviewService');
-        }
+    constructor(reviewModel, historyUserModel, pool) {
         this.#reviewModel = reviewModel;
+        this.#historyUserModel = historyUserModel;
         this.#pool = pool;
     }
 
-    async create(movieId, userId, reviewData) {
+    async create(movieId, userId, reviewData, url) {
         return this.#withTransaction(async connection => {
             const movieExists = await this.#reviewModel.movieExists(movieId, connection);
             if (!movieExists) {
@@ -30,6 +29,12 @@ export default class ReviewService {
                     movie_id: movieId,
                     user_id: userId,
                     ...reviewData
+                }, connection);
+                await this.#historyUserModel.createHistory({
+                    user_id: userId,
+                    action_type: 'CREATE',
+                    status_code: 201,
+                    url
                 }, connection);
                 return { id: result.insertId };
             } catch (error) {
@@ -51,20 +56,32 @@ export default class ReviewService {
         return ReviewDTO.fromArray(reviews);
     }
 
-    async update(movieId, reviewId, userId, reviewData) {
+    async update(movieId, reviewId, userId, reviewData, url) {
         return this.#withTransaction(async connection => {
             const review = await this.#reviewModel.getByIdForUpdate(reviewId, connection);
             this.#assertReviewOwner(review, movieId, userId);
             await this.#reviewModel.updateById(reviewId, reviewData, connection);
+            await this.#historyUserModel.createHistory({
+                user_id: userId,
+                action_type: 'UPDATE',
+                status_code: 200,
+                url
+            }, connection);
             return { id: Number(reviewId) };
         });
     }
 
-    async delete(movieId, reviewId, userId) {
+    async delete(movieId, reviewId, userId, url) {
         return this.#withTransaction(async connection => {
             const review = await this.#reviewModel.getByIdForUpdate(reviewId, connection);
             this.#assertReviewOwner(review, movieId, userId);
             await this.#reviewModel.deleteById(reviewId, connection);
+            await this.#historyUserModel.createHistory({
+                user_id: userId,
+                action_type: 'DELETE',
+                status_code: 200,
+                url
+            }, connection);
             return { id: Number(reviewId) };
         });
     }

@@ -12,10 +12,15 @@ export default class ReviewController {
     async create(req, res, next) {
         try {
             const movieId = Number(req.params.id);
-            const userId = req.user?.id ?? req.user?.sub;
+            const userId = req.user.id ?? req.user.sub;
             const { title, comment, rating } = req.body;
 
-            const result = await this.#reviewService.create(movieId, userId, { title, comment, rating });
+            const result = await this.#reviewService.create(
+                movieId,
+                userId,
+                { title, comment, rating },
+                req.originalUrl
+            );
 
             return res.status(201).json({
                 status: 'success',
@@ -47,8 +52,9 @@ export default class ReviewController {
             const result = await this.#reviewService.update(
                 Number(req.params.id),
                 Number(req.params.reviewId),
-                req.user.id,
-                req.body
+                req.user.id ?? req.user.sub,
+                req.body,
+                req.originalUrl
             );
             return res.status(200).json({
                 status: 'success',
@@ -65,7 +71,8 @@ export default class ReviewController {
             const result = await this.#reviewService.delete(
                 Number(req.params.id),
                 Number(req.params.reviewId),
-                req.user.id
+                req.user.id ?? req.user.sub,
+                req.originalUrl
             );
             return res.status(200).json({
                 status: 'success',

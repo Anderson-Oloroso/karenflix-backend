@@ -15,7 +15,7 @@ El SQL es la fuente de verdad. Si este documento y el esquema difieren, prevalec
 
 ## Alcance
 
-El esquema cubre usuarios, categorías, directores, películas, actores, la relación entre películas y actores, favoritos, reseñas y reacciones a reseñas. Se implementa en MySQL con InnoDB. Este documento describe las tablas y reglas definidas en `01-schema.sql`.
+El esquema cubre usuarios, categorías, directores, películas, actores, la relación entre películas y actores, favoritos, reseñas, reacciones a reseñas y el historial de cambios de reseñas (`history_users`). Se implementa en MySQL con InnoDB. Este documento describe las tablas y reglas definidas en `01-schema.sql`.
 
  `01-schema.sql` no elimina la base de datos ni los datos existentes. `CREATE TABLE IF NOT EXISTS` solo crea tablas faltantes; no aplica cambios a tablas que ya existen. Para actualizar una instalación existente, aplica las migraciones documentadas más abajo.
 
@@ -36,6 +36,15 @@ erDiagram
         atributo password_hash
         atributo role
         atributo token_version
+        atributo created_at
+    }
+
+    HISTORY_USERS {
+        atributo id PK
+        atributo user_id FK
+        atributo action_type
+        atributo status_code
+        atributo url
         atributo created_at
     }
 
@@ -118,6 +127,7 @@ erDiagram
     MOVIES ||--o{ MOVIE_ACTORS : incluye
     ACTORS ||--o{ MOVIE_ACTORS : participa
     USERS ||--o{ FAVORITES : guarda
+    USERS ||--o{ HISTORY_USERS : audita
     MOVIES ||--o{ FAVORITES : aparece_en
     MOVIES ||--o{ REVIEWS : recibe
     USERS ||--o{ REVIEWS : publica
@@ -132,6 +142,7 @@ erDiagram
 | Entidad | Atributos |
 | --- | --- |
 | `users` | `id` (PK), `username` (`VARCHAR(50)`, NOT NULL, UK), `email` (`VARCHAR(100)`, NOT NULL, UK), `password_hash` (`VARCHAR(255)`, NOT NULL), `role` (`ENUM('admin', 'user')`, predeterminado `'user'`), `token_version` (`INT`, NOT NULL, predeterminado `0`), `created_at` (`TIMESTAMP`, predeterminado `CURRENT_TIMESTAMP`) |
+| `history_users` | `id` (PK), `user_id` (`INT`, NOT NULL, FK a `users.id` con `ON DELETE CASCADE`), `action_type` (`ENUM('CREATE', 'UPDATE', 'DELETE')`, NOT NULL), `status_code` (`INT`, NOT NULL), `url` (`VARCHAR(255)`, NOT NULL), `created_at` (`TIMESTAMP`, predeterminado `CURRENT_TIMESTAMP`) |
 | `categories` | `id` (PK), `name` (`VARCHAR(50)`, NOT NULL, UK), `description` (`TEXT`, NOT NULL), `created_at` (`TIMESTAMP`, predeterminado `CURRENT_TIMESTAMP`) |
 | `directors` | `id` (PK), `name` (`VARCHAR(100)`, NOT NULL, UK), `created_at` (`TIMESTAMP`, predeterminado `CURRENT_TIMESTAMP`) |
 | `movies` | `id` (PK), `title` (`VARCHAR(150)`, NOT NULL, UK), `description` (`TEXT`, NOT NULL), `director_id` (`INT`, NOT NULL, FK con `ON DELETE RESTRICT`), `category_id` (`INT`, NOT NULL, FK con `ON DELETE RESTRICT`), `release_year` (`INT`, NOT NULL), `duration_minutes` (`INT`, NOT NULL), `age_rating` (`VARCHAR(10)`, predeterminado `'PG-13'`), `image_url` (`VARCHAR(255)`, nullable), `banner_url` y `trailer_url` (`VARCHAR(255)`, nullable; `trailer_url` admite una URL de YouTube), `status` (`ENUM('pending', 'approved', 'rejected')`, predeterminado `'pending'`), `average_rating` (`DECIMAL(4,2)`, NOT NULL, predeterminado `0.00`, calculado por triggers), `likes_count` (`INT`, NOT NULL, predeterminado `0`, total de favoritos actualizado por triggers), `created_by` (`INT`, nullable, FK con `ON DELETE SET NULL`), `created_at` (`TIMESTAMP`, predeterminado `CURRENT_TIMESTAMP`) |
@@ -145,8 +156,11 @@ Para una base ya creada, aplica una sola vez cada migración después de respald
 
 - [`migrations/20261031_remove_director_metadata.sql`](./migrations/20261031_remove_director_metadata.sql) elimina biografía y foto de directores.
 - [`migrations/20261101_make_movie_image_url_nullable.sql`](./migrations/20261101_make_movie_image_url_nullable.sql) permite películas sin imagen.
+- [`migrations/20261105_create_history_users.sql`](./migrations/20261105_create_history_users.sql) crea la tabla de auditoría de las operaciones CRUD de reseñas.
 
 El esquema nuevo ya crea `directors` sin biografía ni foto y permite `movies.image_url` nulo.
+
+La tabla `history_users` relaciona cada registro con `users` mediante `user_id`. Solo se registran las operaciones exitosas `CREATE`, `UPDATE` y `DELETE` de reseñas; lecturas y cambios de otros recursos no generan registros.
 
 ## Relaciones y cardinalidades
 
@@ -160,6 +174,7 @@ En la tabla, el lado “uno” indica que cada registro dependiente se relaciona
 | `movies` relaciona `movie_actors` | Una película a cero o muchos registros de reparto | Cada registro de reparto pertenece a una película. |
 | `actors` relaciona `movie_actors` | Un actor a cero o muchas películas | `movie_actors` permite asociar varios actores con una película y varias películas con un actor. |
 | `users` guarda `favorites` | Un usuario a cero o muchos favoritos | Cada favorito pertenece a un usuario y a una película. |
+| `users` origina `history_users` | Un usuario a cero o muchos eventos de historial | Cada evento corresponde a un usuario; al eliminarlo, sus eventos se eliminan por `ON DELETE CASCADE`. |
 | `movies` aparece en `favorites` | Una película a cero o muchos favoritos | La combinación usuario-película no se puede repetir. |
 | `movies` recibe `reviews` | Una película a cero o muchas reseñas | Cada reseña corresponde a una película. |
 | `users` publica `reviews` | Un usuario a cero o muchas reseñas | Cada reseña corresponde a un usuario autor. |

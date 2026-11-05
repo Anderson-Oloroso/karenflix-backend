@@ -5,9 +5,9 @@ export default class HistoryUserModel {
     this.#db = db;
   }
 
-  async createHistory(history) {
-    const [result] = await this.#db.execute(
-      `INSERT INTO history_user (
+  async createHistory(history, connection = this.#db) {
+    const [result] = await connection.execute(
+      `INSERT INTO history_users (
         user_id, action_type, status_code, url
       )
       VALUES (?, ?, ?, ?)`,
@@ -23,7 +23,7 @@ export default class HistoryUserModel {
 
   async getUserById(userId, filters = {}) {
     const { action_type, start_date, end_date } = filters;
-    let query = `SELECT * FROM history_user WHERE user_id = ?`;
+    let query = `SELECT * FROM history_users WHERE user_id = ?`;
     const params = [userId];
 
     if (action_type) {

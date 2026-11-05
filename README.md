@@ -99,8 +99,11 @@ El inicio de sesión y el registro tienen un límite adicional de 20 solicitudes
 | `PUT`, `DELETE` | `/movies/:id/reviews/:reviewId` | JWT; solo el autor |
 | `POST` | `/reviews/:id/reactions` | JWT; no permite reaccionar a la reseña propia |
 | `GET`, `POST`, `DELETE` | `/favorites` y `/favorites/:id` | JWT |
+| `GET` | `/history/:id` | JWT; propio historial o administrador |
 
 Consulta Swagger para ver todos los endpoints, esquemas, validaciones y respuestas documentadas.
+
+Las operaciones exitosas de crear, actualizar y eliminar reseñas se registran automáticamente en `history_users`. Para consultar los registros usa `GET /api/v1/history/:id` con el mismo ID del token; los administradores pueden consultar el historial de cualquier usuario.
 
 ### Listar y ordenar películas
 
@@ -201,4 +204,3 @@ Tablero del equipo en [Monday.com](https://ixenbrandonestibens-team-squad.monday
 ## Créditos
 
 Proyecto académico KarenFlix. Backend: [Anderson-Oloroso/karenflix-backend](https://github.com/Anderson-Oloroso/karenflix-backend). Frontend: [ixenbrandonestiben-lang/karenflix-frontend](https://github.com/ixenbrandonestiben-lang/karenflix-frontend).
-
