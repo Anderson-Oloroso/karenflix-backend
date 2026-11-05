@@ -9,6 +9,7 @@ import directorRouter from './director.route.js';
 import favoriteRouter from './favorite.route.js';
 import movieActorRouter from './movie-actor.route.js';
 import userRouter, { userProfileRouter } from './user.route.js';
+import historyUserRouter from './history-user.route.js';
 
 const apiRouter = Router();
 
@@ -24,6 +25,7 @@ apiRouter.use('/actors', actorRouter);
 apiRouter.use('/directors', directorRouter);
 apiRouter.use('/favorites', favoriteRouter);
 apiRouter.use('/movie-actors', movieActorRouter);
+apiRouter.use('/history', historyUserRouter);
 
 // Reseñas anidadas bajo películas: /api/v1/movies/:id/reviews
 apiRouter.use('/movies/:id/reviews', reviewRouter);
